@@ -1,0 +1,20 @@
+.root {
+  background-color: white;
+}
+
+h1 {
+  padding: 5px;
+  font-size: 16px;
+  text-align: left;
+  background-color: rgb(226, 21, 21);
+}
+
+ p {
+  padding: 5px;
+  font-size: 14 px;
+  text-align: left;
+}
+
+ul {
+  list-style-type: none;
+}
