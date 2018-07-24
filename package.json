@@ -1,7 +1,7 @@
 {
-  "name": "rss_intranet_template_project",
+  "name": "rss_intranet",
   "version": "1.1.0",
-  "description": "RSS Intranet Template Project",
+  "description": "RSS Intranet",
   "scripts": {
     "start": "node server.js",
     "build": "webpack --config ./webpack.config.js --progress"
