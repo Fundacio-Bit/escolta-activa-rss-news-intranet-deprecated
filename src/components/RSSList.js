@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import RSSDocument from './RSSDocument'
+import RSSDocument from './RSSDocument';
 
 class RSSList extends Component {
     render () {

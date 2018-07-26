@@ -21,11 +21,13 @@
     "webpack": "~1.12.*"
   },
   "dependencies": {
-    "react": "^15.0.0",
-    "react-dom": "^15.0.0",
+    "@material-ui/core": "^1.4.1",
+    "@material-ui/icons": "^2.0.0",
     "express": "^4.16.3",
     "express-handlebars": "^3.0.0",
+    "jquery": "^3.3.1",
     "mongodb": "^3.0.10",
-    "jquery": "^3.3.1"
+    "react": "^16.3.0",
+    "react-dom": "^16.3.0"
   }
 }

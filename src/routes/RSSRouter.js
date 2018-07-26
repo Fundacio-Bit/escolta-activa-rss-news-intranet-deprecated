@@ -5,16 +5,19 @@ var MongoClient = require('mongodb').MongoClient;
 var db;
 
 // Initialize connection once
-MongoClient.connect("mongodb://localhost:27017/", function(err, client) {
+MongoClient.connect("mongodb://localhost:27017/", (err, client) =>
+{
     if(err) throw err;
     db = client.db('rss_fbit_db');
 });
 
 // Reuse database object in request handlers
-router.get("/", function(req, res) {
+router.get("/", (req, res) =>
+{
     var collection = db.collection("news");
     results = []
-    collection.find({},{fields:{"_id":0, "published":1,"title":1}}).toArray(function(err, docs) {
+    collection.find({},{fields:{"_id":0, "published":1,"title":1}}).toArray((err, docs) =>
+    {
         if(err) {
             console.log(err)
             res.status(500).send(err)
