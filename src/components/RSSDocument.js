@@ -2,7 +2,8 @@ import React, { Component } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import IconButton from '@material-ui/core/IconButton';
 import DeleteIcon from '@material-ui/icons/Delete';
-
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Checkbox from '@material-ui/core/Checkbox';
 
 const styles = theme => ({
     button: {
@@ -22,25 +23,45 @@ class RSSDocument extends Component {
         };
     
         this.handleInputChange = this.handleInputChange.bind(this);
-      }
+        // This binding is necessary to make `this` work in the callback
+        this.handleDeleteClick = this.handleDeleteClick.bind(this);
+    }
     
-      handleInputChange(event) {
+    handleInputChange(event) {
         const target = event.target;
         const value = target.type === 'checkbox' ? target.checked : target.value;
         const name = target.name;
+        console.log('handleInputChange was clicked: ' + value);
     
         this.setState({
           [name]: value
         });
-      }
+    }
     
-      render() {
+    handleDeleteClick(event) {
+        const target = event.target;
+        const name = target.name;
+        // e.preventDefault();
+        console.log('The link was clicked: ' + name);
+    }
+
+    render() {
         const { classes } = this.props;
         return (
             <table>
+            <tbody>
                 <tr>
                     <td>
-                        <label>
+                        <FormControlLabel
+                            control={
+                                <Checkbox 
+                                    checked={this.props.key} 
+                                    onChange={this.handleInputChange} 
+                                    value={this.props.key} />
+                            }
+                            label= {this.props.docId}
+                        />
+                        {/* <label>
                             <input
                                 name="isGoing"
                                 type="checkbox"
@@ -48,17 +69,21 @@ class RSSDocument extends Component {
                                 onChange={this.handleInputChange} />
                                 {this.props.docId}:
                             </label>
-                            <br />
+                            <br /> */}
                     </td>
                     <td>
                         {this.props.title}
                     </td>
                     <td>
-                        <IconButton className={classes.button} aria-label="Delete">
+                        <IconButton 
+                            className={classes.button} 
+                            aria-label="Delete" 
+                            onClick={this.handleDeleteClick} >
                             <DeleteIcon />
                         </IconButton>
                     </td>
                 </tr>
+            </tbody>
             </table>
         );
       }

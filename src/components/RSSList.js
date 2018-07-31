@@ -1,25 +1,39 @@
 import React, { Component } from 'react';
+import { withStyles } from '@material-ui/core/styles';
 import RSSDocument from './RSSDocument';
+import FormControl from '@material-ui/core/FormControl';
+import FormGroup from '@material-ui/core/FormGroup';
+
+const styles = theme => ({
+  root: {
+    display: 'flex',
+  },
+  formControl: {
+    margin: theme.spacing.unit * 3,
+  },
+});
 
 class RSSList extends Component {
     render () {
+      const { classes } = this.props;
       return (
-          <form>
-                    {this.props.retrievedDocs.map(u => {
-                      return (
-                        <RSSDocument
-                        //TODO:check why are keys for. They should ne unique and cannot be rendered in the DOM
-                        // using prop.key
-                          key={u._id}
-                          docId={u.published}
-                          title={u.title}
-                        />
-                      );
-                    })}            
-
-          </form>
+          <FormControl component="fieldset" className={classes.formControl}>
+          <FormGroup>
+              {this.props.retrievedDocs.map(u => {
+                  return (
+                    <RSSDocument
+                    //TODO:check why are keys for. They should ne unique and cannot be rendered in the DOM
+                    // using prop.key
+                      key={u._id}
+                      docId={u.published}
+                      title={u.title}
+                    />
+                  );
+              })}            
+          </FormGroup>
+          </FormControl>
       );
     }
   }
 
-  export default RSSList;
+  export default  withStyles(styles)(RSSList);
