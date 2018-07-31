@@ -10,7 +10,7 @@ class RSSList extends Component {
                 <RSSDocument
                 //TODO:check why are keys for. They should ne unique and cannot be rendered in the DOM
                 // using prop.key
-                  key={u.published}
+                  key={u._id}
                   docId={u.published}
                   title={u.title}
                 />

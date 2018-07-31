@@ -16,7 +16,7 @@ router.get("/", (req, res) =>
 {
     var collection = db.collection("news");
     results = []
-    collection.find({},{fields:{"_id":0, "published":1,"title":1}}).toArray((err, docs) =>
+    collection.find({},{fields:{"_id":1, "published":1,"title":1}}).toArray((err, docs) =>
     {
         if(err) {
             console.log(err)
