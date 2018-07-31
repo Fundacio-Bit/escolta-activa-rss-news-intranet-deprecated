@@ -19,7 +19,6 @@ class RSSDocument extends Component {
         super(props);
         this.state = {
           isGoing: false,
-          numberOfGuests: 2
         };
     
         this.handleInputChange = this.handleInputChange.bind(this);
@@ -41,17 +40,15 @@ class RSSDocument extends Component {
             <table>
                 <tr>
                     <td>
-                        <form>
-                            <label>
+                        <label>
                             <input
                                 name="isGoing"
                                 type="checkbox"
                                 checked={this.props.key}
                                 onChange={this.handleInputChange} />
-                            {this.props.docId}:
+                                {this.props.docId}:
                             </label>
                             <br />
-                        </form>
                     </td>
                     <td>
                         {this.props.title}
