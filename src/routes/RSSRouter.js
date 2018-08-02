@@ -1,6 +1,6 @@
 var express = require('express')
 var router = express();
-
+var mongo = require('mongodb');
 var MongoClient = require('mongodb').MongoClient;
 var db;
 
@@ -11,11 +11,11 @@ MongoClient.connect("mongodb://localhost:27017/", (err, client) =>
     db = client.db('rss_fbit_db');
 });
 
+
 // Reuse database object in request handlers
-router.get("/", (req, res) =>
+router.get("/entries", (req, res) =>
 {
     var collection = db.collection("news");
-    results = []
     collection.find({},{fields:{"_id":1, "published":1,"title":1}}).toArray((err, docs) =>
     {
         if(err) {
@@ -59,77 +59,55 @@ router.get("/", (req, res) =>
 //             })
 //     })
 
-// // Add route with parameters and different CRUD operations (GET, DELETE and PUT) 
-// router.route('/identifier/:documentId')
-//     .get((req, res) =>
-//         {
-//         mongoDocument.find({"_id": req.params.documentId}, (err, retrievedDoc) =>
-//             {
-//             if(err)
-//                 {
-//                 console.log(err)
-//                 res.status(500).send(err)
-//                 }
-//             else
-//                 {
-//                 res.json(retrievedDoc)
-//                 }
-//             })
-//         })
-//     .delete((req, res)=>
-//         {
-//         mongoDocument.findById(req.params.documentId, (err, retrievedDoc) =>
-//             {
-//             if (err)
-//                 {
-//                 console.log(err)
-//                 res.status(500).send(err)
-//                 }
-//             else
-//                 {
-//                 if (retrievedDoc)
-//                     {
-//                     retrievedDoc.remove(err => {
-//                         if(err)
-//                             {
-//                             res.status(500).send(err)
-//                             }
-//                         else
-//                             {
-//                             res.status(204).send('removed')
-//                             }
-//                         })                
-//                     }
-//                 else
-//                     {
-//                     console.log('Not found')
-//                     }
-//                 }
-//             })
-//         })
-//     .put((req, res)=>{ // add a title to an existing document
-//         mongoDocument.findById(req.params.documentId, (err, retrievedDoc) =>
-//             {
-//             if (err)
-//                 {
-//                 console.log(err)
-//                 res.status(500).send(err)
-//                 }
-//             else
-//                 {
-//                 if (retrievedDoc)
-//                     {                      
-//                         retrievedDoc.title = "An updated title"
-//                         retrievedDoc.save()
-//                         res.status(201).send(retrievedDoc)                                  
-//                     }
-//                 else
-//                     {
-//                     console.log('Document not found')
-//                     }
-//                 }
-//             })
-//         })
+// Add route with parameters and different CRUD operations (GET, DELETE and PUT) 
+router.route('/identifier/:documentId')
+    .get((req, res) =>
+    {
+        var o_id = new mongo.ObjectID(req.params.documentId);
+        
+        var collection = db.collection("news");
+        collection.find({"_id": o_id}).toArray((err, docs) =>
+            {
+                if(err) {
+                    console.log("error: " + err)
+                    res.status(500).send(err)
+                } else {
+                    res.json({"results": docs});
+                }
+            });
+    })
+    .delete((req, res)=>
+    {
+        var collection = db.collection("news");
+        collection.deleteOne({ _id: new mongo.ObjectId(req.params.documentId) }, function (err, results) {
+        });
+      
+        res.json({ success: req.params.documentId })
+    })
+    .put((req, res)=>{ // add a title to an existing document
+        var collection = db.collection("news");
+        collection.findById(req.params.documentId, (err, retrievedDoc) =>
+            {
+            if (err)
+                {
+                console.log(err)
+                res.status(500).send(err)
+                }
+            else
+                {
+                if (retrievedDoc)
+                    {                      
+                        retrievedDoc.title = "An updated title"
+                        retrievedDoc.save()
+                        res.status(201).send(retrievedDoc)                                  
+                    }
+                else
+                    {
+                    console.log('Document not found')
+                    }
+                }
+            })
+        })
 
 // // Add route with parameters to POST a new document with a title
 // mongoDocumentsRouter.route('/title/:docTitle')

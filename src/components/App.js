@@ -18,7 +18,7 @@ class App extends Component {
 
  // Call the REST API to get all docuements
   retrievedDocumentsList() {
-    $.getJSON('http://localhost:8000/RSSDocs/')
+    $.getJSON('http://localhost:8000/RSSDocs/entries')
       .then(({results}) => this.setState({retrievedDocuments: results}));      
   }
 
