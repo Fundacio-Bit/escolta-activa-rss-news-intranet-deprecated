@@ -19,40 +19,40 @@ const styles = theme => ({
 class RSSDocument extends Component {
     constructor(props) {
         super(props);
-        // this.state = {
-        //   isGoing: false,
-        // };
-        console.log(this.props.key);
-        this.handleInputChange = this.handleInputChange.bind(this);
+        this.state = {
+            [this.props.docId] : this.props.selected,
+        };
         // This binding is necessary to make `this` work in the callback
+        this.handleInputChange = this.handleInputChange.bind(this);
         this.handleDeleteClick = this.handleDeleteClick.bind(this);
     }
     
     handleInputChange(event) {
         const target = event.target;
         const value = target.type === 'checkbox' ? target.checked : target.value;
-        const name = target.name;
-        console.log('handleInputChange was clicked: ' + value);
-    
-        this.setState({
-          [name]: value
-        });
+        var id = ''
+        Object.keys(this.state).map((key, index) => {
+            id = key
+        })            
+  
+        axios.put('http://localhost:8000/RSSDocs/identifier/'+ id +'/selected/' + value )
+            .then((res) => {
+                console.log(res)
+                // we can update the state after response...
+                this.setState({
+                    [id]: value
+                });
+            })
     }
     
     handleDeleteClick(event) {
-        console.log('Deleting id:  ' + event.target)
-        this.removeDocument('5b23e46c9c6058256dd5ce09');
-    }
-
-    // Call the REST API to remove docuement
-    removeDocument(id) {
-        console.log('Remove document with id: ' + id);
-        axios.delete('http://localhost:8000/RSSDocs/identifier/', {'documentId': id})
+        // axios.delete('http://localhost:8000/RSSDocs/identifier/', {params: {'documentId': id}})
+        axios.delete('http://localhost:8000/RSSDocs/identifier/'+ this.props.docId)
             .then((res) => {
                 console.log(res)
-            // we can update the state after response...
-            // self.setState({selectedBook:selectedBook})
-        })
+                // we can update the state after response...
+                // self.setState({selectedBook:selectedBook})
+            })
     }
 
     render() {
@@ -65,12 +65,11 @@ class RSSDocument extends Component {
                         <FormControlLabel
                             control={
                                 <Checkbox 
-                                    name={this.props.key}
-                                    checked={false}
+                                    checked={this.state[this.props.docId]}
                                     onChange={this.handleInputChange} 
-                                    value={this.key} />
+                                    value={String(this.props.selected)} />
                             }
-                            label= {this.props.docId}
+                            label= {this.props.published}
                         />
                         {/* <label>
                             <input

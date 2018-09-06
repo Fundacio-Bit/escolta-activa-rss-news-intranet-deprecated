@@ -16,7 +16,7 @@ MongoClient.connect("mongodb://localhost:27017/", (err, client) =>
 router.get("/entries", (req, res) =>
 {
     var collection = db.collection("news");
-    collection.find({},{fields:{"_id":1, "published":1,"title":1}}).toArray((err, docs) =>
+    collection.find({},{fields:{"_id":1, "published":1,"title":1, "selected":1}}).toArray((err, docs) =>
     {
         if(err) {
             console.log(err)
@@ -79,47 +79,35 @@ router.route('/identifier/:documentId')
     .delete((req, res)=>
     {
         var collection = db.collection("news");
-        collection.deleteOne({ _id: new mongo.ObjectId(req.params.documentId) }, function (err, results) {
-        });
-      
-        res.json({ success: req.params.documentId })
-    })
-    .put((req, res)=>{ // add a title to an existing document
-        var collection = db.collection("news");
-        collection.findById(req.params.documentId, (err, retrievedDoc) =>
-            {
+        var query = { _id: new mongo.ObjectId(req.params.documentId) };
+        collection.deleteOne(query, function (err, results) {
             if (err)
                 {
                 console.log(err)
                 res.status(500).send(err)
                 }
-            else
+        });
+      
+        res.json({ success: req.params.documentId })
+    })
+
+// Add route with parameters and different CRUD operations (GET, DELETE and PUT) 
+router.route('/identifier/:documentId/selected/:selected')
+    .put((req, res)=>{
+        var collection = db.collection("news");
+        var query = {'_id': new mongo.ObjectID(req.params.documentId)};
+        var newvalues = { $set: {selected: req.params.selected } };
+        collection.updateOne(query, newvalues, function (err, results) {
+            if (err)
                 {
-                if (retrievedDoc)
-                    {                      
-                        retrievedDoc.title = "An updated title"
-                        retrievedDoc.save()
-                        res.status(201).send(retrievedDoc)                                  
-                    }
-                else
-                    {
-                    console.log('Document not found')
-                    }
+                console.log(err)
+                res.status(500).send(err)
                 }
-            })
+            else {
+                res.json({ success: req.params.documentId })
+            }
         })
-
-// // Add route with parameters to POST a new document with a title
-// mongoDocumentsRouter.route('/title/:docTitle')
-//         .post((req, res)=>{
-//             let documentToUpload = new mongoDocument()
-//             documentToUpload.title = req.params.docTitle
-//             documentToUpload.save()
-//             res.status(201).send(documentToUpload) 
-//             })
-
-
-
+    })
 
 // // TODO: add timeout to responses:
 // // https://stackoverflow.com/questions/21708208/express-js-response-timeout

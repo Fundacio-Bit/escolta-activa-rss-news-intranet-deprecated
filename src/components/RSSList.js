@@ -25,7 +25,9 @@ class RSSList extends Component {
                     //TODO:check why are keys for. They should ne unique and cannot be rendered in the DOM
                     // using prop.key
                       key={u._id}
-                      docId={u.published}
+                      published={u.published}
+                      selected={u.selected}
+                      docId={u._id}
                       title={u.title}
                     />
                   );
