@@ -35,7 +35,7 @@ class RSSDocument extends Component {
             id = key
         })            
   
-        axios.put('http://localhost:8000/RSSDocs/identifier/'+ id +'/selected/' + value )
+        axios.put('http://localhost:8000/rss-news/identifier/'+ id +'/selected/' + value )
             .then((res) => {
                 console.log(res)
                 // we can update the state after response...
@@ -46,8 +46,8 @@ class RSSDocument extends Component {
     }
     
     handleDeleteClick(event) {
-        // axios.delete('http://localhost:8000/RSSDocs/identifier/', {params: {'documentId': id}})
-        axios.delete('http://localhost:8000/RSSDocs/identifier/'+ this.props.docId)
+        // axios.delete('http://localhost:8000/rss-news/identifier/', {params: {'documentId': id}})
+        axios.delete('http://localhost:8000/rss-news/identifier/'+ this.props.docId)
             .then((res) => {
                 console.log(res)
                 // we can update the state after response...

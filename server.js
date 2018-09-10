@@ -24,9 +24,9 @@ app.use('/', express.static(path.join(__dirname, 'build')))
 // *************** REST API ************************
 // *************************************************
 
-var RSSRouter = require('./src/routes/RSSRouter')
+var newsRouter = require('./src/routes/news-router')
 
-app.use('/RSSDocs', RSSRouter)
+app.use('/rss-news', newsRouter)
 
 // *************************************************
 // *************** TEMPLATE ENGINE *****************
