@@ -28,6 +28,10 @@ var newsRouter = require('./src/routes/news-router')
 
 app.use('/rss-news', newsRouter)
 
+var sourcesRouter = require('./src/routes/sources-router')
+
+app.use('/rss-sources', sourcesRouter)
+
 // *************************************************
 // *************** TEMPLATE ENGINE *****************
 // *************************************************
