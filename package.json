@@ -26,7 +26,6 @@
     "axios": "^0.18.0",
     "express": "^4.16.3",
     "express-handlebars": "^3.0.0",
-    "jquery": "^3.3.1",
     "mongodb": "^3.0.10",
     "npm": "^6.3.0",
     "react": "^16.3.0",
