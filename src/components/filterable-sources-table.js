@@ -10,6 +10,7 @@ class FilterableSourcesTable extends Component {
       countryISOCode: '',
       activeFilter: '' 
     };
+    
     // This binding is necessary to make `this` work in the callback
     this.handleCountrySelectorChange = this.handleCountrySelectorChange.bind(this);
     this.handleActiveSelectorChange = this.handleActiveSelectorChange.bind(this);     
@@ -35,7 +36,6 @@ class FilterableSourcesTable extends Component {
           onActiveSelectorChange={this.handleActiveSelectorChange}
         />
           <SourcesTable
-          // retrievedSources = {this.state.retrievedDocuments}
           countrySelectorValue = {this.state.countryISOCode}
           activeSelectorValue = {this.state.activeFilter}/>     
       </div>        

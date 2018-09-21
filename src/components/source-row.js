@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
 import axios from 'axios';
+import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
+import TableRow from '@material-ui/core/TableRow';
+import TableCell from '@material-ui/core/TableCell';
 import IconButton from '@material-ui/core/IconButton';
 import StopIcon from '@material-ui/icons/Stop';
 import PlayArrowIcon from '@material-ui/icons/PlayArrow';
-// import FormControlLabel from '@material-ui/core/FormControlLabel';
-// import Checkbox from '@material-ui/core/Checkbox';
 
 const styles = theme => ({
     button: {
@@ -68,40 +69,28 @@ class RSSSource extends Component {
         const { classes } = this.props;
         const isActive = this.state.isActive
         return (
-            <table>
-            <tbody>
-                <tr>
-                    {/* <td>
-                        <FormControlLabel
-                            control={
-                                <Checkbox 
-                                    checked={this.state[this.props.docId]}
-                                    onChange={this.handleInputChange} 
-                                    value = "true"
-                                    value={String(this.props.selected)}
-                                     />
-                            }
-                               />
-            
-                    </td> */}
-                    <td>
-                        <IconButton 
-                            className={classes.button} 
-                            aria-label="SourceManager" 
-                            onClick={this.handleToggleClick}>
-                            {isActive ? (<PlayArrowIcon />):(<StopIcon />)}
-                        </IconButton>
-                    </td>
-                    <td>
-                        {this.props.source_name}<br />({this.props.section})
-                    </td>
-                    <td>
-                        ({this.props.newsCounter} notícies)
-                    </td>
-                </tr>
-            </tbody>
-            </table>
+            <TableRow >
+                    <TableCell>
+                    <IconButton 
+                        className={classes.button} 
+                        aria-label="SourceManager" 
+                        onClick={this.handleToggleClick}>
+                        {isActive ? (<PlayArrowIcon />):(<StopIcon />)}
+                    </IconButton>
+                </TableCell>
+                <TableCell>
+                    {this.props.source_name}<br />({this.props.section})
+                </TableCell>
+                <TableCell>
+                    ({this.props.newsCounter} notícies)
+                </TableCell>
+            </TableRow >
         );
       }
 }
+
+RSSSource.propTypes = {
+    classes: PropTypes.object.isRequired,
+  };
+
 export default withStyles(styles)(RSSSource);
