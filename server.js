@@ -2,7 +2,6 @@
 //An Express application is essentially a series of middleware function calls.
 
 const express = require('express')
-const handlebars = require('express-handlebars')
 const path = require('path')
 
 
