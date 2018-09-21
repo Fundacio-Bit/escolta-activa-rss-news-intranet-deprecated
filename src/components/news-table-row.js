@@ -17,38 +17,40 @@ const styles = theme => ({
   class NewsTableRow extends Component {
     constructor(props) {
         super(props);
-        this.state = {
-            selected: this.props.selected,
-        };
+        // this.state = {
+        //     selected: this.props.selected,
+        // };
     }
     
-    handleSelectedChange(event, id) {
-        const value = event.target.checked;
-        axios.put('http://localhost:8000/rss-news/identifier/'+ id +'/selected/' + String(value) )
-        .then((res) => {
-            console.log(res)
-            // we can update the state after response...
-            this.setState({
-              selected: value
-          });
-        })
-      }
+    // handleSelectedChange(event, id) {
+    //     const value = event.target.checked;
+    //     axios.put('http://localhost:8000/rss-news/identifier/'+ id +'/selected/' + value )
+    //     .then((res) => {
+    //         console.log(res)
+    //         // we can update the state after response...
+    //         this.setState({
+    //           selected: value
+    //       });
+    //     })
+    //   }
     
 
       render () {
         const { classes } = this.props;
+        var handleSelectedChange  =   this.props.handleSelectedChange;
         var handleDeleteClick  =   this.props.handleDeleteClick;
         return (
             <TableRow 
             role="checkbox"
-            onClick={event => this.handleSelectedChange(event, this.props.docId)}
           >
             <TableCell padding="checkbox">
               <Checkbox
-                checked={this.state.selected}
-                value={String(this.state.selected)}
+                checked={this.props.selected}
+                value={String(this.props.selected)}
                 color="primary"
-              />
+                // onClick={event => this.handleSelectedChange(event, this.props.docId)}
+                onClick={event => handleSelectedChange(event, this.props.docId)}
+                />
             </TableCell>
             <TableCell>{this.props.published}</TableCell>
             <TableCell>{this.props.title}</TableCell>
