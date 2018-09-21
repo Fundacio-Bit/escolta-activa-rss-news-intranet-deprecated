@@ -85,11 +85,26 @@ class NewsTable extends Component {
     })
   }
 
+  handleSelectedChange(event, id) {
+    const value = event.target.checked;
+    const retrievedNews = this.state.data;
+    const index = retrievedNews.findIndex(x => x._id == id);
+    axios.put('http://localhost:8000/rss-news/identifier/'+ id +'/selected/' + value )
+    .then((res) => {
+        console.log(res)
+        retrievedNews[index].selected = value;
+        // we can update the state after response...
+        this.setState({data:retrievedNews});
+    })
+  }
+
 
   render () {
       const { classes } = this.props;
       const { data, order, orderBy, rowsPerPage, page } = this.state;
+      const all = [5,10,25,(data.length)];
       const emptyRows = rowsPerPage - Math.min(rowsPerPage, data.length - page * rowsPerPage);
+      var handleSelectedChange = this.handleSelectedChange;
       var handleDeleteClick = this.handleDeleteClick;
       return (
         <Paper className={classes.root}>
@@ -115,6 +130,7 @@ class NewsTable extends Component {
                     selected={u.selected}
                     docId={u._id}
                     title={u.title}
+                    handleSelectedChange = {handleSelectedChange.bind(this)}
                     handleDeleteClick = {handleDeleteClick.bind(this)}
                   />
               );
@@ -140,6 +156,7 @@ class NewsTable extends Component {
           }}
           onChangePage={this.handleChangePage}
           onChangeRowsPerPage={this.handleChangeRowsPerPage}
+          rowsPerPageOptions={all}
         />
 
         </Paper>
