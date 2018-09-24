@@ -46,6 +46,7 @@ class SourcesList extends Component {
   // This binding is necessary to make `this` work in the callback
   this.handleChangePage = this.handleChangePage.bind(this);
   this.handleChangeRowsPerPage = this.handleChangeRowsPerPage.bind(this);
+  this.filterResourcesList = this.filterResourcesList.bind(this);
   }
 
   //  Callback that ensures that teh API calls done by this component are executed once it is mounted. 
@@ -69,36 +70,55 @@ class SourcesList extends Component {
     this.setState({ rowsPerPage: event.target.value });
   };
 
+  // filterResourcesList(resourcesList) {
+  //   self= this.props;
+  //   var my_list = resourcesList.map(u => {
+  //       if (u.source_id.indexOf(self.countrySelectorValue)!== -1 &&
+  //          (self.activeSelectorValue === "" ||
+  //          u.is_active === (self.activeSelectorValue !== 'false'))){
+  //             return u
+  //           }
+  //         });
+  //   return my_list
+  // };
+
+  filterResourcesList(resource) {
+    if (resource.source_id.indexOf(this.props.countrySelectorValue)!== -1 &&
+        (this.props.activeSelectorValue === "" ||
+        resource.is_active === (this.props.activeSelectorValue !== 'false'))){
+          return true;
+        }
+    else return false;
+  };
+
   render () { 
     const { classes } = this.props;
     const { rssSources, order, orderBy, rowsPerPage, page } = this.state;
+    // const filteredSources = this.filterResourcesList(rssSources)
+    const filteredSources = rssSources.filter(this.filterResourcesList)
     // const emptyRows = rowsPerPage - Math.min(rowsPerPage, rssSources.length - page * rowsPerPage);
     return (
       <div className={classes.tableWrapper}>
         <div className={classes.title}> 
           <Table className={classes.table} aria-labelledby="tableTitle">
             <TableBody>
-              {rssSources &&
-                  rssSources.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(u => {
-                      if (u.source_id.indexOf(this.props.countrySelectorValue)!== -1 &&
-                          (this.props.activeSelectorValue === "" ||
-                          u.is_active === (this.props.activeSelectorValue !== 'false'))){
-                        return (
-                          <SourceRow
-                            //TODO:check what are keys for.
-                            // They should be unique and cannot be rendered in the DOM using prop.key
-                            key={u._id}
-                            // published={u.published}
-                            // newsCounter={u.news_counter}
-                            docId={u._id}
-                            isActive={u.is_active}
-                            sourceId={u.source_id}
-                            source_name={u.source_name}
-                            section={u.section}
-                          />
-                        );
-                      }
-                    })
+              {filteredSources &&
+                  filteredSources.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(u => {                    
+                    return (
+                      <SourceRow
+                        //TODO:check what are keys for.
+                        // They should be unique and cannot be rendered in the DOM using prop.key
+                        key={u._id}
+                        // published={u.published}
+                        // newsCounter={u.news_counter}
+                        docId={u._id}
+                        isActive={u.is_active}
+                        sourceId={u.source_id}
+                        source_name={u.source_name}
+                        section={u.section}
+                      />
+                    );                     
+                })
               }
               {/* {emptyRows > 0 && (
               <TableRow style={{ height: 49 * emptyRows }}>
@@ -110,7 +130,7 @@ class SourcesList extends Component {
         </div>
         <TablePagination
         component="div"
-        count={rssSources.length}
+        count={filteredSources.length}
         rowsPerPage={rowsPerPage}
         page={page}
         backIconButtonProps={{
