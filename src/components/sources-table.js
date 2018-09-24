@@ -47,6 +47,7 @@ class SourcesList extends Component {
   this.handleChangePage = this.handleChangePage.bind(this);
   this.handleChangeRowsPerPage = this.handleChangeRowsPerPage.bind(this);
   this.filterResourcesList = this.filterResourcesList.bind(this);
+  this.handleToggleClick = this.handleToggleClick.bind(this);
   }
 
   //  Callback that ensures that teh API calls done by this component are executed once it is mounted. 
@@ -91,6 +92,20 @@ class SourcesList extends Component {
     else return false;
   };
 
+  handleToggleClick(id, isActiveFlag) {
+    axios.put('http://localhost:8000/rss-sources/identifier/'+ id +'/active/' + isActiveFlag)
+        .then((res) => {
+            // we can update the state after response...
+            console.log(res);
+            const retrievedSources = this.state.rssSources;
+            const index = retrievedSources.findIndex(x => x._id == id);
+            retrievedSources[index].is_active = isActiveFlag;
+            // we can update the state after response...
+            this.setState({rssSources:retrievedSources});              
+
+        })
+}
+
   render () { 
     const { classes } = this.props;
     const { rssSources, order, orderBy, rowsPerPage, page } = this.state;
@@ -111,6 +126,7 @@ class SourcesList extends Component {
                         key={u._id}
                         // published={u.published}
                         // newsCounter={u.news_counter}
+                        handleToggleClick = {this.handleToggleClick}
                         docId={u._id}
                         isActive={u.is_active}
                         sourceId={u.source_id}

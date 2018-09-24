@@ -23,11 +23,11 @@ class RSSSource extends Component {
         super(props);
         this.state = {
             [this.props.docId] : this.props.selected,
-            isActive : this.props.isActive
+            // isActive : this.props.isActive
         };
         // This binding is necessary to make `this` work in the callback
         // this.handleInputChange = this.handleInputChange.bind(this);
-        this.handleToggleClick = this.handleToggleClick.bind(this);
+        // this.handleToggleClick = this.handleToggleClick.bind(this);
     }
     
     // handleInputChange(event) {
@@ -48,33 +48,29 @@ class RSSSource extends Component {
     //         })
     // }
     
-    handleToggleClick(event) {
-
-        // this.setState(state => ({
-        //     isActive: !state.isActive
-        //   }));
-
-        
-        axios.put('http://localhost:8000/rss-sources/identifier/'+ this.props.docId +'/active/' + !this.state.isActive)
-            .then((res) => {
-                // we can update the state after response...
-                console.log(res);                
-                this.setState(state => ({
-                        isActive: !state.isActive
-                      }));
-            })
-    }
+    // handleToggleClick(event) {
+    //     axios.put('http://localhost:8000/rss-sources/identifier/'+ this.props.docId +'/active/' + !this.state.isActive)
+    //         .then((res) => {
+    //             // we can update the state after response...
+    //             console.log(res);                
+    //             this.setState(state => ({
+    //                     isActive: !state.isActive
+    //                   }));
+    //         })
+    // }
 
     render() {
         const { classes } = this.props;
-        const isActive = this.state.isActive
+        // const isActive = this.state.isActive
+        const isActive = this.props.isActive
         return (
             <TableRow >
                     <TableCell>
                     <IconButton 
                         className={classes.button} 
                         aria-label="SourceManager" 
-                        onClick={this.handleToggleClick}>
+                        // onClick={this.handleToggleClick}>
+                        onClick = {() => this.props.handleToggleClick(this.props.docId, !this.props.isActive)}>
                         {isActive ? (<PlayArrowIcon />):(<StopIcon />)}
                     </IconButton>
                 </TableCell>
