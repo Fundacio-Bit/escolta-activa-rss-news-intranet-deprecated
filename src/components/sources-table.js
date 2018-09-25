@@ -130,8 +130,11 @@ class SourcesList extends Component {
                         docId={u._id}
                         isActive={u.is_active}
                         sourceId={u.source_id}
-                        source_name={u.source_name}
+                        sourceName={u.source_name}
                         section={u.section}
+                        isOperative={u.is_operative}
+                        frequency={u.average_mins_between_news}
+                        feedUrl={u.feed_url}
                       />
                     );                     
                 })
