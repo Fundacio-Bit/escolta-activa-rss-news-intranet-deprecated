@@ -20,7 +20,20 @@ MongoClient.connect("mongodb://localhost:27017/", (err, client) =>
 router.get("/entries", (req, res) =>
 {
     var collection = db.collection("news");
-    collection.find({},{fields:{"_id":1, "published":1,"title":1, "selected":1}}).toArray((err, docs) =>
+    collection.find({}, {
+            fields: {
+                "_id": 1,
+                "published": 1,
+                "extraction_date": 1,
+                "brand": 1,
+                "title": 1,
+                "tags": 1,
+                "link": 1,
+                "summary": 1,
+                "description": 1,
+                "selected": 1
+            }
+        }).toArray((err, docs) =>
     {
         if(err) {
             console.log(err)
@@ -36,8 +49,6 @@ router.route('/news')
     .post((req, res) =>
 {
     var collection = db.collection("news_discarded");
-    console.log('1:' + req.body._id);
-    console.log('2:' + JSON.stringify(req.body));
     collection.insertOne(req.body, function (err, results) {
         if (err)
             {

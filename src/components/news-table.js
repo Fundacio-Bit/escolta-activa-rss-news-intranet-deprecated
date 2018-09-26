@@ -81,14 +81,14 @@ class NewsTable extends Component {
                 {headers: {'Content-Type': 'application/json' }}
     ).then((res) => {
         console.log(res)
-        // // axios.delete('http://localhost:8000/rss-news/identifier/', {params: {'documentId': id}})
-        // axios.delete('http://localhost:8000/rss-news/identifier/'+ id)
-        // .then((res) => {
-        //       console.log(res);
-        //     // we can update the state after response...
-        //     retrievedNews.splice(index, 1);
-        //     this.setState({data:retrievedNews});
-        // })  
+        // axios.delete('http://localhost:8000/rss-news/identifier/', {params: {'documentId': id}})
+        axios.delete('http://localhost:8000/rss-news/identifier/'+ id)
+        .then((res) => {
+              console.log(res);
+            // we can update the state after response...
+            retrievedNews.splice(index, 1);
+            this.setState({data:retrievedNews});
+        })  
     })
   }
 
