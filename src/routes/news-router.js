@@ -2,7 +2,11 @@ var express = require('express')
 var router = express();
 var mongo = require('mongodb');
 var MongoClient = require('mongodb').MongoClient;
+var bodyParser = require ('body-parser')
 var db;
+
+
+router.use( bodyParser.json() )  // to support JSON-encoded bodies
 
 // Initialize connection once
 MongoClient.connect("mongodb://localhost:27017/", (err, client) =>
@@ -12,11 +16,24 @@ MongoClient.connect("mongodb://localhost:27017/", (err, client) =>
 });
 
 
-// Reuse database object in request handlers
+// get all entries from news
 router.get("/entries", (req, res) =>
 {
     var collection = db.collection("news");
-    collection.find({},{fields:{"_id":1, "published":1,"title":1, "selected":1}}).toArray((err, docs) =>
+    collection.find({}, {
+            fields: {
+                "_id": 1,
+                "published": 1,
+                "extraction_date": 1,
+                "brand": 1,
+                "title": 1,
+                "tags": 1,
+                "link": 1,
+                "summary": 1,
+                "description": 1,
+                "selected": 1
+            }
+        }).toArray((err, docs) =>
     {
         if(err) {
             console.log(err)
@@ -27,37 +44,22 @@ router.get("/entries", (req, res) =>
     });
 });
   
-// // Add route without parameters
-// router.route('/')
-//     .get((req, res) =>
-//         {
-//         // mongoDocument.find({}, (err, mongoDocs) =>
-//         //     {
-//         //     if(err)
-//         //         {
-//         //         console.log(err)
-//         //         res.status(500).send(err)
-//         //         }
-//         //     else
-//         //         {
-//         //         res.json({"results": mongoDocs})
-//         //         }
-//         //     })
-//         const query = {};
-//         const projection = {};
-//         db.collection("rss_sources").find(query, projection).toArray(function(err, results) {
-//             if(err)
-//                 {
-//                 console.log(err)
-//                 res.status(500).send(err)
-//                 }
-//             else
-//                 {
-//                 console.log('results: ' + results)
-//                 res.json({"results": results})
-//                 }
-//             })
-//     })
+// Add route without parameters
+router.route('/news')
+    .post((req, res) =>
+{
+    var collection = db.collection("news_discarded");
+    collection.insertOne(req.body, function (err, results) {
+        if (err)
+            {
+            console.log(err)
+            res.status(500).send(err)
+            }
+    });
+  
+    res.json({ success: req.body._id })
+
+});
 
 // Add route with parameters and different CRUD operations (GET, DELETE and PUT) 
 router.route('/identifier/:documentId')

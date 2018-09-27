@@ -75,13 +75,20 @@ class NewsTable extends Component {
   handleDeleteClick(id) {
     const retrievedNews = this.state.data;
     const index = retrievedNews.findIndex(x => x._id == id);
-    // axios.delete('http://localhost:8000/rss-news/identifier/', {params: {'documentId': id}})
-    axios.delete('http://localhost:8000/rss-news/identifier/'+ id)
-    .then((res) => {
+    const removed_new = retrievedNews[index]
+    axios.post('http://localhost:8000/rss-news/news/', 
+                removed_new, 
+                {headers: {'Content-Type': 'application/json' }}
+    ).then((res) => {
         console.log(res)
-        // we can update the state after response...
-        retrievedNews.splice(index, 1);
-        this.setState({data:retrievedNews});
+        // axios.delete('http://localhost:8000/rss-news/identifier/', {params: {'documentId': id}})
+        axios.delete('http://localhost:8000/rss-news/identifier/'+ id)
+        .then((res) => {
+              console.log(res);
+            // we can update the state after response...
+            retrievedNews.splice(index, 1);
+            this.setState({data:retrievedNews});
+        })  
     })
   }
 
