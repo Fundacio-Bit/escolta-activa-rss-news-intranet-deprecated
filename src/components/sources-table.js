@@ -4,12 +4,19 @@ import axios from 'axios';
 import { withStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
 import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
+import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
-import TableCell from '@material-ui/core/TableCell'
+import TableCell from '@material-ui/core/TableCell';
+import TableBody from '@material-ui/core/TableBody';
 import TablePagination from '@material-ui/core/TablePagination'
 import SourceRow from './source-row';
-
+import ExpansionPanel from '@material-ui/core/ExpansionPanel';
+import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
+import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import ScheduleIcon from '@material-ui/icons/Schedule';
+import Tooltip from '@material-ui/core/Tooltip';
+import Typography from '@material-ui/core/Typography';
 
 const styles = theme => ({
   root: {
@@ -19,9 +26,18 @@ const styles = theme => ({
   },
   table: {
     minWidth: 700,
+    width: '100%'
   },
   tableWrapper: {
     overflowX: 'auto',
+    width: '100%'
+  },
+  tableCell: {
+    padding: '4px 56px 4px 24px'
+  },
+  frequencyTableCell: {
+    alignContent: 'center',
+    textAlign: 'center'
   },
   input: {
     display: 'none',
@@ -29,6 +45,42 @@ const styles = theme => ({
   title: {
     margin: theme.spacing.unit,
     flex: '0 0 auto',
+  },
+  heading: {
+    fontSize: theme.typography.pxToRem(20),
+    padding: '10px 10px 10px 25px',
+    color:'dimgrey'
+  },
+  secondaryHeading: {
+    fontSize: theme.typography.pxToRem(18),
+    color: 'lightslategrey',
+    padding: '20px 10px 10px 10px'
+  },
+  icon: {
+    verticalAlign: 'bottom',
+    height: 20,
+    width: 20,
+  },
+  summary: {
+    backgroundColor: '#0e983214',
+    padding: '4px 56px 4px 24px'
+  },
+  details: {
+    alignItems: 'center',
+  },
+  column: {
+    flexBasis: '33.33%',
+  },
+  helper: {
+    borderLeft: `2px solid ${theme.palette.divider}`,
+    padding: `${theme.spacing.unit}px ${theme.spacing.unit * 2}px`,
+  },
+  link: {
+    color: theme.palette.primary.main,
+    textDecoration: 'none',
+    '&:hover': {
+      textDecoration: 'underline',
+    },
   },
   // children: {
   //   minWidth: 700,
@@ -48,9 +100,10 @@ class SourcesList extends Component {
   this.handleChangeRowsPerPage = this.handleChangeRowsPerPage.bind(this);
   this.filterResourcesList = this.filterResourcesList.bind(this);
   this.handleToggleClick = this.handleToggleClick.bind(this);
+  this.groupBySource = this.groupBySource.bind(this);
   }
 
-  //  Callback that ensures that teh API calls done by this component are executed once it is mounted. 
+  //  Callback that ensures that the API calls done by this component are executed once it is mounted. 
   componentDidMount() {
     this.retrievedDocumentsList();
   }
@@ -92,6 +145,28 @@ class SourcesList extends Component {
     else return false;
   };
 
+  // TODO: group efficiently using map, filter and reduce functions (remove foreach loops)
+  // TODO: Filter by Source_id instead of source_name
+  // TODO: check if using a Mongo aggregation in the router we increase the loading speed
+  groupBySource(rssSourcesArray, startPos, endPos) {
+    const sourcesArray = rssSourcesArray.map(u=>{return u.source_name});
+    const uniqueSourcesArray = [...new Set(sourcesArray)];
+    const sourcesNumber = uniqueSourcesArray.length
+    const feedsBySourceArray = new Array()
+    // TODO add a unique key to all array elements. It can be the source_id
+    uniqueSourcesArray.slice(startPos, endPos).forEach(uniqueSource => {
+      const feedsBySource = {
+        source_name: uniqueSource,
+        feeds: rssSourcesArray.filter(rssSource => rssSource.source_name === uniqueSource)
+      }
+      feedsBySourceArray.push(feedsBySource)});
+    // console.log(feedsBySourceArray)
+    return {
+      "feedsBySource": feedsBySourceArray,
+      "uniqueSourcesNumber": sourcesNumber
+    }
+  };
+
   handleToggleClick(id, isActiveFlag) {
     axios.put('http://localhost:8000/rss-sources/identifier/'+ id +'/active/' + isActiveFlag)
         .then((res) => {
@@ -101,8 +176,7 @@ class SourcesList extends Component {
             const index = retrievedSources.findIndex(x => x._id == id);
             retrievedSources[index].is_active = isActiveFlag;
             // we can update the state after response...
-            this.setState({rssSources:retrievedSources});              
-
+            this.setState({rssSources:retrievedSources});
         })
 }
 
@@ -110,61 +184,86 @@ class SourcesList extends Component {
     const { classes } = this.props;
     const { rssSources, order, orderBy, rowsPerPage, page } = this.state;
     // const filteredSources = this.filterResourcesList(rssSources)
-    const filteredSources = rssSources.filter(this.filterResourcesList)
+    const filteredSources = rssSources.filter(this.filterResourcesList);
+    const groupedSources = this.groupBySource(filteredSources, page * rowsPerPage, (page * rowsPerPage) + rowsPerPage);
     // const emptyRows = rowsPerPage - Math.min(rowsPerPage, rssSources.length - page * rowsPerPage);
-    return (
-      <div className={classes.tableWrapper}>
-        <div className={classes.title}> 
-          <Table className={classes.table} aria-labelledby="tableTitle">
-            <TableBody>
-              {filteredSources &&
-                  filteredSources.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(u => {                    
-                    return (
-                      <SourceRow
-                        //TODO:check what are keys for.
-                        // They should be unique and cannot be rendered in the DOM using prop.key
-                        key={u._id}
-                        // published={u.published}
-                        // newsCounter={u.news_counter}
-                        handleToggleClick = {this.handleToggleClick}
-                        docId={u._id}
-                        isActive={u.is_active}
-                        sourceId={u.source_id}
-                        sourceName={u.source_name}
-                        section={u.section}
-                        isOperative={u.is_operative}
-                        frequency={u.average_mins_between_news}
-                        feedUrl={u.feed_url}
-                      />
-                    );                     
-                })
-              }
-              {/* {emptyRows > 0 && (
-              <TableRow style={{ height: 49 * emptyRows }}>
-                <TableCell colSpan={4} />
-              </TableRow>
-            )} */}
-            </TableBody>
-          </Table>
-        </div>
+    return (      
+      <div className={classes.root}>
         <TablePagination
-        component="div"
-        count={filteredSources.length}
-        rowsPerPage={rowsPerPage}
-        page={page}
-        backIconButtonProps={{
-          'aria-label': 'Previous Page',
-        }}
-        nextIconButtonProps={{
-          'aria-label': 'Next Page',
-        }}
-        onChangePage={this.handleChangePage}
-        onChangeRowsPerPage={this.handleChangeRowsPerPage}
-      />
-     </div>
-      );
+          component="div"
+          count={groupedSources.uniqueSourcesNumber}
+          rowsPerPage={rowsPerPage}
+          page={page}
+          backIconButtonProps={{
+            'aria-label': 'Previous Page',
+          }}
+          nextIconButtonProps={{
+            'aria-label': 'Next Page',
+          }}
+          onChangePage={this.handleChangePage}
+          onChangeRowsPerPage={this.handleChangeRowsPerPage}/>
+       
+        {groupedSources.feedsBySource.map(source =>{
+            if(source.feeds){
+              return (                     
+                <ExpansionPanel>
+                  <ExpansionPanelSummary className={classes.summary} expandIcon={<ExpandMoreIcon />}>
+                    <div className={classes.column}>
+                    <Typography className={classes.heading}>{source.source_name}</Typography>                    
+                    </div>
+                    <div className={classes.column}>
+                      <Typography className={classes.secondaryHeading}>{source.feeds.length} categories</Typography>
+                    </div>        
+                  </ExpansionPanelSummary>
+                  <ExpansionPanelDetails className={classes.details}>                 
+                    <div className={classes.tableWrapper}>
+                      <div className={classes.title}> 
+                        <Table className={classes.table} aria-labelledby="tableTitle">
+                          <TableHead>
+                            <TableRow>
+                              <TableCell className={classes.tableCell}>Extracció</TableCell>
+                              <TableCell className={classes.tableCell}>Categoria</TableCell>
+                              <TableCell className={classes.frequencyTableCell}>
+                                <Tooltip title="Minuts entre notícies"><ScheduleIcon/>
+                                </Tooltip>
+                              </TableCell>
+                            </TableRow>
+                          </TableHead>
+                          <TableBody>
+                            {source.feeds &&
+                              source.feeds.map(feed => { return (
+                                <SourceRow
+                                  //TODO:check what are keys for.
+                                  // They should be unique and cannot be rendered in the DOM using prop.key
+                                  key={feed._id}
+                                  // published={u.published}
+                                  // newsCounter={u.news_counter}
+                                  handleToggleClick = {this.handleToggleClick}
+                                  docId={feed._id}
+                                  isActive={feed.is_active}
+                                  sourceId={feed.source_id}
+                                  sourceName={feed.source_name}
+                                  section={feed.section}
+                                  isOperative={feed.is_operative}
+                                  frequency={feed.average_mins_between_news}
+                                  feedUrl={feed.feed_url}
+                                />
+                              )})
+                            }
+                          </TableBody>
+                        </Table>
+                      </div>
+                    </div>       
+                  </ExpansionPanelDetails>
+                </ExpansionPanel>
+              )
+            }
+          else {return (<div></div>)}            
+          })
+        }
+      </div>)
     }
-  }
+  } 
 
   SourcesList.propTypes = {
     classes: PropTypes.object.isRequired,
