@@ -50,12 +50,12 @@ class RSSAppBar extends Component {
           className={classes.appBar}
         >
           <Tabs className={classes.tabs} value={value} onChange={this.handleChange}>
-            <Tab label="FUENTES" />
             <Tab label="NOTICIAS" />
+            <Tab label="FUENTES" />
           </Tabs>
         </AppBar>
-        {value === 0 && <FilterableSourcesTable/>}
-        {value === 1 && <NewsTable/>}
+        {value === 0 && <NewsTable/>}
+        {value === 1 && <FilterableSourcesTable/>}
        </div>
     )
   }
