@@ -4,7 +4,7 @@ import { withStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
-import NewsTable from './news-table';
+import News from './news';
 import FilterableSourcesTable from './filterable-sources-table';
 
 const styles = {
@@ -55,7 +55,7 @@ class RSSAppBar extends Component {
           </Tabs>
         </AppBar>
         {value === 0 && <FilterableSourcesTable/>}
-        {value === 1 && <NewsTable/>}
+        {value === 1 && <News/>}
        </div>
     )
   }

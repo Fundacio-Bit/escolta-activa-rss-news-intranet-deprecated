@@ -28,10 +28,10 @@ const styles = theme => ({
   input: {
     display: 'none',
   },
-  title: {
-    margin: theme.spacing.unit,
-    flex: '0 0 auto',
-  },
+  // title: {
+  //   margin: theme.spacing.unit,
+  //   flex: '0 0 auto',
+  // },
 });
 
 
@@ -116,11 +116,11 @@ class NewsTable extends Component {
       return (
         <Paper className={classes.root}>
         <div className={classes.tableWrapper}>
-          <div className={classes.title}>
+          {/* <div className={classes.title}>
             <Typography variant="title" id="tableTitle">
               Noticias
             </Typography>
-          </div>
+          </div> */}
           <Table className={classes.table} aria-labelledby="tableTitle">
             <TableHead>
               <NewsTableHead/>
