@@ -7,6 +7,8 @@ import TableCell from '@material-ui/core/TableCell';
 import IconButton from '@material-ui/core/IconButton';
 import StopIcon from '@material-ui/icons/Stop';
 import PlayArrowIcon from '@material-ui/icons/PlayArrow';
+import Tooltip from '@material-ui/core/Tooltip';
+import ReportProblemIcon from '@material-ui/icons/ReportProblem';
 
 const styles = theme => ({
     button: {
@@ -15,6 +17,9 @@ const styles = theme => ({
     input: {
       display: 'none',
     },
+    frequencyColumn: {
+        textAlign: 'center',
+        }
 });
   
 
@@ -62,23 +67,28 @@ class RSSSource extends Component {
     render() {
         const { classes } = this.props;
         // const isActive = this.state.isActive
-        const isActive = this.props.isActive
+        // const isActive = this.props.isActive
+        // const isOperative = this.props.isOperative
+        // const frequency = this.props.frequency
+
         return (
             <TableRow >
-                    <TableCell>
-                    <IconButton 
-                        className={classes.button} 
-                        aria-label="SourceManager" 
-                        // onClick={this.handleToggleClick}>
-                        onClick = {() => this.props.handleToggleClick(this.props.docId, !this.props.isActive)}>
-                        {isActive ? (<PlayArrowIcon />):(<StopIcon />)}
-                    </IconButton>
+                <TableCell>
+                <IconButton 
+                    className={classes.button} 
+                    aria-label="SourceManager" 
+                    // onClick={this.handleToggleClick}>
+                    onClick = {() => this.props.handleToggleClick(this.props.docId, !this.props.isActive)}>
+                    {this.props.isActive ?
+                        <Tooltip title="Extracció activa"><PlayArrowIcon /></Tooltip>:
+                        <Tooltip title="Extracció incativa"><StopIcon /></Tooltip>}
+                </IconButton>
                 </TableCell>
                 <TableCell>
-                    {this.props.source_name}<br />({this.props.section})
+                    {this.props.sourceName}<br /><a href={this.props.feedUrl} target="_blank">({this.props.section})</a>
                 </TableCell>
-                <TableCell>
-                    ({this.props.newsCounter} notícies)
+                <TableCell className={classes.frequencyColumn} >
+                    {this.props.isOperative ? this.props.frequency:<ReportProblemIcon />}
                 </TableCell>
             </TableRow >
         );

@@ -16,7 +16,14 @@ MongoClient.connect("mongodb://localhost:27017/", (err, client) =>
 router.get("/sources", (req, res) =>
 {
     var collection = db.collection("rss_feeds");
-    collection.find({},{fields:{"_id":1, "source_name":1, "source_id":1, "is_active":1, "section":1, "news_counter":1}}).toArray((err, docs) =>
+    collection.find({},{fields:{"_id":1,
+                                "source_name":1,
+                                "source_id":1,
+                                "is_active":1,
+                                "section":1,
+                                "is_operative":1,
+                                "feed_url":1,
+                                "average_mins_between_news":1}}).toArray((err, docs) =>
     {
         if(err) {
             console.log(err)
