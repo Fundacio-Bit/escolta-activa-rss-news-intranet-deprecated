@@ -93,7 +93,7 @@ class SourcesList extends Component {
     this.state = {        
         rssSources : [],
         page: 0,
-        rowsPerPage: 10,
+        rowsPerPage: 5,
     };
   // This binding is necessary to make `this` work in the callback
   this.handleChangePage = this.handleChangePage.bind(this);
@@ -119,22 +119,9 @@ class SourcesList extends Component {
     this.setState({ page });
   };
 
-
   handleChangeRowsPerPage(event) {
     this.setState({ rowsPerPage: event.target.value });
   };
-
-  // filterResourcesList(resourcesList) {
-  //   self= this.props;
-  //   var my_list = resourcesList.map(u => {
-  //       if (u.source_id.indexOf(self.countrySelectorValue)!== -1 &&
-  //          (self.activeSelectorValue === "" ||
-  //          u.is_active === (self.activeSelectorValue !== 'false'))){
-  //             return u
-  //           }
-  //         });
-  //   return my_list
-  // };
 
   filterResourcesList(resource) {
     if (resource.source_id.indexOf(this.props.countrySelectorValue)!== -1 &&
@@ -154,8 +141,9 @@ class SourcesList extends Component {
     const sourcesNumber = uniqueSourcesArray.length
     const feedsBySourceArray = new Array()
     // TODO add a unique key to all array elements. It can be the source_id
-    uniqueSourcesArray.slice(startPos, endPos).forEach(uniqueSource => {
+    uniqueSourcesArray.slice(startPos, endPos).forEach((uniqueSource, i) => {
       const feedsBySource = {
+        key: uniqueSource + i,
         source_name: uniqueSource,
         feeds: rssSourcesArray.filter(rssSource => rssSource.source_name === uniqueSource)
       }
@@ -166,6 +154,7 @@ class SourcesList extends Component {
       "uniqueSourcesNumber": sourcesNumber
     }
   };
+
 
   handleToggleClick(id, isActiveFlag) {
     axios.put('http://localhost:8000/rss-sources/identifier/'+ id +'/active/' + isActiveFlag)
@@ -183,9 +172,22 @@ class SourcesList extends Component {
   render () { 
     const { classes } = this.props;
     const { rssSources, order, orderBy, rowsPerPage, page } = this.state;
+    const paginationOptions = [5,10];
     // const filteredSources = this.filterResourcesList(rssSources)
     const filteredSources = rssSources.filter(this.filterResourcesList);
     const groupedSources = this.groupBySource(filteredSources, page * rowsPerPage, (page * rowsPerPage) + rowsPerPage);
+    
+    // Code got from https://www.consolelog.io/group-by-in-javascript/
+    // A detailed explanation can be found at the URL above.
+    // Array.prototype.groupBy = (prop) =>{
+    //   return filteredSources.reduce((groups,item)=>{
+    //     const val = item[prop]
+    //     groups[val]= groups[val] || []
+    //     groups[val].push(item)
+    //     return groups
+    //   },{})}
+
+    // const groupedBySourceName = filteredSources.groupBy('source_name')
     // const emptyRows = rowsPerPage - Math.min(rowsPerPage, rssSources.length - page * rowsPerPage);
     return (      
       <div className={classes.root}>
@@ -194,6 +196,7 @@ class SourcesList extends Component {
           count={groupedSources.uniqueSourcesNumber}
           rowsPerPage={rowsPerPage}
           page={page}
+          rowsPerPageOptions={paginationOptions}
           backIconButtonProps={{
             'aria-label': 'Previous Page',
           }}
@@ -206,7 +209,7 @@ class SourcesList extends Component {
         {groupedSources.feedsBySource.map(source =>{
             if(source.feeds){
               return (                     
-                <ExpansionPanel>
+                <ExpansionPanel key={source.key}>
                   <ExpansionPanelSummary className={classes.summary} expandIcon={<ExpandMoreIcon />}>
                     <div className={classes.column}>
                     <Typography className={classes.heading}>{source.source_name}</Typography>                    
@@ -230,8 +233,7 @@ class SourcesList extends Component {
                             </TableRow>
                           </TableHead>
                           <TableBody>
-                            {source.feeds &&
-                              source.feeds.map(feed => { return (
+                            {source.feeds.map(feed => { return (
                                 <SourceRow
                                   //TODO:check what are keys for.
                                   // They should be unique and cannot be rendered in the DOM using prop.key
@@ -261,7 +263,8 @@ class SourcesList extends Component {
           else {return (<div></div>)}            
           })
         }
-      </div>)
+      </div>
+      )
     }
   } 
 
