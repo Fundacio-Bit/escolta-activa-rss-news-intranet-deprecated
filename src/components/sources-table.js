@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import axios from 'axios';
-
 import { withStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
 import Table from '@material-ui/core/Table';
@@ -17,6 +16,8 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ScheduleIcon from '@material-ui/icons/Schedule';
 import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
+import Paper from '@material-ui/core/Paper';
+
 
 const styles = theme => ({
   root: {
@@ -26,11 +27,9 @@ const styles = theme => ({
   },
   table: {
     minWidth: 700,
-    width: '100%'
   },
   tableWrapper: {
     overflowX: 'auto',
-    width: '100%'
   },
   tableCell: {
     padding: '4px 56px 4px 24px'
@@ -47,14 +46,14 @@ const styles = theme => ({
     flex: '0 0 auto',
   },
   heading: {
-    fontSize: theme.typography.pxToRem(20),
-    padding: '10px 10px 10px 25px',
+    fontSize: theme.typography.pxToRem(18),
+    padding: '4px 56px 4px 24px',
     color:'dimgrey'
   },
   secondaryHeading: {
-    fontSize: theme.typography.pxToRem(18),
+    fontSize: theme.typography.pxToRem(16),
     color: 'lightslategrey',
-    padding: '20px 10px 10px 10px'
+    padding: '4px 56px 4px 24px'
   },
   icon: {
     verticalAlign: 'bottom',
@@ -63,10 +62,13 @@ const styles = theme => ({
   },
   summary: {
     backgroundColor: '#0e983214',
-    padding: '4px 56px 4px 24px'
+    padding: '4px 56px 4px 24px',
+    // minHeight: '40px',
+    // height: '40px'
   },
   details: {
     alignItems: 'center',
+    display: 'block',
   },
   column: {
     flexBasis: '33.33%',
@@ -82,9 +84,6 @@ const styles = theme => ({
       textDecoration: 'underline',
     },
   },
-  // children: {
-  //   minWidth: 700,
-  // },
 });
 
 class SourcesList extends Component {
@@ -189,81 +188,83 @@ class SourcesList extends Component {
 
     // const groupedBySourceName = filteredSources.groupBy('source_name')
     // const emptyRows = rowsPerPage - Math.min(rowsPerPage, rssSources.length - page * rowsPerPage);
-    return (      
-      <div className={classes.root}>
-        <TablePagination
-          component="div"
-          count={groupedSources.uniqueSourcesNumber}
-          rowsPerPage={rowsPerPage}
-          page={page}
-          rowsPerPageOptions={paginationOptions}
-          backIconButtonProps={{
-            'aria-label': 'Previous Page',
-          }}
-          nextIconButtonProps={{
-            'aria-label': 'Next Page',
-          }}
-          onChangePage={this.handleChangePage}
-          onChangeRowsPerPage={this.handleChangeRowsPerPage}/>
-       
-        {groupedSources.feedsBySource.map(source =>{
-            if(source.feeds){
-              return (                     
-                <ExpansionPanel key={source.key}>
-                  <ExpansionPanelSummary className={classes.summary} expandIcon={<ExpandMoreIcon />}>
-                    <div className={classes.column}>
-                    <Typography className={classes.heading}>{source.source_name}</Typography>                    
-                    </div>
-                    <div className={classes.column}>
-                      <Typography className={classes.secondaryHeading}>{source.feeds.length} categories</Typography>
-                    </div>        
-                  </ExpansionPanelSummary>
-                  <ExpansionPanelDetails className={classes.details}>                 
-                    <div className={classes.tableWrapper}>
-                      <div className={classes.title}> 
-                        <Table className={classes.table} aria-labelledby="tableTitle">
-                          <TableHead>
-                            <TableRow>
-                              <TableCell className={classes.tableCell}>Extracció</TableCell>
-                              <TableCell className={classes.tableCell}>Categoria</TableCell>
-                              <TableCell className={classes.frequencyTableCell}>
-                                <Tooltip title="Minuts entre notícies"><ScheduleIcon/>
-                                </Tooltip>
-                              </TableCell>
-                            </TableRow>
-                          </TableHead>
-                          <TableBody>
-                            {source.feeds.map(feed => { return (
-                                <SourceRow
-                                  //TODO:check what are keys for.
-                                  // They should be unique and cannot be rendered in the DOM using prop.key
-                                  key={feed._id}
-                                  // published={u.published}
-                                  // newsCounter={u.news_counter}
-                                  handleToggleClick = {this.handleToggleClick}
-                                  docId={feed._id}
-                                  isActive={feed.is_active}
-                                  sourceId={feed.source_id}
-                                  sourceName={feed.source_name}
-                                  section={feed.section}
-                                  isOperative={feed.is_operative}
-                                  frequency={feed.average_mins_between_news}
-                                  feedUrl={feed.feed_url}
-                                />
-                              )})
-                            }
-                          </TableBody>
-                        </Table>
+    return (
+      <Paper className={classes.root}>
+        <div className={classes.tableWrapper}>
+          <TablePagination
+            component="div"
+            count={groupedSources.uniqueSourcesNumber}
+            rowsPerPage={rowsPerPage}
+            page={page}
+            rowsPerPageOptions={paginationOptions}
+            backIconButtonProps={{
+              'aria-label': 'Previous Page',
+            }}
+            nextIconButtonProps={{
+              'aria-label': 'Next Page',
+            }}
+            onChangePage={this.handleChangePage}
+            onChangeRowsPerPage={this.handleChangeRowsPerPage}/>
+        
+          {groupedSources.feedsBySource.map(source =>{
+              if(source.feeds){
+                return (                     
+                  <ExpansionPanel key={source.key}>
+                    <ExpansionPanelSummary className={classes.summary} expandIcon={<ExpandMoreIcon />}>
+                      <div className={classes.column}>
+                      <Typography className={classes.heading}>{source.source_name}</Typography>                    
                       </div>
-                    </div>       
-                  </ExpansionPanelDetails>
-                </ExpansionPanel>
-              )
-            }
-          else {return (<div></div>)}            
-          })
-        }
-      </div>
+                      <div className={classes.column}>
+                        <Typography className={classes.secondaryHeading}>{source.feeds.length} categories</Typography>
+                      </div>        
+                    </ExpansionPanelSummary>
+                    <ExpansionPanelDetails className={classes.details}>                 
+                      <div className={classes.tableWrapper}>
+                        <div className={classes.title}> 
+                          <Table className={classes.table} aria-labelledby="tableTitle">
+                            <TableHead>
+                              <TableRow>
+                                <TableCell className={classes.tableCell}>Extracció</TableCell>
+                                <TableCell className={classes.tableCell}>Categoria</TableCell>
+                                <TableCell className={classes.frequencyTableCell}>
+                                  <Tooltip title="Minuts entre notícies"><ScheduleIcon/>
+                                  </Tooltip>
+                                </TableCell>
+                              </TableRow>
+                            </TableHead>
+                            <TableBody>
+                              {source.feeds.map(feed => { return (
+                                  <SourceRow
+                                    //TODO:check what are keys for.
+                                    // They should be unique and cannot be rendered in the DOM using prop.key
+                                    key={feed._id}
+                                    // published={u.published}
+                                    // newsCounter={u.news_counter}
+                                    handleToggleClick = {this.handleToggleClick}
+                                    docId={feed._id}
+                                    isActive={feed.is_active}
+                                    sourceId={feed.source_id}
+                                    sourceName={feed.source_name}
+                                    section={feed.section}
+                                    isOperative={feed.is_operative}
+                                    frequency={feed.average_mins_between_news}
+                                    feedUrl={feed.feed_url}
+                                  />
+                                )})
+                              }
+                            </TableBody>
+                          </Table>
+                        </div>
+                      </div>       
+                    </ExpansionPanelDetails>
+                  </ExpansionPanel>
+                )
+              }
+            else {return (<div></div>)}            
+            })
+          }
+        </div>
+      </Paper>
       )
     }
   } 
