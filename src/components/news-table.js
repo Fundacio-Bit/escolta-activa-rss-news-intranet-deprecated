@@ -43,11 +43,13 @@ class NewsTable extends Component {
       orderBy: 'calories',  
       data: [],
       page: 0,
-      rowsPerPage: 5,
+      rowsPerPage: 5
     };
     // This binding is necessary to make `this` work in the callback
     this.handleChangePage = this.handleChangePage.bind(this);
     this.handleChangeRowsPerPage = this.handleChangeRowsPerPage.bind(this);
+    this.filterByTag = this.filterByTag.bind(this);
+    this.filterBySearchTerm = this.filterBySearchTerm.bind(this);
   }
 
   // Callback that ensures that teh API calls done by this component are executed once it is mounted. 
@@ -61,17 +63,14 @@ class NewsTable extends Component {
     .then((results) => {this.setState({data: results.data.results})});      
   }
 
-
   handleChangePage(event, page) {
     this.setState({ page });
   };
-
 
   handleChangeRowsPerPage(event) {
     this.setState({ rowsPerPage: event.target.value });
   };
   
-
   handleDeleteClick(id) {
     const retrievedNews = this.state.data;
     const index = retrievedNews.findIndex(x => x._id == id);
@@ -105,12 +104,36 @@ class NewsTable extends Component {
     })
   }
 
+  filterByTag(pressNew) {
+    if (
+      pressNew.tags.toLowerCase().split(",").includes(this.props.searchTerm.toLowerCase().slice(1, -1))){
+        return true
+      }
+    else return false
+  };
+
+  // TODO: add search in full text
+  filterBySearchTerm(pressNew) {
+    if (
+      this.props.searchTerm === "" ||
+      pressNew.title.toLowerCase().indexOf(this.props.searchTerm.toLowerCase())!== -1) {return true}
+    else return false
+  };
 
   render () {
       const { classes } = this.props;
       const { data, order, orderBy, rowsPerPage, page } = this.state;
       const all = [5,10,25,(data.length)];
       const emptyRows = rowsPerPage - Math.min(rowsPerPage, data.length - page * rowsPerPage);
+      // const filteredData = data.filter(this.filterByTag);
+      let filteredData = data
+      if (/\[*\]/.test(this.props.searchTerm)){
+        filteredData = data.filter(this.filterByTag);
+        }
+      else {
+        filteredData = data.filter(this.filterBySearchTerm);
+        }
+      
       var handleSelectedChange = this.handleSelectedChange;
       var handleDeleteClick = this.handleDeleteClick;
       return (
@@ -126,17 +149,18 @@ class NewsTable extends Component {
               <NewsTableHead/>
             </TableHead>
             <TableBody>
-            {data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(u => {
+            {filteredData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(u => {                
                 return (
-
                   <NewsTableRow
-                  //TODO:check why are keys for. They should ne unique and cannot be rendered in the DOM
+                  //TODO:check what are keys for. They should be unique and cannot be rendered in the DOM
                   // using prop.key
                     key={u._id}
                     published={u.published}
                     selected={u.selected}
                     docId={u._id}
                     title={u.title}
+                    tags={u.tags.split(",")}
+                    link={u.link}
                     handleSelectedChange = {handleSelectedChange.bind(this)}
                     handleDeleteClick = {handleDeleteClick.bind(this)}
                   />
@@ -152,7 +176,7 @@ class NewsTable extends Component {
         </div>
         <TablePagination
           component="div"
-          count={data.length}
+          count={filteredData.length}
           rowsPerPage={rowsPerPage}
           page={page}
           backIconButtonProps={{

@@ -22,23 +22,18 @@ class News extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      countryISOCode: '',
-      activeFilter: '' 
+      searchTerm: '',
+      date: null 
     };
     
     // This binding is necessary to make `this` work in the callback
-    this.handleCountrySelectorChange = this.handleCountrySelectorChange.bind(this);
-    this.handleActiveSelectorChange = this.handleActiveSelectorChange.bind(this);     
+    this.handleSearchTermChange = this.handleSearchTermChange.bind(this); 
   }
 
-  handleCountrySelectorChange(countrySelectorChoice){
-    this.setState({ countryISOCode: countrySelectorChoice });
-  };
 
-  handleActiveSelectorChange(activeFilterSelectorChoice){
-    this.setState({ activeFilter: activeFilterSelectorChoice });
+  handleSearchTermChange(enteredSearchTerm){
+    this.setState({ searchTerm: enteredSearchTerm });
   };
-
  
   render () {
     const { classes } = this.props;
@@ -48,13 +43,11 @@ class News extends Component {
             <Grid item xs={12}>
               <Paper className={classes.paper}>
                 <NewsSearchAppBar
-                  // countryISOCode={this.state.countryISOCode}
-                  // onCountrySelectorChange={this.handleCountrySelectorChange}
-                  // activeFilter={this.state.activeFilter}
-                  // onActiveSelectorChange={this.handleActiveSelectorChange}
+                  searchTerm={this.state.searchTerm}
+                  onSearchTermChange={this.handleSearchTermChange}
                 />
                 <NewsTable
-                  // countrySelectorValue = {this.state.countryISOCode}
+                  searchTerm = {this.state.searchTerm}
                   // activeSelectorValue = {this.state.activeFilter}
                 />     
               </Paper>

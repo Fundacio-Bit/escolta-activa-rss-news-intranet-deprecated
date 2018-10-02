@@ -85,18 +85,22 @@ class NewsSearchAppBar extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      date: null,
+      date: null
       }
   
       this.handleDate = this.handleDate.bind(this);
+      this.handleSearchTermChange = this.handleSearchTermChange.bind(this);
   };
   
   handleDate(event){
-    console.log(event.target.value);
-    
-    this.setState({date: event.target.value})
+    console.log(event.target.value);    
+    this.setState({date: event.target.value});
   }
 
+  handleSearchTermChange(event){
+    console.log(event.target.value);    
+    this.props.onSearchTermChange(event.target.value);  
+  }
   
   render() {
     const { classes } = this.props;
@@ -131,6 +135,9 @@ class NewsSearchAppBar extends Component {
                 <SearchIcon />
               </div>
               <Input
+                type="search"
+                value={this.props.searchTerm}
+                onChange={this.handleSearchTermChange}
                 placeholder="Search…"
                 disableUnderline
                 classes={{
