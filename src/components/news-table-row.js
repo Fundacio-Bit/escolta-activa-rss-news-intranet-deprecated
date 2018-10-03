@@ -45,17 +45,6 @@ const styles = theme => ({
       this.handleAddTagChipClick = this.handleAddTagChipClick.bind(this);
     }
     
-    // handleSelectedChange(event, id) {
-    //     const value = event.target.checked;
-    //     axios.put('http://localhost:8000/rss-news/identifier/'+ id +'/selected/' + value )
-    //     .then((res) => {
-    //         console.log(res)
-    //         // we can update the state after response...
-    //         this.setState({
-    //           selected: value
-    //       });
-    //     })
-    //   }
 
     handleChipDelete() {
       alert('You clicked the delete icon.'); 
@@ -83,7 +72,6 @@ const styles = theme => ({
                 checked={this.props.selected}
                 value={String(this.props.selected)}
                 color="primary"
-                // onClick={event => this.handleSelectedChange(event, this.props.docId)}
                 onClick={event => handleSelectedChange(event, this.props.docId)}
                 />
             </TableCell>

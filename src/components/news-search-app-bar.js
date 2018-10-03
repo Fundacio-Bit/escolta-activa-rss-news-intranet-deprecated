@@ -84,17 +84,14 @@ const styles = theme => ({
 class NewsSearchAppBar extends Component {
   constructor(props) {
     super(props);
-    this.state = {
-      date: null
-      }
   
-      this.handleDate = this.handleDate.bind(this);
-      this.handleSearchTermChange = this.handleSearchTermChange.bind(this);
+    this.handleDate = this.handleDate.bind(this);
+    this.handleSearchTermChange = this.handleSearchTermChange.bind(this);
   };
   
   handleDate(event){
-    console.log(event.target.value);    
-    this.setState({date: event.target.value});
+    console.log(event.target.value);   
+    this.props.onDateChange(event.target.value);
   }
 
   handleSearchTermChange(event){
@@ -120,7 +117,8 @@ class NewsSearchAppBar extends Component {
                   id="date"
                   label="Published"
                   type="date"
-                  defaultValue="2017-05-24"
+                  // defaultValue="2017-05-24"
+                  value={this.props.searchDate}
                   className={classes.textField}
                   InputLabelProps={{
                     shrink: true,

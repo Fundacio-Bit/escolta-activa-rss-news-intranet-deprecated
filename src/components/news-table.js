@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import axios from 'axios';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography'
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableHead from '@material-ui/core/TableHead';
@@ -48,6 +47,7 @@ class NewsTable extends Component {
     // This binding is necessary to make `this` work in the callback
     this.handleChangePage = this.handleChangePage.bind(this);
     this.handleChangeRowsPerPage = this.handleChangeRowsPerPage.bind(this);
+    this.filterByDate = this.filterByDate.bind(this);
     this.filterByTag = this.filterByTag.bind(this);
     this.filterBySearchTerm = this.filterBySearchTerm.bind(this);
   }
@@ -112,6 +112,14 @@ class NewsTable extends Component {
     else return false
   };
 
+
+  filterByDate(pressNew) {
+    if (pressNew.published.includes(this.props.searchDate)) {
+      return true
+    } else return false
+  };
+
+
   // TODO: add search in full text
   filterBySearchTerm(pressNew) {
     if (
@@ -127,23 +135,21 @@ class NewsTable extends Component {
       const emptyRows = rowsPerPage - Math.min(rowsPerPage, data.length - page * rowsPerPage);
       // const filteredData = data.filter(this.filterByTag);
       let filteredData = data
-      if (/\[*\]/.test(this.props.searchTerm)){
+      if (this.props.searchDate) {
+        filteredData = data.filter(this.filterByDate);
+      } else if (/\[*\]/.test(this.props.searchTerm)){
         filteredData = data.filter(this.filterByTag);
         }
       else {
         filteredData = data.filter(this.filterBySearchTerm);
         }
       
+
       var handleSelectedChange = this.handleSelectedChange;
       var handleDeleteClick = this.handleDeleteClick;
       return (
         <Paper className={classes.root}>
         <div className={classes.tableWrapper}>
-          {/* <div className={classes.title}>
-            <Typography variant="title" id="tableTitle">
-              Noticias
-            </Typography>
-          </div> */}
           <Table className={classes.table} aria-labelledby="tableTitle">
             <TableHead>
               <NewsTableHead/>
