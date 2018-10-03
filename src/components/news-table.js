@@ -91,6 +91,47 @@ class NewsTable extends Component {
     })
   }
 
+  handleDeleteTag(id, tag) {
+    let retrievedNews = this.state.data;
+    const index = retrievedNews.findIndex(x => x._id == id);
+    let updatedNew = retrievedNews[index]
+    let updatedTagsArray = updatedNew.tags.split(",");
+    let updatedTagsString = updatedTagsArray.filter(u => u !== tag).join();
+    // Send "void_tags_string" instead of an empty string (which would crash) 
+    if (updatedTagsString === ""){updatedTagsString = "void_tags_string"}       
+    // TODO: update via POST instead of via put to avoid problems with long URLS and with special chars
+    axios.put('http://localhost:8000/rss-news/identifier/'+ id +'/tags/' + updatedTagsString )
+    .then((res) => {
+        console.log(res)
+        // Show an empty string when updatedTagsString value is "void_tags_string"
+        retrievedNews[index].tags = updatedTagsString === "void_tags_string"? "" : updatedTagsString;
+        // we can update the state after response...
+        this.setState({data:retrievedNews});
+    })
+  }
+
+
+  // TODO: manage handleAddTag and handleDeleteTag with a unique function
+  // TODO: handle the addition of tags with special chars or commas. Also avoid duplicates.
+  handleAddTag(id, tag) {
+    let retrievedNews = this.state.data;
+    const index = retrievedNews.findIndex(x => x._id == id);
+    let updatedNew = retrievedNews[index]
+    let updatedTagsArray = updatedNew.tags.split(",");
+    updatedTagsArray.push(tag.toLowerCase());
+    const uniqueTags = [...new Set(updatedTagsArray)]
+    // remove empty elements and transform to string
+    const updatedTagsString = uniqueTags.filter(u => u !== "").join();
+    // TODO: update via POST instead of via put to avoid problems with long URLS and with special chars
+    axios.put('http://localhost:8000/rss-news/identifier/'+ id +'/tags/' + updatedTagsString )
+    .then((res) => {
+        console.log(res)
+        retrievedNews[index].tags = updatedTagsString;
+        // we can update the state after response...
+        this.setState({data:retrievedNews});
+    })
+  }
+
   handleSelectedChange(event, id) {
     const value = event.target.checked;
     const retrievedNews = this.state.data;
@@ -107,7 +148,7 @@ class NewsTable extends Component {
   filterByTag(pressNew) {
     if (
       pressNew.tags.toLowerCase().split(",").includes(this.props.searchTerm.toLowerCase().slice(1, -1))){
-        return true
+        return trues
       }
     else return false
   };
@@ -136,6 +177,9 @@ class NewsTable extends Component {
       
       var handleSelectedChange = this.handleSelectedChange;
       var handleDeleteClick = this.handleDeleteClick;
+      var handleDeleteTag = this.handleDeleteTag;
+      var handleAddTag = this.handleAddTag;
+
       return (
         <Paper className={classes.root}>
         <div className={classes.tableWrapper}>
@@ -163,6 +207,8 @@ class NewsTable extends Component {
                     link={u.link}
                     handleSelectedChange = {handleSelectedChange.bind(this)}
                     handleDeleteClick = {handleDeleteClick.bind(this)}
+                    handleDeleteTag = {handleDeleteTag.bind(this)}
+                    handleAddTag = {handleAddTag.bind(this)}
                   />
               );
             })} 
