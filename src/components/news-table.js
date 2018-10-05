@@ -11,6 +11,7 @@ import NewsTableRow from './news-table-row'
 import NewsTableHead from './news-table-head'
 import Paper from '@material-ui/core/Paper';
 import TablePagination from '@material-ui/core/TablePagination'
+import RSSSnackbarContent from './rss-snackbar-content'
 
 const styles = theme => ({
   root: {
@@ -27,10 +28,9 @@ const styles = theme => ({
   input: {
     display: 'none',
   },
-  // title: {
-  //   margin: theme.spacing.unit,
-  //   flex: '0 0 auto',
-  // },
+  margin: {
+    margin: theme.spacing.unit,
+  },
 });
 
 
@@ -148,14 +148,14 @@ class NewsTable extends Component {
   filterByTag(pressNew) {
     if (
       pressNew.tags.toLowerCase().split(",").includes(this.props.searchTerm.toLowerCase().slice(1, -1))){
-        return trues
+        return true
       }
     else return false
   };
 
 
   filterByDate(pressNew) {
-    if (pressNew.published.includes(this.props.searchDate)) {
+    if (pressNew.published.includes(this.props.selectedDate)) {
       return true
     } else return false
   };
@@ -175,17 +175,16 @@ class NewsTable extends Component {
       const all = [5,10,25,(data.length)];
       const emptyRows = rowsPerPage - Math.min(rowsPerPage, data.length - page * rowsPerPage);
       // const filteredData = data.filter(this.filterByTag);
-      let filteredData = data
-      if (this.props.searchDate) {
+      var filteredData = data
+      if (this.props.selectedDate) {
         filteredData = data.filter(this.filterByDate);
-      } else if (/\[*\]/.test(this.props.searchTerm)){
-        filteredData = data.filter(this.filterByTag);
-        }
-      else {
-        filteredData = data.filter(this.filterBySearchTerm);
-        }
+      } 
+      if (/\[*\]/.test(this.props.searchTerm)){
+        filteredData = filteredData.filter(this.filterByTag);
+      } else {
+        filteredData = filteredData.filter(this.filterBySearchTerm);
+      }
       
-
       var handleSelectedChange = this.handleSelectedChange;
       var handleDeleteClick = this.handleDeleteClick;
       var handleDeleteTag = this.handleDeleteTag;
@@ -193,55 +192,67 @@ class NewsTable extends Component {
 
       return (
         <Paper className={classes.root}>
-        <div className={classes.tableWrapper}>
-          <Table className={classes.table} aria-labelledby="tableTitle">
-            <TableHead>
-              <NewsTableHead/>
-            </TableHead>
-            <TableBody>
-            {filteredData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(u => {                
-                return (
-                  <NewsTableRow
-                  //TODO:check what are keys for. They should be unique and cannot be rendered in the DOM
-                  // using prop.key
-                    key={u._id}
-                    published={u.published}
-                    selected={u.selected}
-                    docId={u._id}
-                    title={u.title}
-                    tags={u.tags.split(",")}
-                    link={u.link}
-                    handleSelectedChange = {handleSelectedChange.bind(this)}
-                    handleDeleteClick = {handleDeleteClick.bind(this)}
-                    handleDeleteTag = {handleDeleteTag.bind(this)}
-                    handleAddTag = {handleAddTag.bind(this)}
+          <div className={classes.tableWrapper}>
+            <Table className={classes.table} aria-labelledby="tableTitle">
+              {filteredData.length > 0 && (
+                <TableHead>
+                  <NewsTableHead/>
+                </TableHead>
+              )}
+              <TableBody>
+              {filteredData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(u => {                
+                  return (
+                    <NewsTableRow
+                    //TODO:check what are keys for. They should be unique and cannot be rendered in the DOM
+                    // using prop.key
+                      key={u._id}
+                      published={u.published}
+                      selected={u.selected}
+                      docId={u._id}
+                      title={u.title}
+                      tags={u.tags.split(",")}
+                      link={u.link}
+                      handleSelectedChange = {handleSelectedChange.bind(this)}
+                      handleDeleteClick = {handleDeleteClick.bind(this)}
+                      handleDeleteTag = {handleDeleteTag.bind(this)}
+                      handleAddTag = {handleAddTag.bind(this)}
+                    />
+                );
+              })} 
+              {filteredData.length === 0 && (
+                <div>
+                  <RSSSnackbarContent
+                    variant="info"
+                    className={classes.margin}
+                    message="No hay datos para esta fecha!"
                   />
-              );
-            })} 
-            {emptyRows > 0 && (
-              <TableRow style={{ height: 49 * emptyRows }}>
-                <TableCell colSpan={4} />
-              </TableRow>
-            )}
-            </TableBody>
-          </Table>
-        </div>
-        <TablePagination
-          component="div"
-          count={filteredData.length}
-          rowsPerPage={rowsPerPage}
-          page={page}
-          backIconButtonProps={{
-            'aria-label': 'Previous Page',
-          }}
-          nextIconButtonProps={{
-            'aria-label': 'Next Page',
-          }}
-          onChangePage={this.handleChangePage}
-          onChangeRowsPerPage={this.handleChangeRowsPerPage}
-          rowsPerPageOptions={all}
-        />
-
+                </div>
+              )}
+              {emptyRows > 0 && (
+                <TableRow style={{ height: 49 * emptyRows }}>
+                  <TableCell colSpan={4} />
+                </TableRow>
+              )}
+              </TableBody>
+            </Table>
+          </div>
+          {filteredData.length > 0 && (
+            <TablePagination
+              component="div"
+              count={filteredData.length}
+              rowsPerPage={rowsPerPage}
+              page={page}
+              backIconButtonProps={{
+                'aria-label': 'Previous Page',
+              }}
+              nextIconButtonProps={{
+                'aria-label': 'Next Page',
+              }}
+              onChangePage={this.handleChangePage}
+              onChangeRowsPerPage={this.handleChangeRowsPerPage}
+              rowsPerPageOptions={all}
+            />
+          )}
         </Paper>
       );
     }

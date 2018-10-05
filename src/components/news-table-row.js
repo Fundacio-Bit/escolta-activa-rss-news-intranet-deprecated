@@ -29,7 +29,8 @@ const styles = theme => ({
       margin: theme.spacing.unit,
       fontSize: "0.8rem",
       height:"23px",
-      padding:"2px 2px 2px 2px"
+      padding:"2px 2px 2px 2px",
+      // background-color: "#4b4c52"
     },
     // avatar: {
     //   margin: theme.spacing.unit ,

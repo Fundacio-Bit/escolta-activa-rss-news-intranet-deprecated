@@ -6,15 +6,9 @@ import PropTypes from 'prop-types';
 
 
 const styles = theme => ({
-  button: {
-    margin: theme.spacing.unit,
-  },
   dateTableCell: {
     width: 120,
   },
-  chip: {
-    margin: theme.spacing.unit,
-  }
 });
 
 
@@ -28,7 +22,7 @@ class NewsTableHead extends React.Component {
     return (
       <TableRow>
         <TableCell></TableCell>
-        <TableCell className={classes.dateTableCell}><h1>Updating Date</h1></TableCell>
+        <TableCell className={classes.dateTableCell}><h2>Updating Date</h2></TableCell>
         <TableCell><h2>Title</h2></TableCell>
         <TableCell></TableCell>
       </TableRow>

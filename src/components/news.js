@@ -23,7 +23,7 @@ class News extends Component {
     super(props);
     this.state = {
       searchTerm: '',
-      searchDate: '', 
+      selectedDate: '', 
     };
     
     // This binding is necessary to make `this` work in the callback
@@ -37,7 +37,7 @@ class News extends Component {
   };
  
   handleDate(enteredDate) {
-    this.setState({searchDate: enteredDate});
+    this.setState({selectedDate: enteredDate});
   };
 
   render () {
@@ -50,11 +50,11 @@ class News extends Component {
                 <NewsSearchAppBar
                   searchTerm={this.state.searchTerm}
                   onSearchTermChange={this.handleSearchTermChange}
-                  searchDate = {this.state.searchDate}
-                  onDateChange={this.handleDate}
+                  selectedDate = {this.state.selectedDate}
+                  onSelectDate={this.handleDate}
                 />
                 <NewsTable
-                  searchDate = {this.state.searchDate}
+                  selectedDate = {this.state.selectedDate}
                   searchTerm = {this.state.searchTerm}
                   // activeSelectorValue = {this.state.activeFilter}
                 />     

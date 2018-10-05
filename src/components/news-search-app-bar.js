@@ -91,7 +91,7 @@ class NewsSearchAppBar extends Component {
   
   handleDate(event){
     console.log(event.target.value);   
-    this.props.onDateChange(event.target.value);
+    this.props.onSelectDate(event.target.value);
   }
 
   handleSearchTermChange(event){
@@ -118,7 +118,7 @@ class NewsSearchAppBar extends Component {
                   label="Published"
                   type="date"
                   // defaultValue="2017-05-24"
-                  value={this.props.searchDate}
+                  value={this.props.selectedDate}
                   className={classes.textField}
                   InputLabelProps={{
                     shrink: true,

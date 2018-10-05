@@ -33,7 +33,7 @@ router.get("/entries", (req, res) =>
                 "description": 1,
                 "selected": 1
             }
-        }).toArray((err, docs) =>
+        }).sort( { 'published': -1 } ).toArray((err, docs) =>
     {
         if(err) {
             console.log(err)
