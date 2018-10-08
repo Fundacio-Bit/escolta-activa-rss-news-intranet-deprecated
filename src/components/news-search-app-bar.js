@@ -8,6 +8,7 @@ import { fade } from '@material-ui/core/styles/colorManipulator';
 import { withStyles } from '@material-ui/core/styles';
 import SearchIcon from '@material-ui/icons/Search';
 import TextField from '@material-ui/core/TextField';
+import MenuItem from '@material-ui/core/MenuItem';
 
 const styles = theme => ({
   title: {
@@ -86,16 +87,19 @@ class NewsSearchAppBar extends Component {
     super(props);
   
     this.handleDate = this.handleDate.bind(this);
+    this.handleSelectChange = this.handleSelectChange.bind(this);
     this.handleSearchTermChange = this.handleSearchTermChange.bind(this);
   };
   
   handleDate(event){
-    console.log(event.target.value);   
     this.props.onSelectDate(event.target.value);
   }
 
+  handleSelectChange(event){
+    this.props.onSelectChange(event.target.value);
+  }
+
   handleSearchTermChange(event){
-    console.log(event.target.value);    
     this.props.onSearchTermChange(event.target.value);  
   }
   
@@ -125,9 +129,20 @@ class NewsSearchAppBar extends Component {
                   }}
                   onChange={this.handleDate}
                 />
+                <TextField
+                  select
+                  className={classes.textField}
+                  variant="filled"
+                  label="Revised"
+                  value={this.props.isChecked}
+                  onChange={this.handleSelectChange}
+                >
+                  <MenuItem value={0}>Todos</MenuItem>
+                  <MenuItem value={1}>Revisados</MenuItem>
+                  <MenuItem value={-1}>No revisados</MenuItem>
+                </TextField>
               </form>
             </div>
-            {/* <div className={classes.grow} /> */}
             <div className={classes.search}>
               <div className={classes.searchIcon}>
                 <SearchIcon />

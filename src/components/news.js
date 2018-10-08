@@ -22,23 +22,32 @@ class News extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      searchTerm: '',
       selectedDate: '', 
+      isChecked: 0,
+      searchTerm: '',
     };
     
     // This binding is necessary to make `this` work in the callback
     this.handleDate = this.handleDate.bind(this);
+    this.handleSelectChange = this.handleSelectChange.bind(this);
     this.handleSearchTermChange = this.handleSearchTermChange.bind(this);
   }
+
+
+  handleDate(enteredDate) {
+    this.setState({selectedDate: enteredDate});
+  };
+
+
+  handleSelectChange(isChecked){
+    this.setState({ isChecked: isChecked });
+  };
 
 
   handleSearchTermChange(enteredSearchTerm){
     this.setState({ searchTerm: enteredSearchTerm });
   };
  
-  handleDate(enteredDate) {
-    this.setState({selectedDate: enteredDate});
-  };
 
   render () {
     const { classes } = this.props;
@@ -48,15 +57,17 @@ class News extends Component {
             <Grid item xs={12}>
               <Paper className={classes.paper}>
                 <NewsSearchAppBar
-                  searchTerm={this.state.searchTerm}
-                  onSearchTermChange={this.handleSearchTermChange}
                   selectedDate = {this.state.selectedDate}
                   onSelectDate={this.handleDate}
+                  isChecked={this.state.isChecked}
+                  onSelectChange={this.handleSelectChange}
+                  searchTerm={this.state.searchTerm}
+                  onSearchTermChange={this.handleSearchTermChange}
                 />
                 <NewsTable
                   selectedDate = {this.state.selectedDate}
+                  isChecked={this.state.isChecked}
                   searchTerm = {this.state.searchTerm}
-                  // activeSelectorValue = {this.state.activeFilter}
                 />     
               </Paper>
             </Grid>

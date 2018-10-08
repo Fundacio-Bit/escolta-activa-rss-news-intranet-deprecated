@@ -48,6 +48,7 @@ class NewsTable extends Component {
     this.handleChangePage = this.handleChangePage.bind(this);
     this.handleChangeRowsPerPage = this.handleChangeRowsPerPage.bind(this);
     this.filterByDate = this.filterByDate.bind(this);
+    this.filterByChecked = this.filterByChecked.bind(this);
     this.filterByTag = this.filterByTag.bind(this);
     this.filterBySearchTerm = this.filterBySearchTerm.bind(this);
   }
@@ -145,19 +146,31 @@ class NewsTable extends Component {
     })
   }
 
+
+  filterByDate(pressNew) {
+    if (pressNew.published.includes(this.props.selectedDate)) {
+      return true
+    } else return false
+  };
+
+  filterByChecked(pressNew){
+    var value = 0;
+    if (this.props.isChecked === 1){
+      value = true
+    } else if (this.props.isChecked === -1) {
+      value = false
+    }
+    if (value === 0 || pressNew.selected === value) {
+      return true
+    } else return false
+  }
+
   filterByTag(pressNew) {
     if (
       pressNew.tags.toLowerCase().split(",").includes(this.props.searchTerm.toLowerCase().slice(1, -1))){
         return true
       }
     else return false
-  };
-
-
-  filterByDate(pressNew) {
-    if (pressNew.published.includes(this.props.selectedDate)) {
-      return true
-    } else return false
   };
 
 
@@ -178,6 +191,9 @@ class NewsTable extends Component {
       var filteredData = data
       if (this.props.selectedDate) {
         filteredData = data.filter(this.filterByDate);
+      } 
+      if (this.props.isChecked) {
+        filteredData = filteredData.filter(this.filterByChecked);
       } 
       if (/\[*\]/.test(this.props.searchTerm)){
         filteredData = filteredData.filter(this.filterByTag);
@@ -220,13 +236,15 @@ class NewsTable extends Component {
                 );
               })} 
               {filteredData.length === 0 && (
-                <div>
-                  <RSSSnackbarContent
-                    variant="info"
-                    className={classes.margin}
-                    message="No hay datos para esta fecha!"
-                  />
-                </div>
+                <TableRow>
+                  <TableCell colSpan={4}>
+                    <RSSSnackbarContent
+                      variant="info"
+                      className={classes.margin}
+                      message="No hay datos para esta fecha!"
+                    />
+                  </TableCell>
+                </TableRow>
               )}
               {emptyRows > 0 && (
                 <TableRow style={{ height: 49 * emptyRows }}>
