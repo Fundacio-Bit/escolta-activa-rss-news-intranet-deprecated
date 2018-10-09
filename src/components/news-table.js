@@ -60,7 +60,7 @@ class NewsTable extends Component {
 
   // Call the REST API to get all documents
   retrievedDocumentsList() {
-    axios.get('http://localhost:8000/rss-news/entries')
+    axios.get('/rss-news/entries')
     .then((results) => {this.setState({data: results.data.results})});      
   }
 
@@ -76,13 +76,13 @@ class NewsTable extends Component {
     const retrievedNews = this.state.data;
     const index = retrievedNews.findIndex(x => x._id == id);
     const removed_new = retrievedNews[index]
-    axios.post('http://localhost:8000/rss-news/news/', 
+    axios.post('/rss-news/news/', 
                 removed_new, 
                 {headers: {'Content-Type': 'application/json' }}
     ).then((res) => {
         console.log(res)
-        // axios.delete('http://localhost:8000/rss-news/identifier/', {params: {'documentId': id}})
-        axios.delete('http://localhost:8000/rss-news/identifier/'+ id)
+        // axios.delete('/rss-news/identifier/', {params: {'documentId': id}})
+        axios.delete('/rss-news/identifier/'+ id)
         .then((res) => {
               console.log(res);
             // we can update the state after response...
@@ -101,7 +101,7 @@ class NewsTable extends Component {
     // Send "void_tags_string" instead of an empty string (which would crash) 
     if (updatedTagsString === ""){updatedTagsString = "void_tags_string"}       
     // TODO: update via POST instead of via put to avoid problems with long URLS and with special chars
-    axios.put('http://localhost:8000/rss-news/identifier/'+ id +'/tags/' + updatedTagsString )
+    axios.put('/rss-news/identifier/'+ id +'/tags/' + updatedTagsString )
     .then((res) => {
         console.log(res)
         // Show an empty string when updatedTagsString value is "void_tags_string"
@@ -124,7 +124,7 @@ class NewsTable extends Component {
     // remove empty elements and transform to string
     const updatedTagsString = uniqueTags.filter(u => u !== "").join();
     // TODO: update via POST instead of via put to avoid problems with long URLS and with special chars
-    axios.put('http://localhost:8000/rss-news/identifier/'+ id +'/tags/' + updatedTagsString )
+    axios.put('/rss-news/identifier/'+ id +'/tags/' + updatedTagsString )
     .then((res) => {
         console.log(res)
         retrievedNews[index].tags = updatedTagsString;
@@ -137,7 +137,7 @@ class NewsTable extends Component {
     const value = event.target.checked;
     const retrievedNews = this.state.data;
     const index = retrievedNews.findIndex(x => x._id == id);
-    axios.put('http://localhost:8000/rss-news/identifier/'+ id +'/selected/' + value )
+    axios.put('/rss-news/identifier/'+ id +'/selected/' + value )
     .then((res) => {
         console.log(res)
         retrievedNews[index].selected = value;

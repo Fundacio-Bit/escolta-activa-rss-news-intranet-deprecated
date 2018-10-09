@@ -81,7 +81,6 @@ const styles = theme => ({
     };
 
     handleDialogAddAndClose() {
-      console.log(this.state.newTags);
       this.props.handleAddTag(this.props.docId, this.state.newTags)
       this.setState({ open: false });
     };

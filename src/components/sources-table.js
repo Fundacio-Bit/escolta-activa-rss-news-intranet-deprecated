@@ -110,7 +110,7 @@ class SourcesList extends Component {
 //  Call the REST API to get all documents
   retrievedDocumentsList() {
     var self = this;
-    axios.get('http://localhost:8000/rss-sources/sources')
+    axios.get('/rss-sources/sources')
     .then((results) => {self.setState({rssSources: results.data.results})})
   }
 
@@ -156,7 +156,7 @@ class SourcesList extends Component {
 
 
   handleToggleClick(id, isActiveFlag) {
-    axios.put('http://localhost:8000/rss-sources/identifier/'+ id +'/active/' + isActiveFlag)
+    axios.put('/rss-sources/identifier/'+ id +'/active/' + isActiveFlag)
         .then((res) => {
             // we can update the state after response...
             console.log(res);

@@ -43,7 +43,7 @@ class RSSSource extends Component {
     //         id = key
     //     })            
   
-    //     axios.put('http://localhost:8000/rss-sources/identifier/'+ id +'/selected/' + value )
+    //     axios.put('/rss-sources/identifier/'+ id +'/selected/' + value )
     //         .then((res) => {
     //             console.log(res)
     //             // we can update the state after response...
@@ -54,7 +54,7 @@ class RSSSource extends Component {
     // }
     
     // handleToggleClick(event) {
-    //     axios.put('http://localhost:8000/rss-sources/identifier/'+ this.props.docId +'/active/' + !this.state.isActive)
+    //     axios.put('/rss-sources/identifier/'+ this.props.docId +'/active/' + !this.state.isActive)
     //         .then((res) => {
     //             // we can update the state after response...
     //             console.log(res);                
