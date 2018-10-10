@@ -4,7 +4,6 @@ import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
-import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow'
 import TableCell from '@material-ui/core/TableCell'
 import NewsTableRow from './news-table-row'
@@ -39,7 +38,7 @@ class NewsTable extends Component {
     super(props);
     this.state = {
       order: 'asc',
-      orderBy: 'calories',  
+      orderBy: 'date',  
       data: [],
       page: 0,
       rowsPerPage: 5
@@ -146,6 +145,19 @@ class NewsTable extends Component {
     })
   }
 
+  handleRequestSort (event, orderBy, order) {
+    // const orderBy = property;
+    var order = 'desc';
+
+    if (this.state.orderBy === orderBy && this.state.order === 'desc') {
+      order = 'asc';
+    }
+
+    this.setState({
+      order,
+      orderBy
+    });
+  };
 
   filterByDate(pressNew) {
     if (pressNew.published.includes(this.props.selectedDate)) {
@@ -203,6 +215,7 @@ class NewsTable extends Component {
       
       var handleSelectedChange = this.handleSelectedChange;
       var handleDeleteClick = this.handleDeleteClick;
+      var handleRequestSort = this.handleRequestSort;
       var handleDeleteTag = this.handleDeleteTag;
       var handleAddTag = this.handleAddTag;
 
@@ -211,9 +224,11 @@ class NewsTable extends Component {
           <div className={classes.tableWrapper}>
             <Table className={classes.table} aria-labelledby="tableTitle">
               {filteredData.length > 0 && (
-                <TableHead>
-                  <NewsTableHead/>
-                </TableHead>
+                <NewsTableHead
+                  order = { order }
+                  orderBy = { orderBy }
+                  onRequestSort = { handleRequestSort.bind(this) }
+                />
               )}
               <TableBody>
               {filteredData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(u => {                
