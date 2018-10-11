@@ -32,6 +32,9 @@ const styles = theme => ({
       padding:"2px 2px 2px 2px",
       // background-color: "#4b4c52"
     },
+    dateTableCell: {
+      width: 120,
+    },
     // avatar: {
     //   margin: theme.spacing.unit ,
     //   height:"21px",
@@ -96,7 +99,7 @@ const styles = theme => ({
             <TableRow 
             role="checkbox"
           >
-            <TableCell padding="checkbox">
+            <TableCell className = {classes.dateTableCell} padding="checkbox">
               <Checkbox
                 checked={this.props.selected}
                 value={String(this.props.selected)}

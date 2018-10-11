@@ -33,12 +33,28 @@ const styles = theme => ({
 });
 
 
+var desc = (a, b, orderBy) => {
+  if (b[orderBy] < a[orderBy]) {
+    return -1;
+  }
+  if (b[orderBy] > a[orderBy]) {
+    return 1;
+  }
+  return 0;
+}
+
+
+var getSorting = (orderBy, order) => {
+  return order === 'desc' ? (a, b) => desc(a, b, orderBy) : (a, b) => -desc(a, b, orderBy);
+};
+
+
 class NewsTable extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      order: 'asc',
-      orderBy: 'date',  
+      order: 'desc',
+      orderBy: 'published',  
       data: [],
       page: 0,
       rowsPerPage: 5
@@ -50,6 +66,7 @@ class NewsTable extends Component {
     this.filterByChecked = this.filterByChecked.bind(this);
     this.filterByTag = this.filterByTag.bind(this);
     this.filterBySearchTerm = this.filterBySearchTerm.bind(this);
+    // this.getSorting = this.getSorting.bind(this);
   }
 
   // Callback that ensures that teh API calls done by this component are executed once it is mounted. 
@@ -145,7 +162,7 @@ class NewsTable extends Component {
     })
   }
 
-  handleRequestSort (event, orderBy, order) {
+  handleRequestSort (orderBy, order, event) {
     // const orderBy = property;
     var order = 'desc';
 
@@ -194,12 +211,14 @@ class NewsTable extends Component {
     else return false
   };
 
+
   render () {
       const { classes } = this.props;
       const { data, order, orderBy, rowsPerPage, page } = this.state;
       const all = [5,10,25,(data.length)];
       const emptyRows = rowsPerPage - Math.min(rowsPerPage, data.length - page * rowsPerPage);
-      // const filteredData = data.filter(this.filterByTag);
+      
+      // Filtering data
       var filteredData = data
       if (this.props.selectedDate) {
         filteredData = data.filter(this.filterByDate);
@@ -212,7 +231,10 @@ class NewsTable extends Component {
       } else {
         filteredData = filteredData.filter(this.filterBySearchTerm);
       }
-      
+
+      // Sorting data
+      filteredData.sort(getSorting(orderBy, order));
+
       var handleSelectedChange = this.handleSelectedChange;
       var handleDeleteClick = this.handleDeleteClick;
       var handleRequestSort = this.handleRequestSort;

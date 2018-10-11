@@ -18,12 +18,8 @@ const styles = theme => ({
 class NewsTableHead extends React.Component {
   constructor(props) {
     super(props);  
-    this.createSortHandler = this.createSortHandler.bind(this);
   }
 
-  createSortHandler (orderBy, order, event) {
-    this.props.onRequestSort(event, orderBy, order);
-  };
 
   render() {
     const { classes } = this.props;
@@ -32,8 +28,9 @@ class NewsTableHead extends React.Component {
       <TableHead>
         < TableRow >
           <TableCell></TableCell>
-          <TableCell className = {classes.dateTableCell}
-            key = "date"
+          <TableCell 
+            className = {classes.dateTableCell}
+            key = "published"
             numeric = { false }
             sortDirection = {this.props.order} >
             <Tooltip
@@ -43,8 +40,7 @@ class NewsTableHead extends React.Component {
               <TableSortLabel
                 active = { true }
                 direction = {this.props.order}
-                // onClick = { () => onRequestSort(this) } >
-                onClick = { () => this.createSortHandler(this.props.orderBy, this.props.order) } >
+                onClick = { () => onRequestSort(this.props.orderBy, this.props.order) } >
                 <h2>Date</h2>
               </TableSortLabel>
             </Tooltip>
