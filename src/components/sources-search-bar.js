@@ -124,10 +124,12 @@ class SearchBar extends Component {
                     inputProps={{
                       name: 'countryISOCode',
                       id: 'country-simple',}}>
-                    <MenuItem value=""><em>None</em></MenuItem>
-                    <MenuItem value={"ES"}>Espanya</MenuItem>
+                    <MenuItem value=""><em>Tots</em></MenuItem>
+                    <MenuItem value={"ES"}>Epanya</MenuItem>
                     <MenuItem value={"DE"}>Alemanya</MenuItem>
                     <MenuItem value={"UK"}>Regne Unit</MenuItem>
+                    <MenuItem value={"FR"}>França</MenuItem>
+                    <MenuItem value={"IT"}>Itàlia</MenuItem>
                   </Select>
                 </FormControl>
 
