@@ -57,14 +57,13 @@ const styles = theme => ({
       super(props);
       this.state = {
           open: false,
-          newTags: "" 
+          newTopics: "" 
       };
       this.handleChipDelete = this.handleChipDelete.bind(this);
       this.handleChipClick = this.handleChipClick.bind(this);
       this.handleDialogClickOpen  =  this.handleDialogClickOpen.bind(this);
       this.handleDialogClose  =   this.handleDialogClose.bind(this);
       this.handleDialogAddAndClose  =   this.handleDialogAddAndClose.bind(this);
-      // this.handleAddTagChipClick = this.handleAddTagChipClick.bind(this);
     }
     
 
@@ -85,11 +84,11 @@ const styles = theme => ({
     };
 
     handleTextFieldChange(event) {
-      this.setState({ newTags: event.target.value });
+      this.setState({ newTopics: event.target.value });
     };
 
     handleDialogAddAndClose() {
-      this.props.handleAddTag(this.props.docId, this.state.newTags)
+      this.props.handleAddTopic(this.props.docId, this.state.newTopics)
       this.setState({ open: false });
     };
 
@@ -98,7 +97,7 @@ const styles = theme => ({
         const { classes } = this.props;
         var handleSelectedChange  =   this.props.handleSelectedChange;
         var handleDeleteClick  =   this.props.handleDeleteClick;
-        var handleDeleteTag  =   this.props.handleDeleteTag;
+        var handleDeleteTopic  =   this.props.handleDeleteTopic;
  
         return (
             <TableRow 
@@ -120,14 +119,14 @@ const styles = theme => ({
                 </Tooltip>
               </div>
               <div>
-                {this.props.tags.map(u=>{if (u!=="") {
+                {this.props.topics.map(u=>{if (u!=="") {
                   return <Chip
                       label={u}
                       key= {u}
                       color="primary"
                       clickable
                       onClick={this.handleChipClick}
-                      onDelete={() => handleDeleteTag(this.props.docId, u)}                                          
+                      onDelete={() => handleDeleteTopic(this.props.docId, u)}                                          
                       className={classes.chip}
                     />}})}
                       <Chip
@@ -140,9 +139,8 @@ const styles = theme => ({
                         //       </Icon>}
                         //   </Avatar>}
                         avatar = {<Avatar>+</Avatar>}
-                        label="Nou Tag"
+                        label="Nou Tema"
                         clickable
-                        // onClick={() => handleAddTag(this.props.docId, "nou")}
                         onClick={this.handleDialogClickOpen}
                         className={classes.chip}
                       />
@@ -150,16 +148,16 @@ const styles = theme => ({
                         open={this.state.open}
                         onClose={this.handleDialogClose}
                         aria-labelledby="form-dialog-title">
-                          <DialogTitle id="form-dialog-title">Addició de tags</DialogTitle>
+                          <DialogTitle id="form-dialog-title">Addició de temes</DialogTitle>
                           <DialogContent>
                             <DialogContentText>
-                            Escriu el tag que vols afegir. Si el tag està repetit no s'afegirà.
+                            Escriu el tema que vols afegir. Si el tema està repetit no s'afegirà.
                             </DialogContentText>
                             <TextField
                             autoFocus
                             margin="dense"
                             id="name"
-                            label="Tag(s)"
+                            label="Tema(s)"
                             fullWidth
                             onChange = {event => this.handleTextFieldChange(event)}
                             />

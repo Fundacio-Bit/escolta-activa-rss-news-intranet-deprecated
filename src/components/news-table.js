@@ -64,7 +64,7 @@ class NewsTable extends Component {
     this.handleChangeRowsPerPage = this.handleChangeRowsPerPage.bind(this);
     this.filterByDate = this.filterByDate.bind(this);
     this.filterByChecked = this.filterByChecked.bind(this);
-    this.filterByTag = this.filterByTag.bind(this);
+    this.filterByTopic = this.filterByTopic.bind(this);
     this.filterBySearchTerm = this.filterBySearchTerm.bind(this);
     // this.getSorting = this.getSorting.bind(this);
   }
@@ -108,42 +108,43 @@ class NewsTable extends Component {
     })
   }
 
-  handleDeleteTag(id, tag) {
+  handleDeleteTopic(id, topic) {
     let retrievedNews = this.state.data;
     const index = retrievedNews.findIndex(x => x._id == id);
     let updatedNew = retrievedNews[index]
-    let updatedTagsArray = updatedNew.tags.split(",");
-    let updatedTagsString = updatedTagsArray.filter(u => u !== tag).join();
-    // Send "void_tags_string" instead of an empty string (which would crash) 
-    if (updatedTagsString === ""){updatedTagsString = "void_tags_string"}       
+    let updatedTopicsArray = updatedNew.topics.split(",");
+    let updatedTopicsString = updatedTopicsArray.filter(u => u !== topic).join();
+    // Send "void_topics_string" instead of an empty string (which would crash) 
+    if (updatedTopicsString === ""){updatedTopicsString = "void_topics_string"}       
     // TODO: update via POST instead of via put to avoid problems with long URLS and with special chars
-    axios.put('/rss-news/identifier/'+ id +'/tags/' + updatedTagsString )
+    axios.put('/rss-news/identifier/'+ id +'/topics/' + updatedTopicsString )
     .then((res) => {
         console.log(res)
-        // Show an empty string when updatedTagsString value is "void_tags_string"
-        retrievedNews[index].tags = updatedTagsString === "void_tags_string"? "" : updatedTagsString;
+        // Show an empty string when updatedTopicsString value is "void_topics_string"
+        retrievedNews[index].topics = updatedTopicsString === "void_topics_string"? "" : updatedTopicsString;
         // we can update the state after response...
         this.setState({data:retrievedNews});
     })
   }
 
 
-  // TODO: manage handleAddTag and handleDeleteTag with a unique function
-  // TODO: handle the addition of tags with special chars or commas. Also avoid duplicates.
-  handleAddTag(id, tag) {
+  // TODO: manage handleAddTopic and handleDeleteTopic with a unique function
+  // TODO: handle the addition of topics with special chars or commas. Also avoid duplicates.
+  handleAddTopic(id, topic) {
     let retrievedNews = this.state.data;
     const index = retrievedNews.findIndex(x => x._id == id);
     let updatedNew = retrievedNews[index]
-    let updatedTagsArray = updatedNew.tags.split(",");
-    updatedTagsArray.push(tag.toLowerCase());
-    const uniqueTags = [...new Set(updatedTagsArray)]
+    // let updatedTopicsArray = updatedNew.topics.split(",");
+    let updatedTopicsArray = updatedNew.hasOwnProperty("topics")? updatedNew.topics.split(",") : [];    
+    updatedTopicsArray.push(topic.toLowerCase());
+    const uniqueTopics = [...new Set(updatedTopicsArray)]
     // remove empty elements and transform to string
-    const updatedTagsString = uniqueTags.filter(u => u !== "").join();
+    const updatedTopicsString = uniqueTopics.filter(u => u !== "").join();
     // TODO: update via POST instead of via put to avoid problems with long URLS and with special chars
-    axios.put('/rss-news/identifier/'+ id +'/tags/' + updatedTagsString )
+    axios.put('/rss-news/identifier/'+ id +'/topics/' + updatedTopicsString )
     .then((res) => {
         console.log(res)
-        retrievedNews[index].tags = updatedTagsString;
+        retrievedNews[index].topics = updatedTopicsString;
         // we can update the state after response...
         this.setState({data:retrievedNews});
     })
@@ -194,9 +195,9 @@ class NewsTable extends Component {
     } else return false
   }
 
-  filterByTag(pressNew) {
+  filterByTopic(pressNew) {
     if (
-      pressNew.tags.toLowerCase().split(",").includes(this.props.searchTerm.toLowerCase().slice(1, -1))){
+      pressNew.topics.toLowerCase().split(",").includes(this.props.searchTerm.toLowerCase().slice(1, -1))){
         return true
       }
     else return false
@@ -227,7 +228,7 @@ class NewsTable extends Component {
         filteredData = filteredData.filter(this.filterByChecked);
       } 
       if (/\[*\]/.test(this.props.searchTerm)){
-        filteredData = filteredData.filter(this.filterByTag);
+        filteredData = filteredData.filter(this.filterByTopic);
       } else {
         filteredData = filteredData.filter(this.filterBySearchTerm);
       }
@@ -238,8 +239,8 @@ class NewsTable extends Component {
       var handleSelectedChange = this.handleSelectedChange;
       var handleDeleteClick = this.handleDeleteClick;
       var handleRequestSort = this.handleRequestSort;
-      var handleDeleteTag = this.handleDeleteTag;
-      var handleAddTag = this.handleAddTag;
+      var handleDeleteTopic = this.handleDeleteTopic;
+      var handleAddTopic = this.handleAddTopic;
 
       return (
         <Paper className={classes.root}>
@@ -253,24 +254,26 @@ class NewsTable extends Component {
                 />
               )}
               <TableBody>
-              {filteredData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(u => {                
-                  return (
-                    <NewsTableRow
-                    //TODO:check what are keys for. They should be unique and cannot be rendered in the DOM
-                    // using prop.key
-                      key={u._id}
-                      published={u.published}
-                      selected={u.selected}
-                      docId={u._id}
-                      title={u.title}
-                      tags={u.tags.split(",")}
-                      link={u.link}
-                      summary={u.summary}
-                      handleSelectedChange = {handleSelectedChange.bind(this)}
-                      handleDeleteClick = {handleDeleteClick.bind(this)}
-                      handleDeleteTag = {handleDeleteTag.bind(this)}
-                      handleAddTag = {handleAddTag.bind(this)}
-                    />
+              {filteredData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(u => {
+                console.log(u)                
+                return (                    
+                  <NewsTableRow
+                  //TODO:check what are keys for. They should be unique and cannot be rendered in the DOM
+                  // using prop.key
+                    key={u._id}
+                    published={u.published}
+                    selected={u.selected}
+                    docId={u._id}
+                    title={u.title}
+                    // topics={u.topics.split(",")}
+                    topics={u.hasOwnProperty("topics")? u.topics.split(",") : []}
+                    link={u.link}
+                    summary={u.summary}
+                    handleSelectedChange = {handleSelectedChange.bind(this)}
+                    handleDeleteClick = {handleDeleteClick.bind(this)}
+                    handleDeleteTopic = {handleDeleteTopic.bind(this)}
+                    handleAddTopic = {handleAddTopic.bind(this)}
+                  />
                 );
               })} 
               {filteredData.length === 0 && (

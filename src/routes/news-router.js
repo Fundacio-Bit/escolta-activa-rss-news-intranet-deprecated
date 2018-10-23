@@ -27,7 +27,7 @@ router.get("/entries", (req, res) =>
                 "extraction_date": 1,
                 "brand": 1,
                 "title": 1,
-                "tags": 1,
+                "topics": 1,
                 "link": 1,
                 "summary": 1,
                 "description": 1,
@@ -112,15 +112,15 @@ router.route('/identifier/:documentId/selected/:selected')
     })
 
 
-// ######## UPDATE TAGS ##############    
+// ######## UPDATE TOPICS ##############    
 // Add route with parameters and different CRUD operations (GET, DELETE and PUT) 
-router.route('/identifier/:documentId/tags/:tags')    
+router.route('/identifier/:documentId/topics/:topics')    
     .put((req, res)=>{
         var collection = db.collection("news");
         var query = {'_id': new mongo.ObjectID(req.params.documentId)};
-        var newValues = req.params.tags === "void_tags_string"?
-                                        {$set: {tags: ""}}:
-                                        {$set: {tags: req.params.tags}};
+        var newValues = req.params.topics === "void_topics_string"?
+                                        {$set: {topics: ""}}:
+                                        {$set: {topics: req.params.topics}};
 
         collection.updateOne(query, newValues, function (err, results) {
             if (err)
