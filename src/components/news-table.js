@@ -265,6 +265,7 @@ class NewsTable extends Component {
                       title={u.title}
                       tags={u.tags.split(",")}
                       link={u.link}
+                      summary={u.summary}
                       handleSelectedChange = {handleSelectedChange.bind(this)}
                       handleDeleteClick = {handleDeleteClick.bind(this)}
                       handleDeleteTag = {handleDeleteTag.bind(this)}

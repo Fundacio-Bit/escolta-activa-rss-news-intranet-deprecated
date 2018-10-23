@@ -10,7 +10,7 @@ import TableHead from '@material-ui/core/TableHead';
 
 const styles = theme => ({
   dateTableCell: {
-    width: 120,
+    width: 90,
   },
 });
 

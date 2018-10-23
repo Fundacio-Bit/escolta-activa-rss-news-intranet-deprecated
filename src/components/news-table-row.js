@@ -19,6 +19,7 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
+import Tooltip from '@material-ui/core/Tooltip';
 
 
 const styles = theme => ({
@@ -33,8 +34,12 @@ const styles = theme => ({
       // background-color: "#4b4c52"
     },
     dateTableCell: {
-      width: 120,
+      width: 90,
     },
+    customizedTooltip: {
+      fontSize: 14,
+      maxWidth: 600,
+    }
     // avatar: {
     //   margin: theme.spacing.unit ,
     //   height:"21px",
@@ -109,7 +114,11 @@ const styles = theme => ({
             </TableCell>
             <TableCell><div><h3>{this.props.published}</h3></div></TableCell>
             <TableCell>
-              <div><a href={this.props.link} target="_blank"><h3>{this.props.title}</h3></a></div>
+              <div>
+                <Tooltip classes={{ tooltip: classes.customizedTooltip }} title={this.props.summary} enterDelay={500} leaveDelay={200}>
+                  <a href={this.props.link} target="_blank"><h3>{this.props.title}</h3></a>
+                </Tooltip>
+              </div>
               <div>
                 {this.props.tags.map(u=>{if (u!=="") {
                   return <Chip
