@@ -174,13 +174,13 @@ class NewsTable extends Component {
   };
 
   filterByDate(pressNew) {
-    if (pressNew.published.includes(this.props.selectedDate)) {
+    if (pressNew.hasOwnProperty("published") && pressNew.published.includes(this.props.selectedDate)) {
       return true
     } else return false
   };
 
   filterByCountry(pressNew) {
-    if (pressNew.source_id.includes(this.props.selectedCountry)) {
+    if (pressNew.hasOwnProperty("source_id") && pressNew.source_id.includes(this.props.selectedCountry)) {
       return true
     } else return false
   };
@@ -210,7 +210,8 @@ class NewsTable extends Component {
   filterBySearchTerm(pressNew) {
     if (
       this.props.searchTerm === "" ||
-      pressNew.title.toLowerCase().indexOf(this.props.searchTerm.toLowerCase())!== -1) {return true}
+      pressNew.hasOwnProperty("title") && pressNew.title.toLowerCase().indexOf(this.props.searchTerm.toLowerCase())!== -1
+      ) {return true}
     else return false
   };
 
