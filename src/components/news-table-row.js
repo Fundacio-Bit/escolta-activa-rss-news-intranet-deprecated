@@ -95,7 +95,7 @@ const styles = theme => ({
 
       render () {
         const { classes } = this.props;
-        var handleSelectedChange  =   this.props.handleSelectedChange;
+        var handleRevisedSelectedChange  =   this.props.handleRevisedSelectedChange;
         var handleDeleteClick  =   this.props.handleDeleteClick;
         var handleDeleteTopic  =   this.props.handleDeleteTopic;
  
@@ -108,7 +108,7 @@ const styles = theme => ({
                 checked={this.props.selected}
                 value={String(this.props.selected)}
                 color="primary"
-                onClick={event => handleSelectedChange(event, this.props.docId)}
+                onClick={event => handleRevisedSelectedChange(event, this.props.docId)}
                 />
             </TableCell>
             <TableCell><div><h3>{this.props.published}</h3></div></TableCell>

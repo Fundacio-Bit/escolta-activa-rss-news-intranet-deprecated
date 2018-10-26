@@ -31,7 +31,8 @@ router.get("/entries", (req, res) =>
                 "link": 1,
                 "summary": 1,
                 "description": 1,
-                "selected": 1
+                "selected": 1,
+                "source_id": 1
             }
         }).sort( { 'published': -1 } ).toArray((err, docs) =>
     {

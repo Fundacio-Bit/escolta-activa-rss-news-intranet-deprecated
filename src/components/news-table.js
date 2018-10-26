@@ -63,6 +63,7 @@ class NewsTable extends Component {
     this.handleChangePage = this.handleChangePage.bind(this);
     this.handleChangeRowsPerPage = this.handleChangeRowsPerPage.bind(this);
     this.filterByDate = this.filterByDate.bind(this);
+    this.filterByCountry = this.filterByCountry.bind(this);
     this.filterByChecked = this.filterByChecked.bind(this);
     this.filterByTopic = this.filterByTopic.bind(this);
     this.filterBySearchTerm = this.filterBySearchTerm.bind(this);
@@ -96,11 +97,9 @@ class NewsTable extends Component {
                 removed_new, 
                 {headers: {'Content-Type': 'application/json' }}
     ).then((res) => {
-        console.log(res)
         // axios.delete('/rss-news/identifier/', {params: {'documentId': id}})
         axios.delete('/rss-news/identifier/'+ id)
         .then((res) => {
-              console.log(res);
             // we can update the state after response...
             retrievedNews.splice(index, 1);
             this.setState({data:retrievedNews});
@@ -119,7 +118,6 @@ class NewsTable extends Component {
     // TODO: update via POST instead of via put to avoid problems with long URLS and with special chars
     axios.put('/rss-news/identifier/'+ id +'/topics/' + updatedTopicsString )
     .then((res) => {
-        console.log(res)
         // Show an empty string when updatedTopicsString value is "void_topics_string"
         retrievedNews[index].topics = updatedTopicsString === "void_topics_string"? "" : updatedTopicsString;
         // we can update the state after response...
@@ -143,20 +141,18 @@ class NewsTable extends Component {
     // TODO: update via POST instead of via put to avoid problems with long URLS and with special chars
     axios.put('/rss-news/identifier/'+ id +'/topics/' + updatedTopicsString )
     .then((res) => {
-        console.log(res)
         retrievedNews[index].topics = updatedTopicsString;
         // we can update the state after response...
         this.setState({data:retrievedNews});
     })
   }
 
-  handleSelectedChange(event, id) {
+  handleRevisedSelectedChange(event, id) {
     const value = event.target.checked;
     const retrievedNews = this.state.data;
     const index = retrievedNews.findIndex(x => x._id == id);
     axios.put('/rss-news/identifier/'+ id +'/selected/' + value )
     .then((res) => {
-        console.log(res)
         retrievedNews[index].selected = value;
         // we can update the state after response...
         this.setState({data:retrievedNews});
@@ -183,7 +179,13 @@ class NewsTable extends Component {
     } else return false
   };
 
-  filterByChecked(pressNew){
+  filterByCountry(pressNew) {
+    if (pressNew.source_id.includes(this.props.selectedCountry)) {
+      return true
+    } else return false
+  };
+
+  filterByChecked(pressNew){   
     var value = 0;
     if (this.props.isChecked === 1){
       value = true
@@ -197,7 +199,7 @@ class NewsTable extends Component {
 
   filterByTopic(pressNew) {
     if (
-      pressNew.topics.toLowerCase().split(",").includes(this.props.searchTerm.toLowerCase().slice(1, -1))){
+      pressNew.hasOwnProperty("topics") && pressNew.topics.toLowerCase().split(",").includes(this.props.searchTerm.toLowerCase().slice(1, -1))){
         return true
       }
     else return false
@@ -221,11 +223,15 @@ class NewsTable extends Component {
       
       // Filtering data
       var filteredData = data
+ 
       if (this.props.selectedDate) {
         filteredData = data.filter(this.filterByDate);
       } 
       if (this.props.isChecked) {
         filteredData = filteredData.filter(this.filterByChecked);
+      }
+      if (this.props.selectedCountry) {
+        filteredData = filteredData.filter(this.filterByCountry);
       } 
       if (/\[*\]/.test(this.props.searchTerm)){
         filteredData = filteredData.filter(this.filterByTopic);
@@ -236,7 +242,7 @@ class NewsTable extends Component {
       // Sorting data
       filteredData.sort(getSorting(orderBy, order));
 
-      var handleSelectedChange = this.handleSelectedChange;
+      var handleRevisedSelectedChange = this.handleRevisedSelectedChange;
       var handleDeleteClick = this.handleDeleteClick;
       var handleRequestSort = this.handleRequestSort;
       var handleDeleteTopic = this.handleDeleteTopic;
@@ -255,7 +261,6 @@ class NewsTable extends Component {
               )}
               <TableBody>
               {filteredData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(u => {
-                console.log(u)                
                 return (                    
                   <NewsTableRow
                   //TODO:check what are keys for. They should be unique and cannot be rendered in the DOM
@@ -265,11 +270,11 @@ class NewsTable extends Component {
                     selected={u.selected}
                     docId={u._id}
                     title={u.title}
-                    // topics={u.topics.split(",")}
                     topics={u.hasOwnProperty("topics")? u.topics.split(",") : []}
+                    source_id={u.source_id}
                     link={u.link}
                     summary={u.summary}
-                    handleSelectedChange = {handleSelectedChange.bind(this)}
+                    handleRevisedSelectedChange = {handleRevisedSelectedChange.bind(this)}
                     handleDeleteClick = {handleDeleteClick.bind(this)}
                     handleDeleteTopic = {handleDeleteTopic.bind(this)}
                     handleAddTopic = {handleAddTopic.bind(this)}
