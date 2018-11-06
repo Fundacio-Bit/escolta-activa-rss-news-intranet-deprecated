@@ -31,6 +31,10 @@ var sourcesRouter = require('./src/routes/sources-router')
 
 app.use('/rss-sources', sourcesRouter)
 
+var topicsRouter = require('./src/routes/topics-router')
+
+app.use('/rss-topics', topicsRouter)
+
 // *************************************************
 // *************** TEMPLATE ENGINE *****************
 // *************************************************

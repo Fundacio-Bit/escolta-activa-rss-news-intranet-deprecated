@@ -171,7 +171,7 @@ class NewsSearchAppBar extends Component {
                 type="search"
                 value={this.props.searchTerm}
                 onChange={this.handleSearchTermChange}
-                placeholder="Search…"
+                placeholder="Cerca…"
                 disableUnderline
                 classes={{
                   root: classes.inputRoot,

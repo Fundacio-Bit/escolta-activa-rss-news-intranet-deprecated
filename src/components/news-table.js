@@ -56,6 +56,7 @@ class NewsTable extends Component {
       order: 'desc',
       orderBy: 'published',  
       data: [],
+      allTopics:[],
       page: 0,
       rowsPerPage: 5
     };
@@ -67,18 +68,24 @@ class NewsTable extends Component {
     this.filterByChecked = this.filterByChecked.bind(this);
     this.filterByTopic = this.filterByTopic.bind(this);
     this.filterBySearchTerm = this.filterBySearchTerm.bind(this);
-    // this.getSorting = this.getSorting.bind(this);
   }
 
   // Callback that ensures that teh API calls done by this component are executed once it is mounted. 
   componentDidMount() {
     this.retrievedDocumentsList();
+    this.getTopicsList();
   }
 
   // Call the REST API to get all documents
   retrievedDocumentsList() {
     axios.get('/rss-news/entries')
-    .then((results) => {this.setState({data: results.data.results})});      
+    .then((results) => {this.setState({ data: results.data.results })});      
+  }
+
+  // Call the REST API to get a list of topics used so far
+  getTopicsList() {
+    axios.get('/rss-topics/topics')
+    .then((results) => {this.setState({ allTopics: results.data.results })});      
   }
 
   handleChangePage(event, page) {
@@ -100,50 +107,27 @@ class NewsTable extends Component {
         // axios.delete('/rss-news/identifier/', {params: {'documentId': id}})
         axios.delete('/rss-news/identifier/'+ id)
         .then((res) => {
-            // we can update the state after response...
+            // we update the state after response...
             retrievedNews.splice(index, 1);
             this.setState({data:retrievedNews});
+            this.getTopicsList();
         })  
     })
   }
 
-  handleDeleteTopic(id, topic) {
-    let retrievedNews = this.state.data;
-    const index = retrievedNews.findIndex(x => x._id == id);
-    let updatedNew = retrievedNews[index]
-    let updatedTopicsArray = updatedNew.topics.split(",");
-    let updatedTopicsString = updatedTopicsArray.filter(u => u !== topic).join();
-    // Send "void_topics_string" instead of an empty string (which would crash) 
-    if (updatedTopicsString === ""){updatedTopicsString = "void_topics_string"}       
-    // TODO: update via POST instead of via put to avoid problems with long URLS and with special chars
-    axios.put('/rss-news/identifier/'+ id +'/topics/' + updatedTopicsString )
-    .then((res) => {
-        // Show an empty string when updatedTopicsString value is "void_topics_string"
-        retrievedNews[index].topics = updatedTopicsString === "void_topics_string"? "" : updatedTopicsString;
-        // we can update the state after response...
-        this.setState({data:retrievedNews});
-    })
-  }
-
-
-  // TODO: manage handleAddTopic and handleDeleteTopic with a unique function
   // TODO: handle the addition of topics with special chars or commas. Also avoid duplicates.
-  handleAddTopic(id, topic) {
+  handleUpdateTopics(id, topicsString) {
     let retrievedNews = this.state.data;
     const index = retrievedNews.findIndex(x => x._id == id);
-    let updatedNew = retrievedNews[index]
-    // let updatedTopicsArray = updatedNew.topics.split(",");
-    let updatedTopicsArray = updatedNew.hasOwnProperty("topics")? updatedNew.topics.split(",") : [];    
-    updatedTopicsArray.push(topic.toLowerCase());
-    const uniqueTopics = [...new Set(updatedTopicsArray)]
-    // remove empty elements and transform to string
-    const updatedTopicsString = uniqueTopics.filter(u => u !== "").join();
+    var processedTopicsString = topicsString == "" ? "%20" : topicsString;
+
     // TODO: update via POST instead of via put to avoid problems with long URLS and with special chars
-    axios.put('/rss-news/identifier/'+ id +'/topics/' + updatedTopicsString )
+    axios.put('/rss-news/identifier/'+ id +'/topics/' + processedTopicsString )
     .then((res) => {
-        retrievedNews[index].topics = updatedTopicsString;
-        // we can update the state after response...
+        retrievedNews[index].topics = processedTopicsString == "%20" ? "": processedTopicsString;
+        // we update the state after response...
         this.setState({data:retrievedNews});
+        this.getTopicsList();
     })
   }
 
@@ -246,8 +230,7 @@ class NewsTable extends Component {
       var handleRevisedSelectedChange = this.handleRevisedSelectedChange;
       var handleDeleteClick = this.handleDeleteClick;
       var handleRequestSort = this.handleRequestSort;
-      var handleDeleteTopic = this.handleDeleteTopic;
-      var handleAddTopic = this.handleAddTopic;
+      var handleUpdateTopics = this.handleUpdateTopics;
 
       return (
         <Paper className={classes.root}>
@@ -271,14 +254,14 @@ class NewsTable extends Component {
                     selected={u.selected}
                     docId={u._id}
                     title={u.title}
-                    topics={u.hasOwnProperty("topics")? u.topics.split(",") : []}
+                    topics={u.hasOwnProperty("topics") && u.topics != ""? u.topics.split(",") : []}
+                    allPossibleTopics= {this.state.allTopics}
                     source_id={u.source_id}
                     link={u.link}
                     summary={u.summary}
                     handleRevisedSelectedChange = {handleRevisedSelectedChange.bind(this)}
                     handleDeleteClick = {handleDeleteClick.bind(this)}
-                    handleDeleteTopic = {handleDeleteTopic.bind(this)}
-                    handleAddTopic = {handleAddTopic.bind(this)}
+                    handleUpdateTopics = {handleUpdateTopics.bind(this)}
                   />
                 );
               })} 
@@ -288,7 +271,7 @@ class NewsTable extends Component {
                     <RSSSnackbarContent
                       variant="info"
                       className={classes.margin}
-                      message="No hay datos para esta fecha!"
+                      message="No hi ha dades per a aquesta cerca!"
                     />
                   </TableCell>
                 </TableRow>

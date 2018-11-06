@@ -119,11 +119,12 @@ router.route('/identifier/:documentId/topics/:topics')
     .put((req, res)=>{
         var collection = db.collection("news");
         var query = {'_id': new mongo.ObjectID(req.params.documentId)};
-        var newValues = req.params.topics === "void_topics_string"?
-                                        {$set: {topics: ""}}:
-                                        {$set: {topics: req.params.topics}};
+        var topicsToAssign = req.params.topics == " "? "void_topics_string" : req.params.topics
+        var updatedTopics = topicsToAssign === "void_topics_string"?
+                                        {$unset: {topics: ""}}:
+                                        {$set: {topics: topicsToAssign}};
 
-        collection.updateOne(query, newValues, function (err, results) {
+        collection.updateOne(query, updatedTopics, function (err, results) {
             if (err)
                 {
                 console.log(err)
