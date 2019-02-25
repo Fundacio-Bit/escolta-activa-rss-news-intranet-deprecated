@@ -10,7 +10,7 @@ import TableHead from '@material-ui/core/TableHead';
 
 const styles = theme => ({
   dateTableCell: {
-    width: 120,
+    width: 90,
   },
 });
 
@@ -27,7 +27,7 @@ class NewsTableHead extends React.Component {
     return (
       <TableHead>
         < TableRow >
-          <TableCell></TableCell>
+          <TableCell><h2>Revisat</h2></TableCell>
           <TableCell 
             className = {classes.dateTableCell}
             key = "published"
@@ -41,11 +41,11 @@ class NewsTableHead extends React.Component {
                 active = { true }
                 direction = {this.props.order}
                 onClick = { () => onRequestSort(this.props.orderBy, this.props.order) } >
-                <h2>Date</h2>
+                <h2>Data</h2>
               </TableSortLabel>
             </Tooltip>
           </TableCell>
-          <TableCell><h2>Title</h2></TableCell>
+          <TableCell><h2>Notícia</h2></TableCell>
           <TableCell></TableCell>
         </TableRow>
       </TableHead>

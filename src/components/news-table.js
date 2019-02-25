@@ -56,6 +56,7 @@ class NewsTable extends Component {
       order: 'desc',
       orderBy: 'published',  
       data: [],
+      allTopics:[],
       page: 0,
       rowsPerPage: 5
     };
@@ -63,21 +64,28 @@ class NewsTable extends Component {
     this.handleChangePage = this.handleChangePage.bind(this);
     this.handleChangeRowsPerPage = this.handleChangeRowsPerPage.bind(this);
     this.filterByDate = this.filterByDate.bind(this);
+    this.filterByCountry = this.filterByCountry.bind(this);
     this.filterByChecked = this.filterByChecked.bind(this);
-    this.filterByTag = this.filterByTag.bind(this);
+    this.filterByTopic = this.filterByTopic.bind(this);
     this.filterBySearchTerm = this.filterBySearchTerm.bind(this);
-    // this.getSorting = this.getSorting.bind(this);
   }
 
   // Callback that ensures that teh API calls done by this component are executed once it is mounted. 
   componentDidMount() {
     this.retrievedDocumentsList();
+    this.getTopicsList();
   }
 
   // Call the REST API to get all documents
   retrievedDocumentsList() {
     axios.get('/rss-news/entries')
-    .then((results) => {this.setState({data: results.data.results})});      
+    .then((results) => {this.setState({ data: results.data.results })});      
+  }
+
+  // Call the REST API to get a list of topics used so far
+  getTopicsList() {
+    axios.get('/rss-topics/topics')
+    .then((results) => {this.setState({ allTopics: results.data.results })});      
   }
 
   handleChangePage(event, page) {
@@ -96,66 +104,39 @@ class NewsTable extends Component {
                 removed_new, 
                 {headers: {'Content-Type': 'application/json' }}
     ).then((res) => {
-        console.log(res)
         // axios.delete('/rss-news/identifier/', {params: {'documentId': id}})
         axios.delete('/rss-news/identifier/'+ id)
         .then((res) => {
-              console.log(res);
-            // we can update the state after response...
+            // we update the state after response...
             retrievedNews.splice(index, 1);
             this.setState({data:retrievedNews});
+            this.getTopicsList();
         })  
     })
   }
 
-  handleDeleteTag(id, tag) {
+  // TODO: handle the addition of topics with special chars or commas. Also avoid duplicates.
+  handleUpdateTopics(id, topicsString) {
     let retrievedNews = this.state.data;
     const index = retrievedNews.findIndex(x => x._id == id);
-    let updatedNew = retrievedNews[index]
-    let updatedTagsArray = updatedNew.tags.split(",");
-    let updatedTagsString = updatedTagsArray.filter(u => u !== tag).join();
-    // Send "void_tags_string" instead of an empty string (which would crash) 
-    if (updatedTagsString === ""){updatedTagsString = "void_tags_string"}       
+    var processedTopicsString = topicsString == "" ? "%20" : topicsString;
+
     // TODO: update via POST instead of via put to avoid problems with long URLS and with special chars
-    axios.put('/rss-news/identifier/'+ id +'/tags/' + updatedTagsString )
+    axios.put('/rss-news/identifier/'+ id +'/topics/' + processedTopicsString )
     .then((res) => {
-        console.log(res)
-        // Show an empty string when updatedTagsString value is "void_tags_string"
-        retrievedNews[index].tags = updatedTagsString === "void_tags_string"? "" : updatedTagsString;
-        // we can update the state after response...
+        retrievedNews[index].topics = processedTopicsString == "%20" ? "": processedTopicsString;
+        // we update the state after response...
         this.setState({data:retrievedNews});
+        this.getTopicsList();
     })
   }
 
-
-  // TODO: manage handleAddTag and handleDeleteTag with a unique function
-  // TODO: handle the addition of tags with special chars or commas. Also avoid duplicates.
-  handleAddTag(id, tag) {
-    let retrievedNews = this.state.data;
-    const index = retrievedNews.findIndex(x => x._id == id);
-    let updatedNew = retrievedNews[index]
-    let updatedTagsArray = updatedNew.tags.split(",");
-    updatedTagsArray.push(tag.toLowerCase());
-    const uniqueTags = [...new Set(updatedTagsArray)]
-    // remove empty elements and transform to string
-    const updatedTagsString = uniqueTags.filter(u => u !== "").join();
-    // TODO: update via POST instead of via put to avoid problems with long URLS and with special chars
-    axios.put('/rss-news/identifier/'+ id +'/tags/' + updatedTagsString )
-    .then((res) => {
-        console.log(res)
-        retrievedNews[index].tags = updatedTagsString;
-        // we can update the state after response...
-        this.setState({data:retrievedNews});
-    })
-  }
-
-  handleSelectedChange(event, id) {
+  handleRevisedSelectedChange(event, id) {
     const value = event.target.checked;
     const retrievedNews = this.state.data;
     const index = retrievedNews.findIndex(x => x._id == id);
     axios.put('/rss-news/identifier/'+ id +'/selected/' + value )
     .then((res) => {
-        console.log(res)
         retrievedNews[index].selected = value;
         // we can update the state after response...
         this.setState({data:retrievedNews});
@@ -177,12 +158,18 @@ class NewsTable extends Component {
   };
 
   filterByDate(pressNew) {
-    if (pressNew.published.includes(this.props.selectedDate)) {
+    if (pressNew.hasOwnProperty("published") && pressNew.published.includes(this.props.selectedDate)) {
       return true
     } else return false
   };
 
-  filterByChecked(pressNew){
+  filterByCountry(pressNew) {
+    if (pressNew.hasOwnProperty("source_id") && pressNew.source_id.includes(this.props.selectedCountry)) {
+      return true
+    } else return false
+  };
+
+  filterByChecked(pressNew){   
     var value = 0;
     if (this.props.isChecked === 1){
       value = true
@@ -194,9 +181,9 @@ class NewsTable extends Component {
     } else return false
   }
 
-  filterByTag(pressNew) {
+  filterByTopic(pressNew) {
     if (
-      pressNew.tags.toLowerCase().split(",").includes(this.props.searchTerm.toLowerCase().slice(1, -1))){
+      pressNew.hasOwnProperty("topics") && pressNew.topics.toLowerCase().split(",").includes(this.props.searchTerm.toLowerCase().slice(1, -1))){
         return true
       }
     else return false
@@ -207,7 +194,8 @@ class NewsTable extends Component {
   filterBySearchTerm(pressNew) {
     if (
       this.props.searchTerm === "" ||
-      pressNew.title.toLowerCase().indexOf(this.props.searchTerm.toLowerCase())!== -1) {return true}
+      pressNew.hasOwnProperty("title") && pressNew.title.toLowerCase().indexOf(this.props.searchTerm.toLowerCase())!== -1
+      ) {return true}
     else return false
   };
 
@@ -220,14 +208,18 @@ class NewsTable extends Component {
       
       // Filtering data
       var filteredData = data
+ 
       if (this.props.selectedDate) {
         filteredData = data.filter(this.filterByDate);
       } 
       if (this.props.isChecked) {
         filteredData = filteredData.filter(this.filterByChecked);
+      }
+      if (this.props.selectedCountry) {
+        filteredData = filteredData.filter(this.filterByCountry);
       } 
       if (/\[*\]/.test(this.props.searchTerm)){
-        filteredData = filteredData.filter(this.filterByTag);
+        filteredData = filteredData.filter(this.filterByTopic);
       } else {
         filteredData = filteredData.filter(this.filterBySearchTerm);
       }
@@ -235,11 +227,10 @@ class NewsTable extends Component {
       // Sorting data
       filteredData.sort(getSorting(orderBy, order));
 
-      var handleSelectedChange = this.handleSelectedChange;
+      var handleRevisedSelectedChange = this.handleRevisedSelectedChange;
       var handleDeleteClick = this.handleDeleteClick;
       var handleRequestSort = this.handleRequestSort;
-      var handleDeleteTag = this.handleDeleteTag;
-      var handleAddTag = this.handleAddTag;
+      var handleUpdateTopics = this.handleUpdateTopics;
 
       return (
         <Paper className={classes.root}>
@@ -253,23 +244,25 @@ class NewsTable extends Component {
                 />
               )}
               <TableBody>
-              {filteredData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(u => {                
-                  return (
-                    <NewsTableRow
-                    //TODO:check what are keys for. They should be unique and cannot be rendered in the DOM
-                    // using prop.key
-                      key={u._id}
-                      published={u.published}
-                      selected={u.selected}
-                      docId={u._id}
-                      title={u.title}
-                      tags={u.tags.split(",")}
-                      link={u.link}
-                      handleSelectedChange = {handleSelectedChange.bind(this)}
-                      handleDeleteClick = {handleDeleteClick.bind(this)}
-                      handleDeleteTag = {handleDeleteTag.bind(this)}
-                      handleAddTag = {handleAddTag.bind(this)}
-                    />
+              {filteredData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(u => {
+                return (                    
+                  <NewsTableRow
+                  //TODO:check what are keys for. They should be unique and cannot be rendered in the DOM
+                  // using prop.key
+                    key={u._id}
+                    published={u.published}
+                    selected={u.selected}
+                    docId={u._id}
+                    title={u.title}
+                    topics={u.hasOwnProperty("topics") && u.topics != ""? u.topics.split(",") : []}
+                    allPossibleTopics= {this.state.allTopics}
+                    source_id={u.source_id}
+                    link={u.link}
+                    summary={u.summary}
+                    handleRevisedSelectedChange = {handleRevisedSelectedChange.bind(this)}
+                    handleDeleteClick = {handleDeleteClick.bind(this)}
+                    handleUpdateTopics = {handleUpdateTopics.bind(this)}
+                  />
                 );
               })} 
               {filteredData.length === 0 && (
@@ -278,7 +271,7 @@ class NewsTable extends Component {
                     <RSSSnackbarContent
                       variant="info"
                       className={classes.margin}
-                      message="No hay datos para esta fecha!"
+                      message="No hi ha dades per a aquesta cerca!"
                     />
                   </TableCell>
                 </TableRow>

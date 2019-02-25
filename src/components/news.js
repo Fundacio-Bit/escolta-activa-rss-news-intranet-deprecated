@@ -22,14 +22,16 @@ class News extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      selectedDate: '', 
+      selectedDate: '',
+      selectedCountry: '', 
       isChecked: 0,
       searchTerm: '',
     };
     
     // This binding is necessary to make `this` work in the callback
     this.handleDate = this.handleDate.bind(this);
-    this.handleSelectChange = this.handleSelectChange.bind(this);
+    this.handleRevisedSelectChange = this.handleRevisedSelectChange.bind(this);
+    this.handleCountrySelectChange = this.handleCountrySelectChange.bind(this);
     this.handleSearchTermChange = this.handleSearchTermChange.bind(this);
   }
 
@@ -39,10 +41,13 @@ class News extends Component {
   };
 
 
-  handleSelectChange(isChecked){
+  handleRevisedSelectChange(isChecked){
     this.setState({ isChecked: isChecked });
   };
 
+  handleCountrySelectChange(enteredCountry){
+    this.setState({ selectedCountry: enteredCountry });
+  };
 
   handleSearchTermChange(enteredSearchTerm){
     this.setState({ searchTerm: enteredSearchTerm });
@@ -60,12 +65,15 @@ class News extends Component {
                   selectedDate = {this.state.selectedDate}
                   onSelectDate={this.handleDate}
                   isChecked={this.state.isChecked}
-                  onSelectChange={this.handleSelectChange}
+                  onRevisedSelectChange={this.handleRevisedSelectChange}
+                  selectedCountry={this.state.selectedCountry}
+                  onCountrySelectChange={this.handleCountrySelectChange}
                   searchTerm={this.state.searchTerm}
                   onSearchTermChange={this.handleSearchTermChange}
                 />
                 <NewsTable
                   selectedDate = {this.state.selectedDate}
+                  selectedCountry = {this.state.selectedCountry}
                   isChecked={this.state.isChecked}
                   searchTerm = {this.state.searchTerm}
                 />     

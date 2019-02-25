@@ -77,7 +77,7 @@ const styles = theme => ({
     width: 200,
   },
   form: {
-    flexBasis: '50%',
+    flexBasis: '60%',
   },
   // End Datepipcker
 });
@@ -87,7 +87,8 @@ class NewsSearchAppBar extends Component {
     super(props);
   
     this.handleDate = this.handleDate.bind(this);
-    this.handleSelectChange = this.handleSelectChange.bind(this);
+    this.handleRevisedSelectChange = this.handleRevisedSelectChange.bind(this);
+    this.handleCountrySelectChange = this.handleCountrySelectChange.bind(this);
     this.handleSearchTermChange = this.handleSearchTermChange.bind(this);
   };
   
@@ -95,8 +96,12 @@ class NewsSearchAppBar extends Component {
     this.props.onSelectDate(event.target.value);
   }
 
-  handleSelectChange(event){
-    this.props.onSelectChange(event.target.value);
+  handleRevisedSelectChange(event){
+    this.props.onRevisedSelectChange(event.target.value);
+  }
+
+  handleCountrySelectChange(event){
+    this.props.onCountrySelectChange(event.target.value);
   }
 
   handleSearchTermChange(event){
@@ -119,7 +124,7 @@ class NewsSearchAppBar extends Component {
               <form className={classes.container} noValidate>
                 <TextField
                   id="date"
-                  label="Published"
+                  label="Publicat"
                   type="date"
                   // defaultValue="2017-05-24"
                   value={this.props.selectedDate}
@@ -133,13 +138,28 @@ class NewsSearchAppBar extends Component {
                   select
                   className={classes.textField}
                   variant="filled"
-                  label="Revised"
+                  label="Revisat"
                   value={this.props.isChecked}
-                  onChange={this.handleSelectChange}
+                  onChange={this.handleRevisedSelectChange}
                 >
-                  <MenuItem value={0}>Todos</MenuItem>
-                  <MenuItem value={1}>Revisados</MenuItem>
-                  <MenuItem value={-1}>No revisados</MenuItem>
+                  <MenuItem value={0}>Tots</MenuItem>
+                  <MenuItem value={1}>Revisats</MenuItem>
+                  <MenuItem value={-1}>No revisats</MenuItem>
+                </TextField>
+                <TextField
+                  select
+                  className={classes.textField}
+                  variant="filled"
+                  label="País"
+                  value={this.props.selectedCountry}
+                  onChange={this.handleCountrySelectChange}
+                >        
+                  <MenuItem value=""><em>Tots</em></MenuItem>
+                  <MenuItem value={"ES"}>Espanya</MenuItem>
+                  <MenuItem value={"DE"}>Alemanya</MenuItem>
+                  <MenuItem value={"UK"}>Regne Unit</MenuItem>
+                  <MenuItem value={"FR"}>França</MenuItem>
+                  <MenuItem value={"IT"}>Itàlia</MenuItem>
                 </TextField>
               </form>
             </div>
@@ -151,7 +171,7 @@ class NewsSearchAppBar extends Component {
                 type="search"
                 value={this.props.searchTerm}
                 onChange={this.handleSearchTermChange}
-                placeholder="Search…"
+                placeholder="Cerca…"
                 disableUnderline
                 classes={{
                   root: classes.inputRoot,

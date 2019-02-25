@@ -159,7 +159,6 @@ class SourcesList extends Component {
     axios.put('/rss-sources/identifier/'+ id +'/active/' + isActiveFlag)
         .then((res) => {
             // we can update the state after response...
-            console.log(res);
             const retrievedSources = this.state.rssSources;
             const index = retrievedSources.findIndex(x => x._id == id);
             retrievedSources[index].is_active = isActiveFlag;

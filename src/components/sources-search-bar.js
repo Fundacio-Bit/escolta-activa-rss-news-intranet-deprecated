@@ -92,12 +92,10 @@ class SearchBar extends Component {
   }
 
   handleCountrySelectorChange(event){
-    console.log("Country " + event.target.value)
     this.props.onCountrySelectorChange(event.target.value);  
   };
 
   handleActiveSelectorChange(event){
-    console.log("Active " + event.target.value)
     this.props.onActiveSelectorChange(event.target.value);  
   };
 
@@ -124,10 +122,12 @@ class SearchBar extends Component {
                     inputProps={{
                       name: 'countryISOCode',
                       id: 'country-simple',}}>
-                    <MenuItem value=""><em>None</em></MenuItem>
+                    <MenuItem value=""><em>Tots</em></MenuItem>
                     <MenuItem value={"ES"}>Espanya</MenuItem>
                     <MenuItem value={"DE"}>Alemanya</MenuItem>
                     <MenuItem value={"UK"}>Regne Unit</MenuItem>
+                    <MenuItem value={"FR"}>França</MenuItem>
+                    <MenuItem value={"IT"}>Itàlia</MenuItem>
                   </Select>
                 </FormControl>
 

@@ -1,25 +1,30 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
-import axios from 'axios';
 import TableRow from '@material-ui/core/TableRow';
 import TableCell from '@material-ui/core/TableCell';
 import Checkbox from '@material-ui/core/Checkbox';
 import IconButton from '@material-ui/core/IconButton';
 import Chip from '@material-ui/core/Chip';
 import DeleteIcon from '@material-ui/icons/Delete';
-import Icon from '@material-ui/core/Icon';
 import Avatar from '@material-ui/core/Avatar';
-
-
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
+import Tooltip from '@material-ui/core/Tooltip';
+import Select from 'react-select';
+import Typography from '@material-ui/core/Typography';
+import NoSsr from '@material-ui/core/NoSsr';
+import Paper from '@material-ui/core/Paper';
+import MenuItem from '@material-ui/core/MenuItem';
+import { emphasize } from '@material-ui/core/styles/colorManipulator';
 
+// Integrating the autocomplete code from material ui requires to use ES7,
+// adding a preset to the babel loader and installing the necessary package it can be transpiled
+// https://stefan.magnuson.co/articles/frontend/using-es7-spread-operator-with-webpack/
 
 const styles = theme => ({
     button: {
@@ -30,157 +35,324 @@ const styles = theme => ({
       fontSize: "0.8rem",
       height:"23px",
       padding:"2px 2px 2px 2px",
-      // background-color: "#4b4c52"
     },
     dateTableCell: {
-      width: 120,
+      width: 90,
     },
-    // avatar: {
-    //   margin: theme.spacing.unit ,
-    //   height:"21px",
-    //   padding:"2px 2px 2px 2px"
-    // },
-    // icon: {
-    //   margin: theme.spacing.unit,
-    //   height:"15px",
-    //   padding:"2px 2px 2px 2px"
-    // }
-  });
+    customizedTooltip: {
+      fontSize: 14,
+      maxWidth: 600,
+    },
+    root: {
+      overflowY:'hidden',
+      flexGrow: 1,
+      height: 290,
+      width: 500,
+    },
+    input: {
+      display: 'flex',
+      padding: 0,
+    },
+    valueContainer: {
+      display: 'flex',
+      flexWrap: 'wrap',
+      flex: 1,
+      alignItems: 'center',
+    },
+    noOptionsMessage: {
+      padding: `${theme.spacing.unit}px ${theme.spacing.unit * 2}px`,
+    },
+    singleValue: {
+      fontSize: 16,
+    },
+    placeholder: {
+      position: 'absolute',
+      left: 2,
+      fontSize: 16,
+    },
+    paper: {
+      position: 'absolute',
+      zIndex: 1,
+      marginTop: theme.spacing.unit,
+      left: 0,
+      right: 0,
+    }
+  });  
+ 
+  function inputComponent({ inputRef, ...props }) {
+    return <div ref={inputRef} {...props}/>;
+  }
+
+  function NoOptionsMessage(props) {
+    return (
+      <Typography
+        color="textSecondary"
+        className={props.selectProps.classes.noOptionsMessage}
+        {...props.innerProps}
+      >
+        {props.children}
+      </Typography>
+    );
+  }
+  
+  function Control(props) {    
+    return (      
+      <TextField        
+        fullWidth  
+        InputProps={{
+          inputComponent,
+          inputProps: {
+            className: props.selectProps.classes.input,
+            inputRef: props.innerRef,
+            children: props.children,
+            ...props.innerProps            
+          },
+        }}
+        {...props.selectProps.textFieldProps}
+      />
+    );
+  }
+  
+  function Option(props) {    
+    return (
+      <MenuItem
+        buttonRef={props.innerRef}
+        selected={props.isFocused}
+        component="div"
+        style={{
+          fontWeight: props.isSelected ? 500 : 400,
+        }}
+        {...props.innerProps}
+      >
+        {props.children}
+      </MenuItem>
+    );
+  }
+  
+  function Placeholder(props) {
+    return (
+      <Typography
+        color="textSecondary"
+        className={props.selectProps.classes.placeholder}
+        {...props.innerProps}
+      >
+        {props.children}
+      </Typography>
+    );
+  }
+  
+  function SingleValue(props) {
+    return (
+      <Typography className={props.selectProps.classes.singleValue} {...props.innerProps}>
+        {props.children}
+      </Typography>
+    );
+  }
+  
+  function ValueContainer(props) {
+    return <div className={props.selectProps.classes.valueContainer}>{props.children}</div>;
+  }
+  
+  function Menu(props) {
+    return (
+      <Paper square className={props.selectProps.classes.paper} {...props.innerProps}>
+        {props.children}
+      </Paper>
+    );
+  }
+
+  function MultiValue(props) {
+    return (
+      <Chip
+        tabIndex={-1}
+        label={props.children}
+        className={classNames(props.selectProps.classes.chip, {
+          [props.selectProps.classes.chipFocused]: props.isFocused,
+        })}
+        onDelete={props.removeProps.onClick}
+        deleteIcon={<CancelIcon {...props.removeProps} />}
+      />
+    );
+  }
+  
+
+  // components are used to set the style of the autocomplete component (NoSsr) elements
+  const components = {
+    Control,
+    Menu,
+    MultiValue,
+    NoOptionsMessage,
+    Option,
+    Placeholder,
+    SingleValue,
+    ValueContainer,
+  };
   
   class NewsTableRow extends Component {
     constructor(props) {
       super(props);
       this.state = {
-          open: false,
-          newTags: "" 
+        open: false,
+        assignedTopics: this.props.topics,
+        textFieldValue: ""
       };
-      this.handleChipDelete = this.handleChipDelete.bind(this);
-      this.handleChipClick = this.handleChipClick.bind(this);
+
       this.handleDialogClickOpen  =  this.handleDialogClickOpen.bind(this);
       this.handleDialogClose  =   this.handleDialogClose.bind(this);
-      this.handleDialogAddAndClose  =   this.handleDialogAddAndClose.bind(this);
-      // this.handleAddTagChipClick = this.handleAddTagChipClick.bind(this);
+      this.handleUpdateByDeleting  =   this.handleUpdateByDeleting.bind(this);
+      this.handleTextFieldValueChange  =   this.handleTextFieldValueChange.bind(this);
     }
-    
 
-    handleChipDelete() {
-      alert('You clicked the delete icon.'); 
-    }
-    
-    handleChipClick() {
-      alert('You clicked the Chip.');
-    }
+    // It looks like that at this class level/scope we are using Typescript.It does not allow to
+    // use var, let or const for variable definition. They are catalogued as public (by default) or
+    // private and declared using just the = sign
+    // Source: https://stackoverflow.com/questions/45464245/angular-unexpected-token-a-constructor-method-accessor-or-property-was-expe
+
 
     handleDialogClickOpen(){
       this.setState({ open: true });
     };
   
     handleDialogClose() {
-      this.setState({ open: false });
+      this.setState({ 
+        textFieldValue: "",
+        open: false });
     };
 
-    handleTextFieldChange(event) {
-      this.setState({ newTags: event.target.value });
+    handleUpdateByDeleting(deletedTopic) {
+      let updatedTopicsArray = this.state.assignedTopics;
+      const index = updatedTopicsArray.indexOf(deletedTopic);
+      if (index !== -1){updatedTopicsArray.splice(index, 1)};      
+      this.props.handleUpdateTopics(this.props.docId, updatedTopicsArray.join(","))
+      this.setState({ assignedTopics: updatedTopicsArray});
     };
 
-    handleDialogAddAndClose() {
-      this.props.handleAddTag(this.props.docId, this.state.newTags)
-      this.setState({ open: false });
-    };
+    handleTextFieldValueChange(event){this.setState({ textFieldValue: event.target.value})}
 
-
-      render () {
-        const { classes } = this.props;
-        var handleSelectedChange  =   this.props.handleSelectedChange;
-        var handleDeleteClick  =   this.props.handleDeleteClick;
-        var handleDeleteTag  =   this.props.handleDeleteTag;
+    handleChange(event)
+      {
+        let updatedTopicsArray = this.state.assignedTopics;
+        updatedTopicsArray.push(event.value);
+        updatedTopicsArray = [...new Set(updatedTopicsArray)]
+        this.props.handleUpdateTopics(this.props.docId, updatedTopicsArray.join(","))
+        this.setState(
+          {
+            assignedTopics: updatedTopicsArray,
+            open: false
+          });
+      };
  
-        return (
-            <TableRow 
-            role="checkbox"
-          >
-            <TableCell className = {classes.dateTableCell} padding="checkbox">
-              <Checkbox
-                checked={this.props.selected}
-                value={String(this.props.selected)}
-                color="primary"
-                onClick={event => handleSelectedChange(event, this.props.docId)}
-                />
-            </TableCell>
-            <TableCell><div><h3>{this.props.published}</h3></div></TableCell>
-            <TableCell>
-              <div><a href={this.props.link} target="_blank"><h3>{this.props.title}</h3></a></div>
-              <div>
-                {this.props.tags.map(u=>{if (u!=="") {
-                  return <Chip
-                      label={u}
-                      key= {u}
-                      color="primary"
+
+    render () {
+      const { classes, theme } = this.props;
+
+      const selectStyles = {
+        input: base => ({
+          ...base,
+          color: theme.palette.text.primary,
+          '& input': {
+            font: 'inherit',
+          },
+        }),
+      };
+
+      var handleRevisedSelectedChange  =   this.props.handleRevisedSelectedChange;
+      var handleDeleteClick  =   this.props.handleDeleteClick;
+      var possibleTopics = this.props.allPossibleTopics ? this.props.allPossibleTopics: [];
+
+      var selectableOptions = possibleTopics.map(suggestion => ({value: suggestion, label: suggestion}));
+      this.state.textFieldValue != "" ?
+        selectableOptions.push({value: this.state.textFieldValue, label: this.state.textFieldValue}): null;
+          
+      return (
+          <TableRow 
+          role="checkbox"
+        >
+          <TableCell className = {classes.dateTableCell} padding="checkbox">
+            <Checkbox
+              checked={this.props.selected}
+              value={String(this.props.selected)}
+              color="primary"
+              onClick={event => handleRevisedSelectedChange(event, this.props.docId)}
+              />
+          </TableCell>
+          <TableCell><div><h3>{this.props.published}</h3></div></TableCell>
+          <TableCell>
+            <div>
+              <Tooltip classes={{ tooltip: classes.customizedTooltip }} title={this.props.summary} enterDelay={500} leaveDelay={200}>
+                <a href={this.props.link} target="_blank"><h3>{this.props.title}</h3></a>
+              </Tooltip>
+            </div>
+            <div>
+              {this.props.topics.map(u=>{if (u!=="") {
+                return <Chip
+                    label={u}
+                    key= {u}
+                    color="primary"
+                    clickable
+                    onDelete={() => this.handleUpdateByDeleting(u)}                                         
+                    className={classes.chip}
+                  />}})}
+                    <Chip
+                      avatar = {<Avatar>+</Avatar>}
+                      label="Nou Tema"
                       clickable
-                      onClick={this.handleChipClick}
-                      onDelete={() => handleDeleteTag(this.props.docId, u)}                                          
+                      onClick={this.handleDialogClickOpen}
                       className={classes.chip}
-                    />}})}
-                      <Chip
-                        // avatar={
-                        //   <Avatar className={classes.avatar}>
-                        //     {<Icon
-                        //       className={classes.icon}
-                        //       color="primary">
-                        //         add_circle
-                        //       </Icon>}
-                        //   </Avatar>}
-                        avatar = {<Avatar>+</Avatar>}
-                        label="Nou Tag"
-                        clickable
-                        // onClick={() => handleAddTag(this.props.docId, "nou")}
-                        onClick={this.handleDialogClickOpen}
-                        className={classes.chip}
-                      />
-                      <Dialog
-                        open={this.state.open}
-                        onClose={this.handleDialogClose}
-                        aria-labelledby="form-dialog-title">
-                          <DialogTitle id="form-dialog-title">Addició de tags</DialogTitle>
-                          <DialogContent>
-                            <DialogContentText>
-                            Escriu el tag que vols afegir. Si el tag està repetit no s'afegirà.
-                            </DialogContentText>
-                            <TextField
-                            autoFocus
-                            margin="dense"
-                            id="name"
-                            label="Tag(s)"
-                            fullWidth
-                            onChange = {event => this.handleTextFieldChange(event)}
-                            />
-                          </DialogContent>                          
-                          <DialogActions>
-                            <Button onClick={this.handleDialogClose} color="primary">Cancel·la</Button>
-                            <Button 
-                              onClick={this.handleDialogAddAndClose}
-                              color="primary">
-                              Afegeix
-                            </Button>
-                          </DialogActions>
-                      </Dialog>
-              </div>
-            </TableCell>
-            <TableCell>
-              <IconButton 
-                className={classes.button} 
-                aria-label="Delete" 
-                onClick={() => handleDeleteClick(this.props.docId)} >
-                <DeleteIcon />
-              </IconButton>
-            </TableCell>
-          </TableRow>
-        );
-    }
+                    />
+                    <Dialog                                     
+                      open={this.state.open}
+                      onClose={this.handleDialogClose}
+                      aria-labelledby="form-dialog-title">
+                        <DialogTitle id="form-dialog-title">Cerca o afegeix un tema</DialogTitle>
+                        <DialogContent>   
+                          <div                           
+                            className={classes.root}
+                            onChange={event => this.handleTextFieldValueChange(event)}
+                            >
+                            <NoSsr>
+                              <Select
+                                id="topicSelector"                                              
+                                tabIndex="1"
+                                classes={classes}
+                                styles={selectStyles}
+                                textFieldProps={{
+                                  InputLabelProps: {
+                                    shrink: true,
+                                  },
+                                }}
+                                options={selectableOptions}
+                                components={components}
+                                value={this.state.single}
+                                onChange={event => this.handleChange(event)}                            
+                                placeholder="Escriu per obtenir suggerències"
+                                autoFocus
+                              />
+                            </NoSsr>
+                          </div>
+                        </DialogContent>                          
+                        <DialogActions>
+                          <Button tabIndex="2" onClick={this.handleDialogClose} color="primary">Cancel·la</Button>
+                        </DialogActions>
+                    </Dialog>
+            </div>
+          </TableCell>
+          <TableCell>
+            <IconButton 
+              className={classes.button} 
+              aria-label="Delete" 
+              onClick={() => handleDeleteClick(this.props.docId)} >
+              <DeleteIcon />
+            </IconButton>
+          </TableCell>
+        </TableRow>
+      );
+  }
 }
 
 NewsTableRow.propTypes = {
     classes: PropTypes.object.isRequired,
+    theme: PropTypes.object.isRequired,
   };
 
-  export default withStyles(styles)(NewsTableRow);
+  export default withStyles(styles,{ withTheme: true })(NewsTableRow);

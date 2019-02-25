@@ -45,7 +45,6 @@ class RSSSource extends Component {
   
     //     axios.put('/rss-sources/identifier/'+ id +'/selected/' + value )
     //         .then((res) => {
-    //             console.log(res)
     //             // we can update the state after response...
     //             this.setState({
     //                 [id]: value
@@ -57,7 +56,6 @@ class RSSSource extends Component {
     //     axios.put('/rss-sources/identifier/'+ this.props.docId +'/active/' + !this.state.isActive)
     //         .then((res) => {
     //             // we can update the state after response...
-    //             console.log(res);                
     //             this.setState(state => ({
     //                     isActive: !state.isActive
     //                   }));
