@@ -5,6 +5,7 @@ import AppBar from '@material-ui/core/AppBar';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import News from './news';
+import Graphs from './graphs';
 import FilterableSourcesTable from './filterable-sources-table';
 
 const styles = {
@@ -52,10 +53,12 @@ class RSSAppBar extends Component {
           <Tabs className={classes.tabs} value={value} onChange={this.handleChange}>
             <Tab label="NOTICIAS" />
             <Tab label="FUENTES" />
+            <Tab label="GRAPHS" />
           </Tabs>
         </AppBar>
         {value === 0 && <News/>}
         {value === 1 && <FilterableSourcesTable/>}
+        {value === 2 && <Graphs/>}
        </div>
     )
   }

@@ -25,11 +25,13 @@
     "@material-ui/icons": "^2.0.0",
     "axios": "^0.18.0",
     "body-parser": "^1.18.3",
+    "chart.js": "^2.7.2",
     "express": "^4.16.3",
     "express-handlebars": "^3.0.0",
     "mongodb": "^3.0.10",
     "npm": "^6.3.0",
     "react": "^16.3.0",
+    "react-chartjs-2": "^2.7.4",
     "react-dom": "^16.3.0"
   }
 }
