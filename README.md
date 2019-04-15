@@ -16,8 +16,7 @@ To create an intranet for RSS managements, based on Node (server with REST API) 
 
 ### Usage
 **Clone this repository**
-```
-git clone git clone https://eaguado_fbit@bitbucket.org/eaguado_fbit/rss_intranet.git
+git clone https://eaguado_fbit@bitbucket.org/eaguado_fbit/rss_intranet.git
 ```
 
 **Install dependencies**
