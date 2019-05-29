@@ -117,9 +117,10 @@ class NewsTable extends Component {
 
   // TODO: handle the addition of topics with special chars or commas. Also avoid duplicates.
   handleUpdateTopics(id, topicsString) {
+    console.log(topicsString.toString().toLowerCase())
     let retrievedNews = this.state.data;
     const index = retrievedNews.findIndex(x => x._id == id);
-    var processedTopicsString = topicsString == "" ? "%20" : topicsString;
+    var processedTopicsString = topicsString == "" ? "%20" : topicsString.toString().toLowerCase();
 
     // TODO: update via POST instead of via put to avoid problems with long URLS and with special chars
     axios.put('/rss-news/identifier/'+ id +'/topics/' + processedTopicsString )
