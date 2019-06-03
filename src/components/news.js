@@ -28,6 +28,9 @@ class News extends Component {
       searchTerm: '',
     };
     
+    // Create a ref b
+    this.newsTableElement = React.createRef();
+
     // This binding is necessary to make `this` work in the callback
     this.handleDate = this.handleDate.bind(this);
     this.handleRevisedSelectChange = this.handleRevisedSelectChange.bind(this);
@@ -46,6 +49,7 @@ class News extends Component {
   };
 
   handleCountrySelectChange(enteredCountry){
+    this.newsTableElement.current.handleChangeFormField();
     this.setState({ selectedCountry: enteredCountry });
   };
 
@@ -71,7 +75,8 @@ class News extends Component {
                   searchTerm={this.state.searchTerm}
                   onSearchTermChange={this.handleSearchTermChange}
                 />
-                <NewsTable
+                <NewsTable 
+                  innerRef={this.newsTableElement}
                   selectedDate = {this.state.selectedDate}
                   selectedCountry = {this.state.selectedCountry}
                   isChecked={this.state.isChecked}

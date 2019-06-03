@@ -92,6 +92,10 @@ class NewsTable extends Component {
     this.setState({ page });
   };
 
+  handleChangeFormField() {
+    this.setState({ page: 0 });
+  };
+
   handleChangeRowsPerPage(event) {
     this.setState({ rowsPerPage: event.target.value });
   };
