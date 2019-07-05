@@ -280,7 +280,7 @@ const styles = theme => ({
           <TableCell>
             <div>
               <Tooltip classes={{ tooltip: classes.customizedTooltip }} title={this.props.summary} enterDelay={500} leaveDelay={200}>
-                <a href={this.props.link} target="_blank"><h3>{this.props.title}</h3></a>
+                <a href={this.props.link}  style={{ textDecoration: 'none' }} target="_blank"><h3>{this.props.title}</h3></a>
               </Tooltip>
             </div>
             <div>
