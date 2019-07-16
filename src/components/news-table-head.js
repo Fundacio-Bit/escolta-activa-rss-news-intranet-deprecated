@@ -31,7 +31,7 @@ class NewsTableHead extends React.Component {
           <TableCell 
             className = {classes.dateTableCell}
             key = "published"
-            numeric = { false }
+            align = "right"
             sortDirection = {this.props.order} >
             <Tooltip
               title = "Sort"

@@ -9,6 +9,7 @@ import { withStyles } from '@material-ui/core/styles';
 import SearchIcon from '@material-ui/icons/Search';
 import TextField from '@material-ui/core/TextField';
 import MenuItem from '@material-ui/core/MenuItem';
+import InputLabel from '@material-ui/core/InputLabel';
 
 const styles = theme => ({
   title: {
@@ -41,19 +42,25 @@ const styles = theme => ({
   },
   searchIcon: {
     width: theme.spacing.unit * 9,
-    height: '100%',
+    height: '70%',
     position: 'absolute',
     pointerEvents: 'none',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
   },
+  searchLabelDiv: {
+    marginLeft: '15px',
+    textAlign: 'left'
+  },
+  searchLabel: {
+    fontSize: 12,
+  },
   inputRoot: {
     color: 'inherit',
     width: '100%',
   },
   inputInput: {
-    paddingTop: theme.spacing.unit,
     paddingRight: theme.spacing.unit,
     paddingBottom: theme.spacing.unit,
     paddingLeft: theme.spacing.unit * 10,
@@ -74,7 +81,7 @@ const styles = theme => ({
   textField: {
     marginLeft: theme.spacing.unit,
     marginRight: theme.spacing.unit,
-    width: 200,
+    width: 180,
   },
   form: {
     flexBasis: '60%',
@@ -89,8 +96,9 @@ class NewsSearchAppBar extends Component {
     this.handleDate = this.handleDate.bind(this);
     this.handleRevisedSelectChange = this.handleRevisedSelectChange.bind(this);
     this.handleCountrySelectChange = this.handleCountrySelectChange.bind(this);
+    this.handleSearchTagChange = this.handleSearchTagChange.bind(this);
     this.handleSearchTermChange = this.handleSearchTermChange.bind(this);
-  };
+  }
   
   handleDate(event){
     this.props.onSelectDate(event.target.value);
@@ -102,6 +110,10 @@ class NewsSearchAppBar extends Component {
 
   handleCountrySelectChange(event){
     this.props.onCountrySelectChange(event.target.value);
+  }
+
+  handleSearchTagChange(event){
+    this.props.onSearchTagChange(event.target.value);  
   }
 
   handleSearchTermChange(event){
@@ -126,7 +138,6 @@ class NewsSearchAppBar extends Component {
                   id="date"
                   label="Publicat"
                   type="date"
-                  // defaultValue="2017-05-24"
                   value={this.props.selectedDate}
                   className={classes.textField}
                   InputLabelProps={{
@@ -137,24 +148,22 @@ class NewsSearchAppBar extends Component {
                 <TextField
                   select
                   className={classes.textField}
-                  variant="filled"
                   label="Revisat"
                   value={this.props.isChecked}
                   onChange={this.handleRevisedSelectChange}
                 >
-                  <MenuItem value={0}>Tots</MenuItem>
+                  <MenuItem value={0}><em>Tots</em></MenuItem>
                   <MenuItem value={1}>Revisats</MenuItem>
                   <MenuItem value={-1}>No revisats</MenuItem>
                 </TextField>
                 <TextField
                   select
                   className={classes.textField}
-                  variant="filled"
                   label="País"
                   value={this.props.selectedCountry}
                   onChange={this.handleCountrySelectChange}
                 >        
-                  <MenuItem value=""><em>Tots</em></MenuItem>
+                  <MenuItem value={"Tots"}><em>Tots</em></MenuItem>
                   <MenuItem value={"ES"}>Espanya</MenuItem>
                   <MenuItem value={"DE"}>Alemanya</MenuItem>
                   <MenuItem value={"UK"}>Regne Unit</MenuItem>
@@ -163,7 +172,31 @@ class NewsSearchAppBar extends Component {
                 </TextField>
               </form>
             </div>
+
             <div className={classes.search}>
+              <div className={classes.searchLabelDiv}>
+                <InputLabel className={classes.searchLabel}>Tag</InputLabel>
+              </div>
+              <div className={classes.searchIcon}>
+                <SearchIcon />
+              </div>
+              <Input
+                type="search"
+                value={this.props.searchTag}
+                onChange={this.handleSearchTagChange}
+                placeholder="Cerca…"
+                disableUnderline
+                classes={{
+                  root: classes.inputRoot,
+                  input: classes.inputInput,
+                }}
+              />
+            </div>
+
+            <div className={classes.search}>
+              <div className={classes.searchLabelDiv}>
+                <InputLabel className={classes.searchLabel}>Term</InputLabel>
+              </div>
               <div className={classes.searchIcon}>
                 <SearchIcon />
               </div>

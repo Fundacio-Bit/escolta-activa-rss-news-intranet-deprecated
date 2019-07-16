@@ -1,3 +1,4 @@
+/* eslint-disable no-prototype-builtins */
 import React, { Component } from 'react';
 import axios from 'axios';
 import PropTypes from 'prop-types';
@@ -90,15 +91,15 @@ class NewsTable extends Component {
 
   handleChangePage(event, page) {
     this.setState({ page });
-  };
+  }
 
   handleChangeFormField() {
     this.setState({ page: 0 });
-  };
+  }
 
   handleChangeRowsPerPage(event) {
     this.setState({ rowsPerPage: event.target.value });
-  };
+  }
   
   handleDeleteClick(id) {
     const retrievedNews = this.state.data;
@@ -160,19 +161,19 @@ class NewsTable extends Component {
       order,
       orderBy
     });
-  };
+  }
 
   filterByDate(pressNew) {
     if (pressNew.hasOwnProperty("published") && pressNew.published.includes(this.props.selectedDate)) {
       return true
     } else return false
-  };
+  }
 
   filterByCountry(pressNew) {
     if (pressNew.hasOwnProperty("source_id") && pressNew.source_id.includes(this.props.selectedCountry)) {
       return true
     } else return false
-  };
+  }
 
   filterByChecked(pressNew){   
     var value = 0;
@@ -188,11 +189,11 @@ class NewsTable extends Component {
 
   filterByTopic(pressNew) {
     if (
-      pressNew.hasOwnProperty("topics") && pressNew.topics.toLowerCase().split(",").includes(this.props.searchTerm.toLowerCase().slice(1, -1))){
+      pressNew.hasOwnProperty("topics") && pressNew.topics.toLowerCase().split(",").includes(this.props.searchTag.toLowerCase())){
         return true
       }
     else return false
-  };
+  }
 
 
   // TODO: add search in full text
@@ -202,7 +203,7 @@ class NewsTable extends Component {
       pressNew.hasOwnProperty("title") && pressNew.title.toLowerCase().indexOf(this.props.searchTerm.toLowerCase())!== -1
       ) {return true}
     else return false
-  };
+  }
 
 
   render () {
@@ -221,11 +222,14 @@ class NewsTable extends Component {
         filteredData = filteredData.filter(this.filterByChecked);
       }
       if (this.props.selectedCountry) {
-        filteredData = filteredData.filter(this.filterByCountry);
+        if (this.props.selectedCountry != 'Tots') {
+          filteredData = filteredData.filter(this.filterByCountry);
+        }
       } 
-      if (/\[*\]/.test(this.props.searchTerm)){
+      if (this.props.searchTag){
         filteredData = filteredData.filter(this.filterByTopic);
-      } else {
+      }
+      if (this.props.searchTerm){
         filteredData = filteredData.filter(this.filterBySearchTerm);
       }
 

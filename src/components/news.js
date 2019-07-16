@@ -23,8 +23,9 @@ class News extends Component {
     super(props);
     this.state = {
       selectedDate: '',
-      selectedCountry: '', 
+      selectedCountry: 'Tots', 
       isChecked: 0,
+      searchTag: '',
       searchTerm: '',
     };
     
@@ -35,27 +36,32 @@ class News extends Component {
     this.handleDate = this.handleDate.bind(this);
     this.handleRevisedSelectChange = this.handleRevisedSelectChange.bind(this);
     this.handleCountrySelectChange = this.handleCountrySelectChange.bind(this);
+    this.handleSearchTagChange = this.handleSearchTagChange.bind(this);
     this.handleSearchTermChange = this.handleSearchTermChange.bind(this);
   }
 
 
   handleDate(enteredDate) {
     this.setState({selectedDate: enteredDate});
-  };
+  }
 
 
   handleRevisedSelectChange(isChecked){
     this.setState({ isChecked: isChecked });
-  };
+  }
 
   handleCountrySelectChange(enteredCountry){
     this.newsTableElement.current.handleChangeFormField();
     this.setState({ selectedCountry: enteredCountry });
-  };
+  }
+
+  handleSearchTagChange(enteredSearchTag){
+    this.setState({ searchTag: enteredSearchTag });
+  }
 
   handleSearchTermChange(enteredSearchTerm){
     this.setState({ searchTerm: enteredSearchTerm });
-  };
+  }
  
 
   render () {
@@ -72,7 +78,9 @@ class News extends Component {
                   onRevisedSelectChange={this.handleRevisedSelectChange}
                   selectedCountry={this.state.selectedCountry}
                   onCountrySelectChange={this.handleCountrySelectChange}
+                  searchTag={this.state.searchTag}
                   searchTerm={this.state.searchTerm}
+                  onSearchTagChange={this.handleSearchTagChange}
                   onSearchTermChange={this.handleSearchTermChange}
                 />
                 <NewsTable 
@@ -80,6 +88,7 @@ class News extends Component {
                   selectedDate = {this.state.selectedDate}
                   selectedCountry = {this.state.selectedCountry}
                   isChecked={this.state.isChecked}
+                  searchTag = {this.state.searchTag}
                   searchTerm = {this.state.searchTerm}
                 />     
               </Paper>
