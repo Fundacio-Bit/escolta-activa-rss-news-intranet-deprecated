@@ -81,7 +81,7 @@ const styles = theme => ({
   textField: {
     marginLeft: theme.spacing.unit,
     marginRight: theme.spacing.unit,
-    width: 180,
+    width: 155,
   },
   form: {
     flexBasis: '60%',
