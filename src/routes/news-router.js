@@ -9,7 +9,7 @@ var db;
 router.use( bodyParser.json() )  // to support JSON-encoded bodies
 
 // Initialize connection once
-MongoClient.connect("mongodb://localhost:27017/", (err, client) =>
+MongoClient.connect("mongodb://localhost:27017/",  { useNewUrlParser: true }, (err, client) =>
 {
     if(err) throw err;
     db = client.db('rss_fbit_db');
