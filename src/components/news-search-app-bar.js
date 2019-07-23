@@ -3,105 +3,84 @@ import PropTypes from 'prop-types';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
-import Input from '@material-ui/core/Input';
-import { fade } from '@material-ui/core/styles/colorManipulator';
+import InputBase from '@material-ui/core/InputBase';
+import Paper from '@material-ui/core/Paper';
 import { withStyles } from '@material-ui/core/styles';
 import SearchIcon from '@material-ui/icons/Search';
+import IconButton from '@material-ui/core/IconButton';
 import TextField from '@material-ui/core/TextField';
 import MenuItem from '@material-ui/core/MenuItem';
-import InputLabel from '@material-ui/core/InputLabel';
 
 const styles = theme => ({
+  root: {
+    flexGrow: 1,
+  },
   title: {
     // flexGrow: 1,
     margin: theme.spacing.unit,
-    // flex: '0 0 auto',
     textAlign: 'left',
-    flexBasis: '20%'
+    flexBasis: '15%'
   },
-  // App search
-  root: {
-    width: '100%',
-  },
-  // grow: {
-  //   flexGrow: 1,
-  // },
-  search: {
-    position: 'relative',
-    borderRadius: theme.shape.borderRadius,
-    backgroundColor: fade(theme.palette.common.white, 0.15),
-    '&:hover': {
-      backgroundColor: fade(theme.palette.common.white, 0.25),
-    },
-    marginLeft: 0,
-    width: '100%',
-    [theme.breakpoints.up('sm')]: {
-      marginLeft: theme.spacing.unit,
-      width: 'auto',
-    },
-  },
-  searchIcon: {
-    width: theme.spacing.unit * 9,
-    height: '70%',
-    position: 'absolute',
-    pointerEvents: 'none',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  searchLabelDiv: {
-    marginLeft: '15px',
-    textAlign: 'left'
-  },
-  searchLabel: {
-    fontSize: 12,
-  },
-  inputRoot: {
-    color: 'inherit',
-    width: '100%',
-  },
-  inputInput: {
-    paddingRight: theme.spacing.unit,
-    paddingBottom: theme.spacing.unit,
-    paddingLeft: theme.spacing.unit * 10,
-    transition: theme.transitions.create('width'),
-    width: '100%',
-    [theme.breakpoints.up('sm')]: {
-      width: 120,
-      '&:focus': {
-        width: 200,
-      },
-    },
-  },
-  // Datepicker
+  // form
   container: {
     display: 'flex',
     flexWrap: 'wrap',
-  },
-  textField: {
-    marginLeft: theme.spacing.unit,
-    marginRight: theme.spacing.unit,
-    width: 155,
+    marginRight:0
   },
   form: {
-    flexBasis: '60%',
+    flexBasis: '85%',
   },
-  // End Datepipcker
+
+  textField: {
+    marginLeft: 20,
+    width: '15%',
+  },
+
+  selectMenu:{
+    color: 'red',
+  },
+  
+  search: {
+    marginLeft: 15,
+    display: 'flex',
+    alignItems: 'center',
+    width: "30%",
+    height: 50
+  },
+
+  select: {
+    width: '25%',
+  },
+
+  input: {
+    marginLeft: 8,
+    height: 50,
+    marginTop: 15
+  },
+
+  iconButton: {
+    padding: 10,
+  },
 });
 
 class NewsSearchAppBar extends Component {
   constructor(props) {
     super(props);
   
-    this.handleDate = this.handleDate.bind(this);
+    this.handleDateFrom = this.handleDateFrom.bind(this);
+    this.handleDateTo = this.handleDateTo.bind(this);
     this.handleRevisedSelectChange = this.handleRevisedSelectChange.bind(this);
     this.handleCountrySelectChange = this.handleCountrySelectChange.bind(this);
-    this.handleSearchTagChange = this.handleSearchTagChange.bind(this);
     this.handleSearchTermChange = this.handleSearchTermChange.bind(this);
+    this.handleSearchTypeChange = this.handleSearchTypeChange.bind(this);
   }
   
-  handleDate(event){
-    this.props.onSelectDate(event.target.value);
+  handleDateFrom(event){
+    this.props.onSelectDateFrom(event.target.value);
+  }
+
+  handleDateTo(event){
+    this.props.onSelectDateTo(event.target.value);
   }
 
   handleRevisedSelectChange(event){
@@ -112,14 +91,14 @@ class NewsSearchAppBar extends Component {
     this.props.onCountrySelectChange(event.target.value);
   }
 
-  handleSearchTagChange(event){
-    this.props.onSearchTagChange(event.target.value);  
-  }
-
   handleSearchTermChange(event){
     this.props.onSearchTermChange(event.target.value);  
   }
   
+  handleSearchTypeChange(event){
+    this.props.onSearchTypeChange(event.target.value);  
+  }
+
   render() {
     const { classes } = this.props;
     return (
@@ -131,19 +110,29 @@ class NewsSearchAppBar extends Component {
                 Noticias
               </Typography>
             </div>
-
             <div className={classes.form}>
               <form className={classes.container} noValidate>
                 <TextField
-                  id="date"
-                  label="Publicat"
+                  id="dateFrom"
+                  label="Des de"
                   type="date"
-                  value={this.props.selectedDate}
+                  value={this.props.selectedDateFrom}
                   className={classes.textField}
                   InputLabelProps={{
                     shrink: true,
                   }}
-                  onChange={this.handleDate}
+                  onChange={this.handleDateFrom}
+                />
+                <TextField
+                  id="dateTo"
+                  label="Fins a"
+                  type="date"
+                  value={this.props.selectedDateTo}
+                  className={classes.textField}
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                  onChange={this.handleDateTo}
                 />
                 <TextField
                   select
@@ -170,47 +159,34 @@ class NewsSearchAppBar extends Component {
                   <MenuItem value={"FR"}>França</MenuItem>
                   <MenuItem value={"IT"}>Itàlia</MenuItem>
                 </TextField>
+                <Paper className={classes.search} elevation={1}>
+                  <TextField
+                    select
+                    className={classes.select}
+                    value={this.props.searchType}
+                    onChange={this.handleSearchTypeChange}
+                    variant="filled"
+                    InputProps={{
+                      disableUnderline: true,
+                    }}
+                    InputLabelProps={{
+                      margin: "dense"
+                    }}
+                  >        
+                    <MenuItem value={0}>Text</MenuItem>
+                    <MenuItem value={1}>Tag</MenuItem>
+                  </TextField>
+                  <InputBase
+                    value={this.props.searchTerm}
+                    onChange={this.handleSearchTermChange}
+                    placeholder="Cerca…"
+                    className={classes.input}
+                  />
+                  <IconButton className={classes.iconButton} aria-label="Search">
+                    <SearchIcon />
+                  </IconButton>
+                </Paper>
               </form>
-            </div>
-
-            <div className={classes.search}>
-              <div className={classes.searchLabelDiv}>
-                <InputLabel className={classes.searchLabel}>Tag</InputLabel>
-              </div>
-              <div className={classes.searchIcon}>
-                <SearchIcon />
-              </div>
-              <Input
-                type="search"
-                value={this.props.searchTag}
-                onChange={this.handleSearchTagChange}
-                placeholder="Cerca…"
-                disableUnderline
-                classes={{
-                  root: classes.inputRoot,
-                  input: classes.inputInput,
-                }}
-              />
-            </div>
-
-            <div className={classes.search}>
-              <div className={classes.searchLabelDiv}>
-                <InputLabel className={classes.searchLabel}>Term</InputLabel>
-              </div>
-              <div className={classes.searchIcon}>
-                <SearchIcon />
-              </div>
-              <Input
-                type="search"
-                value={this.props.searchTerm}
-                onChange={this.handleSearchTermChange}
-                placeholder="Cerca…"
-                disableUnderline
-                classes={{
-                  root: classes.inputRoot,
-                  input: classes.inputInput,
-                }}
-              />
             </div>
           </Toolbar>
         </AppBar>

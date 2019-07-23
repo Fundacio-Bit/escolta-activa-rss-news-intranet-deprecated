@@ -20,12 +20,26 @@ const styles = theme => ({
 
 class News extends Component {
   constructor(props) {
+    var date = new Date();
+    var dd = String(date.getDate()).padStart(2, '0');
+    var mm = String(date.getMonth() + 1).padStart(2, '0'); //January is 0!
+    var yyyy = date.getFullYear();
+    var today = yyyy + '-' + mm + '-' + dd;
+  
+    var yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+    dd = String(yesterday.getDate()).padStart(2, '0');
+    mm = String(yesterday.getMonth() + 1).padStart(2, '0'); //January is 0!
+    yyyy = yesterday.getFullYear();
+    yesterday = yyyy + '-' + mm + '-' + dd;
+
     super(props);
     this.state = {
-      selectedDate: '',
+      selectedDateFrom: yesterday,
+      selectedDateTo: today,
       selectedCountry: 'Tots', 
       isChecked: 0,
-      searchTag: '',
+      searchType: '0',
       searchTerm: '',
     };
     
@@ -33,18 +47,22 @@ class News extends Component {
     this.newsTableElement = React.createRef();
 
     // This binding is necessary to make `this` work in the callback
-    this.handleDate = this.handleDate.bind(this);
+    this.handleDateFrom = this.handleDateFrom.bind(this);
+    this.handleDateTo = this.handleDateTo.bind(this);
     this.handleRevisedSelectChange = this.handleRevisedSelectChange.bind(this);
     this.handleCountrySelectChange = this.handleCountrySelectChange.bind(this);
-    this.handleSearchTagChange = this.handleSearchTagChange.bind(this);
     this.handleSearchTermChange = this.handleSearchTermChange.bind(this);
+    this.handleSearchTypeChange = this.handleSearchTypeChange.bind(this);
   }
 
 
-  handleDate(enteredDate) {
-    this.setState({selectedDate: enteredDate});
+  handleDateFrom(enteredDate) {
+    this.setState({selectedDateFrom: enteredDate});
   }
 
+  handleDateTo(enteredDate) {
+    this.setState({selectedDateTo: enteredDate});
+  }
 
   handleRevisedSelectChange(isChecked){
     this.setState({ isChecked: isChecked });
@@ -55,14 +73,13 @@ class News extends Component {
     this.setState({ selectedCountry: enteredCountry });
   }
 
-  handleSearchTagChange(enteredSearchTag){
-    this.setState({ searchTag: enteredSearchTag });
-  }
-
   handleSearchTermChange(enteredSearchTerm){
     this.setState({ searchTerm: enteredSearchTerm });
   }
  
+  handleSearchTypeChange(enteredSearchType){
+    this.setState({ searchType: enteredSearchType });
+  }
 
   render () {
     const { classes } = this.props;
@@ -72,23 +89,26 @@ class News extends Component {
             <Grid item xs={12}>
               <Paper className={classes.paper}>
                 <NewsSearchAppBar
-                  selectedDate = {this.state.selectedDate}
-                  onSelectDate={this.handleDate}
+                  selectedDateFrom = {this.state.selectedDateFrom}
+                  selectedDateTo = {this.state.selectedDateTo}
+                  onSelectDateFrom={this.handleDateFrom}
+                  onSelectDateTo={this.handleDateTo}
                   isChecked={this.state.isChecked}
                   onRevisedSelectChange={this.handleRevisedSelectChange}
                   selectedCountry={this.state.selectedCountry}
                   onCountrySelectChange={this.handleCountrySelectChange}
-                  searchTag={this.state.searchTag}
                   searchTerm={this.state.searchTerm}
-                  onSearchTagChange={this.handleSearchTagChange}
+                  searchType={this.state.searchType}
                   onSearchTermChange={this.handleSearchTermChange}
+                  onSearchTypeChange={this.handleSearchTypeChange}
                 />
                 <NewsTable 
                   innerRef={this.newsTableElement}
-                  selectedDate = {this.state.selectedDate}
+                  selectedDateFrom = {this.state.selectedDateFrom}
+                  selectedDateTo = {this.state.selectedDateTo}
                   selectedCountry = {this.state.selectedCountry}
                   isChecked={this.state.isChecked}
-                  searchTag = {this.state.searchTag}
+                  searchType = {this.state.searchType}
                   searchTerm = {this.state.searchTerm}
                 />     
               </Paper>

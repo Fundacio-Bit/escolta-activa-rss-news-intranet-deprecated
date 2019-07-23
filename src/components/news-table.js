@@ -151,7 +151,7 @@ class NewsTable extends Component {
 
   handleRequestSort (orderBy, order, event) {
     // const orderBy = property;
-    var order = 'desc';
+    order = 'desc';
 
     if (this.state.orderBy === orderBy && this.state.order === 'desc') {
       order = 'asc';
@@ -164,9 +164,20 @@ class NewsTable extends Component {
   }
 
   filterByDate(pressNew) {
-    if (pressNew.hasOwnProperty("published") && pressNew.published.includes(this.props.selectedDate)) {
-      return true
-    } else return false
+    var dateFrom = this.props.selectedDateFrom.split("-");
+    var dateTo = this.props.selectedDateTo.split("-");
+
+    var from = new Date(dateFrom[0], parseInt(dateFrom[1])-1, dateFrom[2]);  // -1 because months are from 0 to 11
+    var to   = new Date(dateTo[0], parseInt(dateTo[1])-1, dateTo[2]);
+
+    if (pressNew.hasOwnProperty("published"))
+    {
+      var datePublished = pressNew.published.split("-")
+      var published = new Date(datePublished[0], parseInt(datePublished[1])-1, datePublished[2].split(' ')[0]);
+      if (published > from && published < to){
+        return true
+      } else return false
+    }
   }
 
   filterByCountry(pressNew) {
@@ -189,17 +200,15 @@ class NewsTable extends Component {
 
   filterByTopic(pressNew) {
     if (
-      pressNew.hasOwnProperty("topics") && pressNew.topics.toLowerCase().split(",").includes(this.props.searchTag.toLowerCase())){
+      pressNew.hasOwnProperty("topics") && pressNew.topics.toLowerCase().split(",").includes(this.props.searchTerm.toLowerCase())){
         return true
       }
     else return false
   }
 
-
   // TODO: add search in full text
   filterBySearchTerm(pressNew) {
     if (
-      this.props.searchTerm === "" ||
       pressNew.hasOwnProperty("title") && pressNew.title.toLowerCase().indexOf(this.props.searchTerm.toLowerCase())!== -1
       ) {return true}
     else return false
@@ -215,7 +224,10 @@ class NewsTable extends Component {
       // Filtering data
       var filteredData = data
  
-      if (this.props.selectedDate) {
+      if (this.props.selectedDateFrom) {
+        filteredData = data.filter(this.filterByDate);
+      } 
+      if (this.props.selectedDateTo) {
         filteredData = data.filter(this.filterByDate);
       } 
       if (this.props.isChecked) {
@@ -226,11 +238,10 @@ class NewsTable extends Component {
           filteredData = filteredData.filter(this.filterByCountry);
         }
       } 
-      if (this.props.searchTag){
-        filteredData = filteredData.filter(this.filterByTopic);
-      }
-      if (this.props.searchTerm){
+      if (this.props.searchType === 0){
         filteredData = filteredData.filter(this.filterBySearchTerm);
+      } else if (this.props.searchType === 1){
+        filteredData = filteredData.filter(this.filterByTopic);
       }
 
       // Sorting data
