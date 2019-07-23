@@ -49,7 +49,7 @@ const styles = theme => ({
   },
 
   select: {
-    width: '25%',
+    width: '30%',
   },
 
   input: {
@@ -174,7 +174,7 @@ class NewsSearchAppBar extends Component {
                     }}
                   >        
                     <MenuItem value={0}>Text</MenuItem>
-                    <MenuItem value={1}>Tag</MenuItem>
+                    <MenuItem value={1}>Tema</MenuItem>
                   </TextField>
                   <InputBase
                     value={this.props.searchTerm}

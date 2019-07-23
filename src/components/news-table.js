@@ -240,7 +240,7 @@ class NewsTable extends Component {
       } 
       if (this.props.searchType === 0){
         filteredData = filteredData.filter(this.filterBySearchTerm);
-      } else if (this.props.searchType === 1){
+      } else if (this.props.searchType === 1 && this.props.searchTerm !== ""){
         filteredData = filteredData.filter(this.filterByTopic);
       }
 

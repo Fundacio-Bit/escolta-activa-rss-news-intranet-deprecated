@@ -217,7 +217,7 @@ const styles = theme => ({
       this.setState({ 
         textFieldValue: "",
         open: false });
-    };
+    }
 
     handleUpdateByDeleting(deletedTopic) {
       let updatedTopicsArray = this.state.assignedTopics;
@@ -225,22 +225,24 @@ const styles = theme => ({
       if (index !== -1){updatedTopicsArray.splice(index, 1)};      
       this.props.handleUpdateTopics(this.props.docId, updatedTopicsArray.join(","))
       this.setState({ assignedTopics: updatedTopicsArray});
-    };
+    }
 
     handleTextFieldValueChange(event){this.setState({ textFieldValue: event.target.value})}
 
     handleChange(event)
       {
-        let updatedTopicsArray = this.state.assignedTopics;
-        updatedTopicsArray.push(event.value);
-        updatedTopicsArray = [...new Set(updatedTopicsArray)]
-        this.props.handleUpdateTopics(this.props.docId, updatedTopicsArray.join(","))
-        this.setState(
-          {
-            assignedTopics: updatedTopicsArray,
-            open: false
-          });
-      };
+        if (event.value != "") {
+          let updatedTopicsArray = this.state.assignedTopics;
+          updatedTopicsArray.push(event.value);
+          updatedTopicsArray = [...new Set(updatedTopicsArray)]
+          this.props.handleUpdateTopics(this.props.docId, updatedTopicsArray.join(","))
+          this.setState(
+            {
+              assignedTopics: updatedTopicsArray,
+              open: false
+            });
+          }
+      }
  
 
     render () {
