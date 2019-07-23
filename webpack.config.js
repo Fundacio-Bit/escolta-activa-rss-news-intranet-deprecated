@@ -3,7 +3,7 @@ var HtmlWebpackPlugin = require('html-webpack-plugin');
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
 
 module.exports = {
-  devtool: 'eval-source-map',
+  devtool: 'source-map',
   entry: __dirname + "/src/index.js",
   output: {
     path: __dirname + "/build",
@@ -31,6 +31,7 @@ module.exports = {
       template: __dirname + "/src/index.html"
     }),
     new ExtractTextPlugin("bundle.css"),
-    new webpack.optimize.UglifyJsPlugin()
+    // Descomentar para pasar a produccion
+    // new webpack.optimize.UglifyJsPlugin()
   ]
 }

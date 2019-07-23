@@ -16,6 +16,7 @@ To create an intranet for RSS managements, based on Node (server with REST API) 
 
 ### Usage
 **Clone this repository**
+```
 git clone https://eaguado_fbit@bitbucket.org/eaguado_fbit/rss_intranet.git
 ```
 
@@ -50,3 +51,12 @@ Detailed docuemntation to understand this project template can be found at:
 https://docs.google.com/document/d/11Bb2A3G1uX2eX--Kt4e_zgW8VwoMV4mq2jJ1kSJHdec/edit?usp=sharing
 
 
+**DEBUG**
+ 
+The following line in "webpack.config.js" should be uncommented to generate the bundle.js file for production:
+
+```
+new webpack.optimize.UglifyJsPlugin()
+```
+
+ 
