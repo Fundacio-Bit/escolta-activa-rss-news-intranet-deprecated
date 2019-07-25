@@ -174,7 +174,7 @@ class NewsTable extends Component {
     {
       var datePublished = pressNew.published.split("-")
       var published = new Date(datePublished[0], parseInt(datePublished[1])-1, datePublished[2].split(' ')[0]);
-      if (published > from && published < to){
+      if (published >= from && published <= to){
         return true
       } else return false
     }
