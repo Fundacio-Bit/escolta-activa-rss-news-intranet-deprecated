@@ -5,7 +5,7 @@ var MongoClient = require('mongodb').MongoClient;
 var db;
 
 // Initialize connection once
-MongoClient.connect("mongodb://localhost:27017/",  { useNewUrlParser: true }, (err, client) =>
+MongoClient.connect("mongodb://localhost:27017/",  { useNewUrlParser: true, useUnifiedTopology: true }, (err, client) =>
 {
     if(err) throw err;
     db = client.db('rss_fbit_db');
