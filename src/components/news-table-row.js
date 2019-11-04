@@ -20,7 +20,7 @@ import Typography from '@material-ui/core/Typography';
 import NoSsr from '@material-ui/core/NoSsr';
 import Paper from '@material-ui/core/Paper';
 import MenuItem from '@material-ui/core/MenuItem';
-import { emphasize } from '@material-ui/core/styles/colorManipulator';
+// import { emphasize } from '@material-ui/core/styles/colorManipulator';
 
 // Integrating the autocomplete code from material ui requires to use ES7,
 // adding a preset to the babel loader and installing the necessary package it can be transpiled
@@ -281,7 +281,15 @@ const styles = theme => ({
           <TableCell><div><h3>{this.props.published}</h3></div></TableCell>
           <TableCell>
             <div>
-              <Tooltip classes={{ tooltip: classes.customizedTooltip }} title={this.props.summary} enterDelay={500} leaveDelay={200}>
+              <Tooltip
+                classes={{ tooltip: classes.customizedTooltip }}
+                title={
+                  <React.Fragment>
+                    <strong>{this.props.source_name}</strong>
+                    <p>{this.props.summary}</p>
+                  </React.Fragment>}
+                enterDelay={500}
+                leaveDelay={200}>
                 <a href={this.props.link}  style={{ textDecoration: 'none' }} target="_blank"><h3>{this.props.title}</h3></a>
               </Tooltip>
             </div>

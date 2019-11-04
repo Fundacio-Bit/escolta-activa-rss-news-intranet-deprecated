@@ -223,7 +223,7 @@ class NewsTable extends Component {
       
       // Filtering data
       var filteredData = data
- 
+
       if (this.props.selectedDateFrom) {
         filteredData = data.filter(this.filterByDate);
       } 
@@ -277,6 +277,7 @@ class NewsTable extends Component {
                     topics={u.hasOwnProperty("topics") && u.topics != ""? u.topics.split(",") : []}
                     allPossibleTopics= {this.state.allTopics}
                     source_id={u.source_id}
+                    source_name={u.source_name}
                     link={u.link}
                     summary={u.summary}
                     handleRevisedSelectedChange = {handleRevisedSelectedChange.bind(this)}

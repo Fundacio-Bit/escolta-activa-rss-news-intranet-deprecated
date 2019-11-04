@@ -21,7 +21,6 @@ router.get("/entries", (req, res) =>
 {
     var collection = db.collection("news");
     collection.find({}, {
-            fields: {
                 "_id": 1,
                 "published": 1,
                 "extraction_date": 1,
@@ -32,8 +31,8 @@ router.get("/entries", (req, res) =>
                 "summary": 1,
                 "description": 1,
                 "selected": 1,
-                "source_id": 1
-            }
+                "source_id": 1,
+                "source_name": 1
         }).sort( { 'published': -1 } ).toArray((err, docs) =>
     {
         if(err) {
@@ -44,7 +43,7 @@ router.get("/entries", (req, res) =>
         }
     });
 });
-  
+
 // Add route without parameters
 router.route('/news')
     .post((req, res) =>
@@ -57,7 +56,6 @@ router.route('/news')
             res.status(500).send(err)
             }
     });
-  
     res.json({ success: req.body._id })
 
 });
@@ -90,7 +88,6 @@ router.route('/identifier/:documentId')
                 res.status(500).send(err)
                 }
         });
-      
         res.json({ success: req.params.documentId })
     })
 
