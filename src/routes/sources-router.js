@@ -16,14 +16,14 @@ MongoClient.connect("mongodb://localhost:27017/",  { useNewUrlParser: true, useU
 router.get("/sources", (req, res) =>
 {
     var collection = db.collection("rss_feeds");
-    collection.find({},{fields:{"_id":1,
+    collection.find({},{"_id":1,
                                 "source_name":1,
                                 "source_id":1,
                                 "is_active":1,
                                 "section":1,
                                 "is_operative":1,
                                 "feed_url":1,
-                                "average_mins_between_news":1}}).toArray((err, docs) =>
+                                "average_mins_between_news":1}).toArray((err, docs) =>
     {
         if(err) {
             console.log(err)
@@ -105,7 +105,7 @@ router.route('/country/:countryISOCode')
     {     
         
         var collection = db.collection("rss_feeds");
-        collection.find({"source_id": {$regex: 'RSS_'+ req.params.countryISOCode}},{fields:{"_id":0, "name":1, "source_id":1}}).toArray((err, docs) =>
+        collection.find({"source_id": {$regex: 'RSS_'+ req.params.countryISOCode}},{"_id":0, "name":1, "source_id":1}).toArray((err, docs) =>
             {
                 if(err) {
                     console.log("error: " + err)
