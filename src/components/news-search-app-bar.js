@@ -106,7 +106,7 @@ class NewsSearchAppBar extends Component {
         <AppBar position="static" color="inherit">
           <Toolbar>
             <div className={classes.title}>
-              <Typography variant="title" id="tableTitle">
+              <Typography variant="h6" id="tableTitle">
                 Noticias
               </Typography>
             </div>
