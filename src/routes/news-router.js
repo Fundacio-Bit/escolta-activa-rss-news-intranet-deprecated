@@ -5,8 +5,7 @@ var MongoClient = require('mongodb').MongoClient;
 var bodyParser = require ('body-parser')
 var db;
 
-
-router.use( bodyParser.json() )  // to support JSON-encoded bodies
+router.use( bodyParser.json({limit: '50mb', extended: true}) )  // to support JSON-encoded bodies
 
 // Initialize connection once
 MongoClient.connect("mongodb://localhost:27017/",  { useNewUrlParser: true, useUnifiedTopology: true }, (err, client) =>
