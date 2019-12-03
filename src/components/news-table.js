@@ -137,18 +137,6 @@ class NewsTable extends Component {
     })
   }
 
-  handleRevisedSelectedChange(event, id) {
-    const value = event.target.checked;
-    const retrievedNews = this.state.data;
-    const index = retrievedNews.findIndex(x => x._id == id);
-    axios.put('/rss-news/identifier/'+ id +'/selected/' + value )
-    .then((res) => {
-        retrievedNews[index].selected = value;
-        // we can update the state after response...
-        this.setState({data:retrievedNews});
-    })
-  }
-
   handleRequestSort (orderBy, order, event) {
     // const orderBy = property;
     order = 'desc';
@@ -187,15 +175,11 @@ class NewsTable extends Component {
   }
 
   filterByChecked(pressNew){   
-    var value = 0;
-    if (this.props.isChecked === 1){
-      value = true
-    } else if (this.props.isChecked === -1) {
-      value = false
-    }
-    if (value === 0 || pressNew.selected === value) {
-      return true
-    } else return false
+
+    if (this.props.isChecked === 1 && pressNew.hasOwnProperty("topics")) return true
+    else if (this.props.isChecked === -1 && !pressNew.hasOwnProperty("topics")) return true
+    else if (this.props.isChecked === 0) return true
+    else return false
   }
 
   filterByTopic(pressNew) {
@@ -247,7 +231,6 @@ class NewsTable extends Component {
       // Sorting data
       filteredData.sort(getSorting(orderBy, order));
 
-      var handleRevisedSelectedChange = this.handleRevisedSelectedChange;
       var handleDeleteClick = this.handleDeleteClick;
       var handleRequestSort = this.handleRequestSort;
       var handleUpdateTopics = this.handleUpdateTopics;
@@ -271,7 +254,6 @@ class NewsTable extends Component {
                   // using prop.key
                     key={u._id}
                     published={u.published}
-                    selected={u.selected}
                     docId={u._id}
                     title={u.title}
                     topics={u.hasOwnProperty("topics") && u.topics != ""? u.topics.split(",") : []}
@@ -280,7 +262,6 @@ class NewsTable extends Component {
                     source_name={u.source_name}
                     link={u.link}
                     summary={u.summary}
-                    handleRevisedSelectedChange = {handleRevisedSelectedChange.bind(this)}
                     handleDeleteClick = {handleDeleteClick.bind(this)}
                     handleUpdateTopics = {handleUpdateTopics.bind(this)}
                   />

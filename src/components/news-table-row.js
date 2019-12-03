@@ -258,7 +258,6 @@ const styles = theme => ({
         }),
       };
 
-      var handleRevisedSelectedChange  =   this.props.handleRevisedSelectedChange;
       var handleDeleteClick  =   this.props.handleDeleteClick;
       var possibleTopics = this.props.allPossibleTopics ? this.props.allPossibleTopics: [];
 
@@ -270,14 +269,6 @@ const styles = theme => ({
           <TableRow 
           role="checkbox"
         >
-          <TableCell className = {classes.dateTableCell} padding="checkbox">
-            <Checkbox
-              checked={this.props.selected}
-              value={String(this.props.selected)}
-              color="primary"
-              onClick={event => handleRevisedSelectedChange(event, this.props.docId)}
-              />
-          </TableCell>
           <TableCell><div><h3>{this.props.published}</h3></div></TableCell>
           <TableCell>
             <div>

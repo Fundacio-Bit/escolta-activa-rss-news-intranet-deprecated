@@ -27,7 +27,6 @@ class NewsTableHead extends React.Component {
     return (
       <TableHead>
         < TableRow >
-          <TableCell><h2>Revisat</h2></TableCell>
           <TableCell 
             className = {classes.dateTableCell}
             key = "published"

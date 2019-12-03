@@ -29,7 +29,7 @@ router.get("/entries", (req, res) =>
                 "link": 1,
                 "summary": 1,
                 "description": 1,
-                "selected": 1,
+                // "selected": 1,
                 "source_id": 1,
                 "source_name": 1
         }).sort( { 'published': -1 } ).toArray((err, docs) =>
@@ -89,25 +89,6 @@ router.route('/identifier/:documentId')
         });
         res.json({ success: req.params.documentId })
     })
-
-// ######## UPDATE SELECTED ##############    
-router.route('/identifier/:documentId/selected/:selected')
-    .put((req, res)=>{
-        var collection = db.collection("news");
-        var query = {'_id': new mongo.ObjectID(req.params.documentId)};
-        var newvalues = { $set: {selected: (req.params.selected === 'true') } };
-        collection.updateOne(query, newvalues, function (err, results) {
-            if (err)
-                {
-                console.log(err)
-                res.status(500).send(err)
-                }
-            else {
-                res.json({ success: req.params.documentId })
-            }
-        })
-    })
-
 
 // ######## UPDATE TOPICS ##############    
 // Add route with parameters and different CRUD operations (GET, DELETE and PUT) 
