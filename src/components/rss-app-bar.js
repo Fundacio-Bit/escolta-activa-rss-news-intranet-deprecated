@@ -52,6 +52,7 @@ class RSSAppBar extends Component {
         >
           <Tabs className={classes.tabs} value={value} onChange={this.handleChange}>
             <Tab label="NOTICIAS" />
+            <Tab label="DESCARTES" />
             <Tab label="FUENTES" />
             <Tab label="GRAPHS" />
           </Tabs>
