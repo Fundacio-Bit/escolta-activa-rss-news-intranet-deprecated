@@ -57,6 +57,7 @@ class RSSAppBar extends Component {
           </Tabs>
         </AppBar>
         {value === 0 && <News/>}
+        {value === 3 && <DiscardedNews/>}
         {value === 1 && <FilterableSourcesTable/>}
         {value === 2 && <Graphs/>}
        </div>
