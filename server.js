@@ -35,6 +35,10 @@ var topicsRouter = require('./src/routes/topics-router')
 
 app.use('/rss-topics', topicsRouter)
 
+var discardedNewsRouter = require('./src/routes/discarded-news-router')
+
+app.use('/rss-discarded-news', discardedNewsRouter)
+
 // *************************************************
 // *************** TEMPLATE ENGINE *****************
 // *************************************************
