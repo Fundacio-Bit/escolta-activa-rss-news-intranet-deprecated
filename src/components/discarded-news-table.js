@@ -102,14 +102,16 @@ class DiscardedNewsTable extends Component {
   handleRestoreClick(id) {
     const retrievedNews = this.state.data;
     const index = retrievedNews.findIndex(x => x._id == id);
-    const removed_new = retrievedNews[index]
-    axios.post('/rss-news/news/', 
-                removed_new, 
+    const discarded_new = retrievedNews[index]
+    axios.post('/rss-discarded-news/news/', 
+                discarded_new, 
                 {headers: {'Content-Type': 'application/json' }}
     ).then((res) => {
-        // axios.delete('/rss-news/identifier/', {params: {'documentId': id}})
-        axios.delete('/rss-news/identifier/'+ id)
-        .then((res) => {
+        console.log("Restore new " + res.status)
+        axios.delete('/rss-discarded-news/identifier/'+ id, 
+                    {headers: {'Content-Type': 'application/json' }}
+        ).then((res) => {
+            console.log("Removed discarded new " + res.status)
             // we update the state after response...
             retrievedNews.splice(index, 1);
             this.setState({data:retrievedNews});
@@ -120,7 +122,6 @@ class DiscardedNewsTable extends Component {
 
   // TODO: handle the addition of topics with special chars or commas. Also avoid duplicates.
   handleUpdateTopics(id, topicsString) {
-    console.log(topicsString.toString().toLowerCase())
     let retrievedNews = this.state.data;
     const index = retrievedNews.findIndex(x => x._id == id);
     var processedTopicsString = topicsString == "" ? "%20" : topicsString.toString().toLowerCase();

@@ -79,15 +79,18 @@ router.route('/identifier/:documentId')
     .delete((req, res)=>
     {
         var collection = db.collection("news");
-        var query = { _id: new mongo.ObjectId(req.params.documentId) };
+        var query = { _id: req.params.documentId };
         collection.deleteOne(query, function (err, results) {
             if (err)
                 {
                 console.log(err)
                 res.status(500).send(err)
                 }
+            else { 
+                console.log("Deleting " + req.params.documentId + ' ' + results)
+                res.json({ success: req.params.documentId })
+            }
         });
-        res.json({ success: req.params.documentId })
     })
 
 // ######## UPDATE TOPICS ##############    

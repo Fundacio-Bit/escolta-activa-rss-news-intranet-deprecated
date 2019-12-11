@@ -18,7 +18,7 @@ MongoClient.connect("mongodb://localhost:27017/",  { useNewUrlParser: true, useU
 // get all entries from discarded news
 router.get("/entries", (req, res) =>
 {
-    var collection = db.collection("news-discarded");
+    var collection = db.collection("news_discarded");
     collection.find({}, {
                 "_id": 1,
                 "published": 1,
@@ -37,58 +37,60 @@ router.get("/entries", (req, res) =>
             console.log(err)
             res.status(500).send(err)
         } else {
-            console.log("docs: " + docs)
             res.json({"results": docs});
         }
     });
 });
 
-// // Add route without parameters
-// router.route('/news')
-//     .post((req, res) =>
-// {
-//     var collection = db.collection("news_discarded");
-//     collection.insertOne(req.body, function (err, results) {
-//         if (err)
-//             {
-//             console.log(err)
-//             res.status(500).send(err)
-//             }
-//     });
-//     res.json({ success: req.body._id })
+// Add route without parameters
+router.route('/news')
+    .post((req, res) =>
+{
+    var collection = db.collection("news");
+    collection.insertOne(req.body, function (err, results) {
+        if (err)
+            {
+            console.log(err)
+            res.status(500).send(err)
+            }
+    });
+    res.json({ success: req.body._id })
 
-// });
+});
 
-// // Add route with parameters and different CRUD operations (GET, DELETE and PUT) 
-// router.route('/identifier/:documentId')
-//     .get((req, res) =>
-//     {
-//         var o_id = new mongo.ObjectID(req.params.documentId);
+// Add route with parameters and different CRUD operations (GET, DELETE and PUT) 
+router.route('/identifier/:documentId')
+    .get((req, res) =>
+    {
+        var o_id = new mongo.ObjectID(req.params.documentId);
         
-//         var collection = db.collection("news");
-//         collection.find({"_id": o_id}).toArray((err, docs) =>
-//             {
-//                 if(err) {
-//                     console.log("error: " + err)
-//                     res.status(500).send(err)
-//                 } else {
-//                     res.json({"results": docs});
-//                 }
-//             });
-//     })
-//     .delete((req, res)=>
-//     {
-//         var collection = db.collection("news");
-//         var query = { _id: new mongo.ObjectId(req.params.documentId) };
-//         collection.deleteOne(query, function (err, results) {
-//             if (err)
-//                 {
-//                 console.log(err)
-//                 res.status(500).send(err)
-//                 }
-//         });
-//         res.json({ success: req.params.documentId })
-//     })
+        var collection = db.collection("news_discarded");
+        collection.find({"_id": o_id}).toArray((err, docs) =>
+            {
+                if(err) {
+                    console.log("error: " + err)
+                    res.status(500).send(err)
+                } else {
+                    res.json({"results": docs});
+                }
+            });
+    })
+    .delete((req, res)=>
+    {
+        console.log("Recovered new id " + req.params.documentId)
+        var collection = db.collection("news_discarded");
+        var query = { _id: req.params.documentId};
+        collection.deleteOne(query, function (err, results) {
+            if (err)
+            {
+                console.log(err)
+                res.status(500).send(err)
+            } else {
+                console.log("Deleting " + req.params.documentId + ' ' + results)
+                res.json({ success: req.params.documentId })
+            }
+        });
+    })
 
 // // ######## UPDATE TOPICS ##############    
 // // Add route with parameters and different CRUD operations (GET, DELETE and PUT) 

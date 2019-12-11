@@ -35,6 +35,7 @@ class RSSAppBar extends Component {
     super(props);
     this.state = {
       value: 0,
+      content: <News/>,
       anchorEl: null
     };
     // This binding is necessary to make `this` work in the callback
@@ -46,7 +47,7 @@ class RSSAppBar extends Component {
   
   handleChange(event, value) {
     this.setState({ value });
-  };
+  }
 
   handleClick(event) {
     event.stopPropagation();
@@ -62,11 +63,18 @@ class RSSAppBar extends Component {
   }
 
   handleMenuItemClick(menuItem) {
-    this.handleClose();
+    this.handleClose()
+    var content = null
+    if (menuItem === 0) {
+      content = <News/>
+    }
+    else if (menuItem === 3) {
+      content = <DiscardedNews/>
+    }
     this.setState({
       // label: menuItem,
-      // content: menuItem,
-      value: menuItem
+      content: content,
+      value: 0
     });
   }
 
@@ -87,17 +95,20 @@ class RSSAppBar extends Component {
                   classes = {{wrapper: classes.Tab}}
                   value = {0}
                   icon = {< ArrowDropDownIcon onClick = {this.handleClick}/>}
-                  onClick = {() => this.setState({content: "NOTICIAS"})
+                  onClick = {() => this.setState({content: <News/>})
                 }
             />
-            <Tab label="FUENTES" />
-            <Tab label="GRAPHS" />
+            <Tab label="FUENTES" value="1"  
+              onClick={() => this.setState({ content: <FilterableSourcesTable/> })}/>
+            <Tab label="GRAPHS" value="2"
+              onClick={() => this.setState({ content: <Graphs/> })}/>
           </Tabs>
         </AppBar>
-        {value === 0 && <News/>}
+        {/* {value === 0 && <News/>}
         {value === 1 && <FilterableSourcesTable/>}
         {value === 2 && <Graphs/>}
-        {value === 3 && <DiscardedNews/>}
+        {value === 3 && <DiscardedNews/>} */}
+        {this.state.content}
         <Popover
           open = {open}
           anchorEl = {this.state.anchorEl}
@@ -119,7 +130,7 @@ class RSSAppBar extends Component {
             Noticias
           </MenuItem>
           <MenuItem onClick = {() => this.handleMenuItemClick(3)}>
-            Noticias descartadas
+            Descartadas
           </MenuItem>
         </Popover>
       </div>
