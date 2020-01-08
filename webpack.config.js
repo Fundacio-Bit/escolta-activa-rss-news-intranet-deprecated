@@ -1,6 +1,7 @@
 const webpack = require('webpack');
 var HtmlWebpackPlugin = require('html-webpack-plugin');
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
+// const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 module.exports = {
   devtool: 'source-map',
@@ -32,6 +33,7 @@ module.exports = {
     }),
     new ExtractTextPlugin("bundle.css"),
     // Descomentar para pasar a produccion
-    // new webpack.optimize.UglifyJsPlugin()
+    new webpack.optimize.UglifyJsPlugin(),
+    // new BundleAnalyzerPlugin(),
   ]
 }

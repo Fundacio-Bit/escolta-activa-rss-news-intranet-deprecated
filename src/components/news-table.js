@@ -159,8 +159,9 @@ class NewsTable extends Component {
 
     if (pressNew.hasOwnProperty("published"))
     {
-      var datePublished = pressNew.published.split("-")
-      var published = new Date(datePublished[0], parseInt(datePublished[1])-1, datePublished[2].split(' ')[0]);
+      // var datePublished = pressNew.published.split("-")
+      // var published = new Date(datePublished[0], parseInt(datePublished[1])-1, datePublished[2].split(' ')[0]);
+      var published =new Date(pressNew.published)
       if (published >= from && published <= to){
         return true
       } else return false

@@ -116,11 +116,11 @@ class SourcesList extends Component {
 
   handleChangePage(event, page) {
     this.setState({ page });
-  };
+  }
 
   handleChangeRowsPerPage(event) {
-    this.setState({ rowsPerPage: event.target.value });
-  };
+    this.setState({ rowsPerPage: event.target.value })
+  }
 
   filterResourcesList(resource) {
     if (resource.source_id.indexOf(this.props.countrySelectorValue)!== -1 &&
@@ -129,7 +129,7 @@ class SourcesList extends Component {
           return true;
         }
     else return false;
-  };
+  }
 
   // TODO: group efficiently using map, filter and reduce functions (remove foreach loops)
   // TODO: Filter by Source_id instead of source_name
@@ -152,7 +152,7 @@ class SourcesList extends Component {
       "feedsBySource": feedsBySourceArray,
       "uniqueSourcesNumber": sourcesNumber
     }
-  };
+  }
 
 
   handleToggleClick(id, isActiveFlag) {
@@ -169,7 +169,7 @@ class SourcesList extends Component {
 
   render () { 
     const { classes } = this.props;
-    const { rssSources, order, orderBy, rowsPerPage, page } = this.state;
+    const { rssSources, rowsPerPage, page } = this.state;
     const paginationOptions = [5,10];
     // const filteredSources = this.filterResourcesList(rssSources)
     const filteredSources = rssSources.filter(this.filterResourcesList);
