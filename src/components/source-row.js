@@ -11,9 +11,9 @@ import Tooltip from '@material-ui/core/Tooltip';
 import ReportProblemIcon from '@material-ui/icons/ReportProblem';
 
 const styles = theme => ({
-    button: {
-      margin: theme.spacing.unit,
-    },
+    // button: {
+    //   margin: theme.spacing(y),
+    // },
     input: {
       display: 'none',
     },

@@ -16,7 +16,7 @@ import RSSSnackbarContent from './rss-snackbar-content'
 const styles = theme => ({
   root: {
     width: '100%',
-    marginTop: theme.spacing.unit * 3,
+    // marginTop: theme.spacing(y) * 3,
     overflowX: 'auto',
   },
   table: {
@@ -28,9 +28,9 @@ const styles = theme => ({
   input: {
     display: 'none',
   },
-  margin: {
-    margin: theme.spacing.unit,
-  },
+  // margin: {
+  //   margin: theme.spacing(y),
+  // },
 });
 
 

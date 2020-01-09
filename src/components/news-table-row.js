@@ -27,11 +27,11 @@ import MenuItem from '@material-ui/core/MenuItem';
 // https://stefan.magnuson.co/articles/frontend/using-es7-spread-operator-with-webpack/
 
 const styles = theme => ({
-    button: {
-      margin: theme.spacing.unit,
-    },
+    // button: {
+    //   margin: theme.spacing(y),
+    // },
     chip: {
-      margin: theme.spacing.unit,
+      // margin: theme.spacing(y),
       fontSize: "0.8rem",
       height:"23px",
       padding:"2px 2px 2px 2px",
@@ -59,9 +59,9 @@ const styles = theme => ({
       flex: 1,
       alignItems: 'center',
     },
-    noOptionsMessage: {
-      padding: `${theme.spacing.unit}px ${theme.spacing.unit * 2}px`,
-    },
+    // noOptionsMessage: {
+    //   padding: `${theme.spacing(y)}px ${theme.spacing(y) * 2}px`,
+    // },
     singleValue: {
       fontSize: 16,
     },
@@ -73,7 +73,7 @@ const styles = theme => ({
     paper: {
       position: 'absolute',
       zIndex: 1,
-      marginTop: theme.spacing.unit,
+      // marginTop: theme.spacing(y),
       left: 0,
       right: 0,
     }
