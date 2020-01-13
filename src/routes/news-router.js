@@ -19,36 +19,6 @@ MongoClient.connect("mongodb://localhost:27017/",  { useNewUrlParser: true, useU
 router.get("/entries", (req, res) =>
 {
     var collection = db.collection("news");
-
-    // // Added in order to convert string columns to date columns
-    // collection.find({}, {
-    //     "_id": 1,
-    //     "published": 1,
-    //     "extraction_date": 1,
-    //     "brand": 1,
-    //     "title": 1,
-    //     "topics": 1,
-    //     "link": 1,
-    //     "summary": 1,
-    //     "description": 1,
-    //     // "selected": 1,
-    //     "source_id": 1,
-    //     "source_name": 1
-    // }).toArray((err, docs) =>
-    //     {
-    //         if(err) {
-    //             console.log(err)
-    //             res.status(500).send(err)
-    //         } else {
-    //             docs.forEach(item => {
-    //                 var asDate = new Date(item["extraction_date"])
-    //                 db.collection("news").updateOne({_id: item["_id"]}, { $set: { "extraction_date": asDate } });
-    //             })
-    //         }
-    //     }
-    // )
-    // // END: Added in order to convert string columns to date columns
-
     collection.find({}, {
                 "_id": 1,
                 "published": 1,

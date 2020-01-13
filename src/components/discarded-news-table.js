@@ -159,8 +159,7 @@ class DiscardedNewsTable extends Component {
 
     if (pressNew.hasOwnProperty("published"))
     {
-      var datePublished = pressNew.published.split("-")
-      var published = new Date(datePublished[0], parseInt(datePublished[1])-1, datePublished[2].split(' ')[0]);
+      var published =new Date(pressNew.published)
       if (published >= from && published <= to){
         return true
       } else return false
@@ -187,7 +186,7 @@ class DiscardedNewsTable extends Component {
   render () {
       const { classes } = this.props;
       const { data, order, orderBy, rowsPerPage, page } = this.state;
-      const all = [5,10,25,(data.length)];
+      const all = [5,10,25, 50, 100,(data.length)];
       const emptyRows = rowsPerPage - Math.min(rowsPerPage, data.length - page * rowsPerPage);
       
       // Filtering data
@@ -225,12 +224,20 @@ class DiscardedNewsTable extends Component {
               )}
               <TableBody>
               {filteredData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(u => {
+                let datePublished = new Date(u.published)
+                let published= 
+                  datePublished.getFullYear() +'-' + 
+                  String((datePublished.getMonth()+1)).padStart(2, '0') + '-' +
+                  String(datePublished.getDate()).padStart(2, '0') + ' ' + 
+                  String(datePublished.getHours()).padStart(2, '0') + ':' + 
+                  String(datePublished.getMinutes()).padStart(2, '0') + ':' + 
+                  String(datePublished.getSeconds()).padStart(2, '0')
                 return (                    
                   <DiscardedNewsTableRow
                   //TODO:check what are keys for. They should be unique and cannot be rendered in the DOM
                   // using prop.key
                     key={u._id}
-                    published={u.published}
+                    published={published}
                     docId={u._id}
                     title={u.title}
                     topics={u.hasOwnProperty("topics") && u.topics != ""? u.topics.split(",") : []}

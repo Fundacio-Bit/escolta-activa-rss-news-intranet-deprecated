@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import TableRow from '@material-ui/core/TableRow';
 import TableCell from '@material-ui/core/TableCell';
-import Checkbox from '@material-ui/core/Checkbox';
 import IconButton from '@material-ui/core/IconButton';
 import Chip from '@material-ui/core/Chip';
 import RestoreIcon from '@material-ui/icons/Restore';
@@ -211,7 +210,7 @@ const styles = theme => ({
 
     handleDialogClickOpen(){
       this.setState({ open: true });
-    };
+    }
   
     handleDialogClose() {
       this.setState({ 

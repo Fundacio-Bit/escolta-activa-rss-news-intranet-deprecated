@@ -211,7 +211,7 @@ const styles = theme => ({
 
     handleDialogClickOpen(){
       this.setState({ open: true });
-    };
+    }
   
     handleDialogClose() {
       this.setState({ 
