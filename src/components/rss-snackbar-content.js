@@ -1,6 +1,5 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
-import classNames from 'classnames';
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 import ErrorIcon from '@material-ui/icons/Error';
 import InfoIcon from '@material-ui/icons/Info';
@@ -37,7 +36,7 @@ const styles = theme => ({
   },
   iconVariant: {
     opacity: 0.9,
-    marginRight: theme.spacing.unit,
+    // marginRight: theme.spacing(y),
   },
   message: {
     display: 'flex',
@@ -56,11 +55,10 @@ class RSSSnackbarContent extends Component {
 
     return (
         <SnackbarContent
-        className={classNames(classes[variant], className)}
-        aria-describedby="client-snackbar"
+                aria-describedby="client-snackbar"
         message={
             <span id="client-snackbar" className={classes.message}>
-            <Icon className={classNames(classes.icon, classes.iconVariant)} />
+            <Icon  />
             {message}
             </span>
         }

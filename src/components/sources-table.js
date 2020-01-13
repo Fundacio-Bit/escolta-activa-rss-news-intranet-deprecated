@@ -22,7 +22,7 @@ import Paper from '@material-ui/core/Paper';
 const styles = theme => ({
   root: {
     width: '100%',
-    marginTop: theme.spacing.unit * 3,
+    // marginTop: theme.spacing(y) * 3,
     overflowX: 'auto',
   },
   table: {
@@ -42,7 +42,7 @@ const styles = theme => ({
     display: 'none',
   },
   title: {
-    margin: theme.spacing.unit,
+    // margin: theme.spacing(y),
     flex: '0 0 auto',
   },
   heading: {
@@ -75,7 +75,7 @@ const styles = theme => ({
   },
   helper: {
     borderLeft: `2px solid ${theme.palette.divider}`,
-    padding: `${theme.spacing.unit}px ${theme.spacing.unit * 2}px`,
+    // padding: `${theme.spacing(y)}px ${theme.spacing(y) * 2}px`,
   },
   link: {
     color: theme.palette.primary.main,

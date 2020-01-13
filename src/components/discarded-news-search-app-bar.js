@@ -17,7 +17,7 @@ const styles = theme => ({
   },
   title: {
     // flexGrow: 1,
-    margin: theme.spacing.unit,
+    // margin: theme.spacing(y),
     textAlign: 'left',
     flexBasis: '15%'
   },
