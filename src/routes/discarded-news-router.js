@@ -79,8 +79,8 @@ router.route('/identifier/:documentId')
     {
         console.log("Recovered new id " + req.params.documentId)
         var collection = db.collection("news_discarded");
-        // var query = { _id: req.params.documentId};
-        var query = { _id: new mongo.ObjectId(req.params.documentId) };
+        var query = { _id: req.params.documentId};
+        // var query = { _id: new mongo.ObjectId(req.params.documentId) };
         collection.deleteOne(query, function (err, results) {
             if (err)
             {
