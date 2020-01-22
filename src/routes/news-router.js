@@ -48,6 +48,7 @@ router.route('/news')
     .post((req, res) =>
 {
     var collection = db.collection("news_discarded");
+    delete  req.body._id
     collection.insertOne(req.body, function (err, results) {
         if (err)
             {
