@@ -244,6 +244,8 @@ class DiscardedNewsTable extends Component {
                     allPossibleTopics= {this.state.allTopics}
                     source_id={u.source_id}
                     source_name={u.source_name}
+                    section={u.section}
+                    brand={u.brand}
                     link={u.link}
                     summary={u.summary}
                     handleRestoreClick = {handleRestoreClick.bind(this)}
