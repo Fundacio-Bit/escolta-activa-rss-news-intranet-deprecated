@@ -4,7 +4,9 @@ var ExtractTextPlugin = require('extract-text-webpack-plugin');
 // const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 module.exports = {
-  devtool: 'source-map',
+  // Options for devtool at:
+  // https://webpack.js.org/configuration/devtool/
+  devtool: 'inline-source-map',
   entry: __dirname + "/src/index.js",
   output: {
     path: __dirname + "/build",
@@ -24,7 +26,7 @@ module.exports = {
       {
         test: /\.css$/,
         loader: ExtractTextPlugin.extract('style', 'css')
-      }
+      },
     ]
   },
   plugins: [
@@ -33,7 +35,7 @@ module.exports = {
     }),
     new ExtractTextPlugin("bundle.css"),
     // Descomentar para pasar a produccion
-    new webpack.optimize.UglifyJsPlugin(),
+    new webpack.optimize.UglifyJsPlugin({ sourceMap: true }),
     // new BundleAnalyzerPlugin(),
   ]
 }
