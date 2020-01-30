@@ -39,7 +39,8 @@ class NewsTableHead extends React.Component {
               <TableSortLabel
                 active = { true }
                 direction = {this.props.order}
-                onClick = { () => onRequestSort(this.props.orderBy, this.props.order) } >
+                onClick = { () => onRequestSort(this.props.orderBy, this.props.order) }
+              >
                 <h2>Data</h2>
               </TableSortLabel>
             </Tooltip>
