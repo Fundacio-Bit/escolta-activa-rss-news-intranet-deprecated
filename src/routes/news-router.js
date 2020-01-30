@@ -77,7 +77,8 @@ router.get("/entries", (req, res) =>
 router.route('/news')
     .post((req, res) =>
 {
-    var collection = db.collection("news_discarded");
+    var collection = db.collection("news");
+    delete  req.body._id
     collection.insertOne(req.body, function (err, results) {
         if (err)
             {
@@ -109,7 +110,7 @@ router.route('/identifier/:documentId')
     .delete((req, res)=>
     {
         var collection = db.collection("news");
-        var query = { _id: req.params.documentId };
+        var query = { _id: new mongo.ObjectID(req.params.documentId) };
         collection.deleteOne(query, function (err, results) {
             if (err)
                 {

@@ -43,10 +43,11 @@ router.get("/entries", (req, res) =>
 });
 
 // Add route without parameters
-router.route('/news')
+router.route('/news-discarded')
     .post((req, res) =>
 {
-    var collection = db.collection("news");
+    var collection = db.collection("news_discarded");
+    delete  req.body._id
     collection.insertOne(req.body, function (err, results) {
         if (err)
             {
@@ -79,7 +80,7 @@ router.route('/identifier/:documentId')
     {
         console.log("Recovered new id " + req.params.documentId)
         var collection = db.collection("news_discarded");
-        var query = { _id: req.params.documentId};
+        var query = { _id: new mongo.ObjectID(req.params.documentId) };
         collection.deleteOne(query, function (err, results) {
             if (err)
             {
