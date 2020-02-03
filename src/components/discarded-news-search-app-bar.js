@@ -144,6 +144,12 @@ class DiscardedNewsSearchAppBar extends Component {
                   <InputBase
                     value={this.props.searchTerm}
                     onChange={this.handleSearchTermChange}
+                    // Prevent form submission a data reload when the Enter Key is pressed
+                    onKeyPress={(event) => {
+                      if (event.key === 'Enter') {
+                        event.preventDefault();
+                      }
+                    }}
                     placeholder="Cerca…"
                     className={classes.input}
                   />
