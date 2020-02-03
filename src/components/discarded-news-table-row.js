@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import TableRow from '@material-ui/core/TableRow';
 import TableCell from '@material-ui/core/TableCell';
-import Checkbox from '@material-ui/core/Checkbox';
+// import Checkbox from '@material-ui/core/Checkbox';
 import IconButton from '@material-ui/core/IconButton';
 import Chip from '@material-ui/core/Chip';
 import RestoreIcon from '@material-ui/icons/Restore';
@@ -20,6 +20,7 @@ import Typography from '@material-ui/core/Typography';
 import NoSsr from '@material-ui/core/NoSsr';
 import Paper from '@material-ui/core/Paper';
 import MenuItem from '@material-ui/core/MenuItem';
+import CircularProgress from '@material-ui/core/CircularProgress'
 // import { emphasize } from '@material-ui/core/styles/colorManipulator';
 
 // Integrating the autocomplete code from material ui requires to use ES7,
@@ -78,7 +79,7 @@ const styles = theme => ({
       right: 0,
     }
   });  
- 
+
   function inputComponent({ inputRef, ...props }) {
     return <div ref={inputRef} {...props}/>;
   }
@@ -194,7 +195,8 @@ const styles = theme => ({
       this.state = {
         open: false,
         assignedTopics: this.props.topics,
-        textFieldValue: ""
+        textFieldValue: "",
+        isLoading: this.props.isUpdating
       };
 
       this.handleDialogClickOpen  =  this.handleDialogClickOpen.bind(this);
@@ -247,6 +249,7 @@ const styles = theme => ({
 
     render () {
       const { classes, theme } = this.props;
+      const isLoading = this.state.isLoading;
 
       const selectStyles = {
         input: base => ({
@@ -269,7 +272,7 @@ const styles = theme => ({
           <TableRow 
           role="checkbox"
         >
-          <TableCell><div><h3>{this.props.published}</h3></div></TableCell>
+          <TableCell><div><h3>{new Date(this.props.published).toLocaleString()}</h3></div></TableCell>
           <TableCell>
             <div>
               <Tooltip
@@ -339,12 +342,23 @@ const styles = theme => ({
             </div>
           </TableCell>
           <TableCell>
-            <IconButton 
+            { isLoading && <div>
+              <div className={classes.loading}>
+              <CircularProgress size={24} thickness={4} />
+              </div>
+            </div>}
+            { !isLoading && <IconButton 
               className={classes.button} 
               aria-label="Restore" 
-              onClick={() => handleRestoreClick(this.props.docId)} >
+              onClick= 
+                { () => {
+                  this.setState(
+                    { isLoading: true })
+                  handleRestoreClick(this.props.docId)
+                  }  
+                }>
               <RestoreIcon />
-            </IconButton>
+            </IconButton>}
           </TableCell>
         </TableRow>
       );
