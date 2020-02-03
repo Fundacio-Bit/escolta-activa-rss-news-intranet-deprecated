@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
-import DiscardedNewsTable from './discarded-news-table';
+import { DiscardedNewsTable } from './discarded-news-table';
 import DiscardedNewsSearchAppBar from './discarded-news-search-app-bar';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
@@ -42,7 +42,7 @@ class DiscardedNews extends Component {
     };
     
     // Create a ref b
-    this.newsTableElement = React.createRef();
+    // this.newsTableElement = React.createRef();
 
     // This binding is necessary to make `this` work in the callback
     this.handleDateFrom = this.handleDateFrom.bind(this);
@@ -63,7 +63,7 @@ class DiscardedNews extends Component {
   handleSearchTermChange(enteredSearchTerm){
     this.setState({ searchTerm: enteredSearchTerm });
   }
- 
+
   handleSearchTypeChange(enteredSearchType){
     this.setState({ searchType: enteredSearchType });
   }
@@ -86,7 +86,7 @@ class DiscardedNews extends Component {
                   onSearchTypeChange={this.handleSearchTypeChange}
                 />
                 <DiscardedNewsTable
-                  innerRef={this.newsTableElement}
+                  // innerRef={this.newsTableElement}
                   selectedDateFrom = {this.state.selectedDateFrom}
                   selectedDateTo = {this.state.selectedDateTo}
                   searchType = {this.state.searchType}

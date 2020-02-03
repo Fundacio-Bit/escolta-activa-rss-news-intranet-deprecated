@@ -1,8 +1,7 @@
 /* eslint-disable no-prototype-builtins */
-import React, { Component } from 'react';
+// import React, { Component } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableRow from '@material-ui/core/TableRow'
@@ -12,11 +11,15 @@ import NewsTableHead from './news-table-head'
 import Paper from '@material-ui/core/Paper';
 import TablePagination from '@material-ui/core/TablePagination'
 import RSSSnackbarContent from './rss-snackbar-content'
+import CircularProgress from '@material-ui/core/CircularProgress'
 
-const styles = theme => ({
+import ErrorIcon from '@material-ui/icons/Error'
+import { baseErrorMessage, getErrorMessage } from './utils/getErrorMessage.js'
+import { makeStyles } from '@material-ui/core/styles'
+
+const useStyles = makeStyles(theme => ({
   root: {
     width: '100%',
-    // marginTop: theme.spacing(y) * 3,
     overflowX: 'auto',
   },
   table: {
@@ -28,10 +31,15 @@ const styles = theme => ({
   input: {
     display: 'none',
   },
-  // margin: {
-  //   margin: theme.spacing(y),
-  // },
-});
+  error: {
+    marginTop: theme.spacing(1),
+    color: '#e91e63'
+  },
+  loading: {
+    flexGrow: 1,
+    marginTop: theme.spacing(4)
+  }
+}));
 
 
 var desc = (a, b, orderBy) => {
@@ -42,251 +50,339 @@ var desc = (a, b, orderBy) => {
     return 1;
   }
   return 0;
-}
+};
 
 
 var getSorting = (orderBy, order) => {
   return order === 'desc' ? (a, b) => desc(a, b, orderBy) : (a, b) => -desc(a, b, orderBy);
 };
 
+export const DiscardedNewsTable = (props) => {
 
-class DiscardedNewsTable extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      order: 'desc',
-      orderBy: 'published',  
-      data: [],
-      allTopics:[],
-      page: 0,
-      rowsPerPage: 5
-    };
-    // This binding is necessary to make `this` work in the callback
-    this.handleChangePage = this.handleChangePage.bind(this);
-    this.handleChangeRowsPerPage = this.handleChangeRowsPerPage.bind(this);
-    this.filterByDate = this.filterByDate.bind(this);
-    this.filterByTopic = this.filterByTopic.bind(this);
-    this.filterBySearchTerm = this.filterBySearchTerm.bind(this);
-  }
+  const classes  = useStyles();
 
-  // Callback that ensures that teh API calls done by this component are executed once it is mounted. 
-  componentDidMount() {
-    this.retrievedDocumentsList();
-    this.getTopicsList();
-  }
+  const [order, setOrder] = useState('desc');
+  const [orderBy, setOrderBy] = useState('published');
+  const [data, setData] = useState([]);
+  const [allTopics, setAllTopics] = useState([]);
 
-  // Call the REST API to get all documents
-  retrievedDocumentsList() {
-    axios.get('/rss-discarded-news/entries')
-    .then((results) => {this.setState({ data: results.data.results })});      
-  }
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [loading, setLoading] = useState(true);
+  const [errorStatus, setErrorStatus] = useState({error: false, message: ''});
+  const [lastUpdateTimestamp, setLastUpdateTimestamp] = useState(Date.now())
 
-  // Call the REST API to get a list of topics used so far
-  getTopicsList() {
-    axios.get('/rss-topics/topics')
-    .then((results) => {this.setState({ allTopics: results.data.results })});      
-  }
+  const all = [5,10,25,50];
+  const emptyRows = rowsPerPage - Math.min(rowsPerPage, data.length - page * rowsPerPage);
 
-  handleChangePage(event, page) {
-    this.setState({ page });
-  }
-
-  handleChangeFormField() {
-    this.setState({ page: 0 });
-  }
-
-  handleChangeRowsPerPage(event) {
-    this.setState({ rowsPerPage: event.target.value });
-  }
-  
-  handleRestoreClick(id) {
-    const retrievedNews = this.state.data;
-    const index = retrievedNews.findIndex(x => x._id == id);
-    const discarded_new = retrievedNews[index]
-    axios.post('/rss-discarded-news/news/', 
-                discarded_new, 
-                {headers: {'Content-Type': 'application/json' }}
-    ).then((res) => {
-        console.log("Restore new " + res.status)
-        axios.delete('/rss-discarded-news/identifier/'+ id, 
-                    {headers: {'Content-Type': 'application/json' }}
-        ).then((res) => {
-            console.log("Removed discarded new " + res.status)
-            // we update the state after response...
-            retrievedNews.splice(index, 1);
-            this.setState({data:retrievedNews});
-            this.getTopicsList();
-        })  
-    })
-  }
-
-  // TODO: handle the addition of topics with special chars or commas. Also avoid duplicates.
-  handleUpdateTopics(id, topicsString) {
-    let retrievedNews = this.state.data;
-    const index = retrievedNews.findIndex(x => x._id == id);
-    var processedTopicsString = topicsString == "" ? "%20" : topicsString.toString().toLowerCase();
-
-    // TODO: update via POST instead of via put to avoid problems with long URLS and with special chars
-    axios.put('/rss-news/identifier/'+ id +'/topics/' + processedTopicsString )
-    .then((res) => {
-        retrievedNews[index].topics = processedTopicsString == "%20" ? "": processedTopicsString;
-        // we update the state after response...
-        this.setState({data:retrievedNews});
-        this.getTopicsList();
-    })
-  }
-
-  handleRequestSort (orderBy, order, event) {
-    // const orderBy = property;
-    order = 'desc';
-
-    if (this.state.orderBy === orderBy && this.state.order === 'desc') {
-      order = 'asc';
-    }
-
-    this.setState({
-      order,
-      orderBy
-    });
-  }
-
-  filterByDate(pressNew) {
-    var dateFrom = this.props.selectedDateFrom.split("-");
-    var dateTo = this.props.selectedDateTo.split("-");
+  function filterByDate(pressNew) {
+    var dateFrom = props.selectedDateFrom.split("-");
+    var dateTo = props.selectedDateTo.split("-");
 
     var from = new Date(dateFrom[0], parseInt(dateFrom[1])-1, dateFrom[2]);  // -1 because months are from 0 to 11
     var to   = new Date(dateTo[0], parseInt(dateTo[1])-1, dateTo[2]);
 
     if (pressNew.hasOwnProperty("published"))
     {
-      var datePublished = pressNew.published.split("-")
-      var published = new Date(datePublished[0], parseInt(datePublished[1])-1, datePublished[2].split(' ')[0]);
+      var published = new Date(pressNew.published)
       if (published >= from && published <= to){
         return true
       } else return false
     }
-  }
+  };
+  
 
-  filterByTopic(pressNew) {
+  function filterByTopic(pressNew) {
     if (
-      pressNew.hasOwnProperty("topics") && pressNew.topics.toLowerCase().split(",").includes(this.props.searchTerm.toLowerCase())){
+      pressNew.hasOwnProperty("topics") && pressNew.topics.toLowerCase().split(",").includes(props.searchTerm.toLowerCase())){
         return true
       }
     else return false
-  }
-
-  // TODO: add search in full text
-  filterBySearchTerm(pressNew) {
-    if (
-      pressNew.hasOwnProperty("title") && pressNew.title.toLowerCase().indexOf(this.props.searchTerm.toLowerCase())!== -1
-      ) {return true}
-    else return false
-  }
-
-
-  render () {
-      const { classes } = this.props;
-      const { data, order, orderBy, rowsPerPage, page } = this.state;
-      const all = [5,10,25,(data.length)];
-      const emptyRows = rowsPerPage - Math.min(rowsPerPage, data.length - page * rowsPerPage);
-      
-      // Filtering data
-      var filteredData = data
-
-      if (this.props.selectedDateFrom) {
-        filteredData = data.filter(this.filterByDate);
-      } 
-      if (this.props.selectedDateTo) {
-        filteredData = data.filter(this.filterByDate);
-      } 
-      if (this.props.searchType === 0){
-        filteredData = filteredData.filter(this.filterBySearchTerm);
-      } else if (this.props.searchType === 1 && this.props.searchTerm !== ""){
-        filteredData = filteredData.filter(this.filterByTopic);
-      }
-
-      // Sorting data
-      filteredData.sort(getSorting(orderBy, order));
-
-      var handleRestoreClick = this.handleRestoreClick;
-      var handleRequestSort = this.handleRequestSort;
-      var handleUpdateTopics = this.handleUpdateTopics;
-
-      return (
-        <Paper className={classes.root}>
-          <div className={classes.tableWrapper}>
-            <Table className={classes.table} aria-labelledby="tableTitle">
-              {filteredData.length > 0 && (
-                <NewsTableHead
-                  order = { order }
-                  orderBy = { orderBy }
-                  onRequestSort = { handleRequestSort.bind(this) }
-                />
-              )}
-              <TableBody>
-              {filteredData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(u => {
-                return (                    
-                  <DiscardedNewsTableRow
-                  //TODO:check what are keys for. They should be unique and cannot be rendered in the DOM
-                  // using prop.key
-                    key={u._id}
-                    published={u.published}
-                    docId={u._id}
-                    title={u.title}
-                    topics={u.hasOwnProperty("topics") && u.topics != ""? u.topics.split(",") : []}
-                    allPossibleTopics= {this.state.allTopics}
-                    source_id={u.source_id}
-                    source_name={u.source_name}
-                    link={u.link}
-                    summary={u.summary}
-                    handleRestoreClick = {handleRestoreClick.bind(this)}
-                    handleUpdateTopics = {handleUpdateTopics.bind(this)}
-                  />
-                );
-              })} 
-              {filteredData.length === 0 && (
-                <TableRow>
-                  <TableCell colSpan={4}>
-                    <RSSSnackbarContent
-                      variant="info"
-                      className={classes.margin}
-                      message="No hi ha dades per a aquesta cerca!"
-                    />
-                  </TableCell>
-                </TableRow>
-              )}
-              {emptyRows > 0 && (
-                <TableRow style={{ height: 49 * emptyRows }}>
-                  <TableCell colSpan={4} />
-                </TableRow>
-              )}
-              </TableBody>
-            </Table>
-          </div>
-          {filteredData.length > 0 && (
-            <TablePagination
-              component="div"
-              count={filteredData.length}
-              rowsPerPage={rowsPerPage}
-              page={page}
-              backIconButtonProps={{
-                'aria-label': 'Previous Page',
-              }}
-              nextIconButtonProps={{
-                'aria-label': 'Next Page',
-              }}
-              onChangePage={this.handleChangePage}
-              onChangeRowsPerPage={this.handleChangeRowsPerPage}
-              rowsPerPageOptions={all}
-            />
-          )}
-        </Paper>
-      );
-    }
-  }
-
-  DiscardedNewsTable.propTypes = {
-    classes: PropTypes.object.isRequired,
   };
 
-  export default withStyles(styles)(DiscardedNewsTable);
+// Funciona la búsqueda por término si antes haces una por topic
+
+  // TODO: add search in full text
+  function filterBySearchTerm(pressNew) {
+    if (
+      pressNew.hasOwnProperty("title") && pressNew.title.toLowerCase().indexOf(props.searchTerm.toLowerCase())!== -1){
+        return true
+      }
+    else return false
+  };
+
+  // Filtering data
+  let filteredData = data.slice();
+
+  if (props.selectedDateFrom) {
+    filteredData = filteredData.filter(filterByDate);
+  } 
+  if (props.selectedDateTo) {
+    filteredData = filteredData.filter(filterByDate);
+  } 
+  // if (props.isChecked) {
+  //   filteredData = filteredData.filter(filterByChecked);
+  //   console.log('time to filter') 
+  // }
+  // if (props.selectedCountry) {
+  //   if (props.selectedCountry != 'Tots') {
+  //     filteredData = filteredData.filter(filterByCountry);
+  //     console.log('time to filter')  
+  //   }
+  // } 
+  if (props.searchType === 0){
+    filteredData = filteredData.filter(filterBySearchTerm);
+  }
+  else if (props.searchType === 1 && props.searchTerm !== ""){
+    filteredData = filteredData.filter(filterByTopic);
+  }
+
+  // Sorting data
+  filteredData.sort(getSorting(orderBy, order));
+  
+  // Retrieving the array of discarded news.
+  useEffect(() => {
+    
+    let unmounted = false;
+
+    const fetchData = () => {
+      if (!unmounted) {
+        setErrorStatus({error: false, message: ''});
+        // setLoading(true);
+      }
+
+      try {
+        axios.get('/rss-discarded-news/entries').then((results) => { 
+          if (results.data.results.length > 0) { 
+            // OK
+            setTimeout(() => {
+              if (!unmounted) {
+                setErrorStatus({error: false, message: ''});
+                setLoading(false);
+                setData(results.data.results);
+              }
+            }, 850);
+          }
+          else {
+            // Error
+            if (!unmounted) {
+              console.log(getErrorMessage(results));
+              setErrorStatus( { error: true, message: baseErrorMessage } );
+              setLoading(false);
+            }
+          }
+        }).catch(error => {
+          console.log(getErrorMessage(error));
+          setErrorStatus( { error: true, message: baseErrorMessage } );
+          setLoading(false);
+        });   
+
+      }
+      catch (error) {
+        if (!unmounted) {
+          console.log(getErrorMessage(error));
+          setErrorStatus( { error: true, message: baseErrorMessage } );
+          setLoading(false);
+        }
+      }
+    }
+
+    fetchData();
+
+    // Cleanup function.
+    return () => unmounted = true;
+
+  }, [lastUpdateTimestamp]);
+
+  // Second useEffect. To retrieve the topics array. Executes on mounting and each time that "allTopics" changes.
+  useEffect(() => {
+    
+    let unmounted = false;
+
+    const fetchData = () => {
+      // if (!unmounted) {
+      //   setErrorStatus({error: false, message: ''});
+      //   setLoading(true);
+      // }
+
+      try {
+        axios.get('/rss-topics/topics').then((results) => {               
+          if (results.data.results.length > 0) {            
+            // OK
+            setTimeout(() => {
+              if (!unmounted) {
+                setErrorStatus({error: false, message: ''});
+                // setLoading(false);
+                setAllTopics(results.data.results);
+              }
+            }, 850);
+          }
+          else {
+            // Error
+            if (!unmounted) {
+              console.log(getErrorMessage(results));
+              setErrorStatus( { error: true, message: baseErrorMessage } );
+              // setLoading(false);
+            }
+          }
+        }).catch(error => {
+          console.log(getErrorMessage(error));
+          setErrorStatus( { error: true, message: baseErrorMessage } );
+          // setLoading(false);
+        }); 
+
+      } catch (error) {
+        if (!unmounted) {          
+          console.error(error);
+          setErrorStatus( { error: true, message: baseErrorMessage } );
+          // setLoading(false);
+        }
+      }
+    }
+
+    fetchData();
+    
+    // Cleanup function. Here it is used to avoid the execution of setAllTopics on unmounted components.
+    return () => unmounted = true;
+  }, [lastUpdateTimestamp]);
+
+  // TODO: handle the addition of topics with special chars or commas. Also avoid duplicates.
+  function handleUpdateTopics(id, topicsString) {
+    let retrievedNews = data;
+    const index = retrievedNews.findIndex(x => x._id == id);
+    var processedTopicsString = topicsString == "" ? "%20" : topicsString.toString().toLowerCase();
+
+    // TODO: update via POST instead of via put to avoid problems with long URLS and with special chars
+    axios.put('/rss-discarded-news/identifier/'+ id +'/topics/' + processedTopicsString )
+    .then((res) => {
+        retrievedNews[index].topics = processedTopicsString == "%20" ? "": processedTopicsString;
+        // Update the state after response
+        // We have used an "update timestamp" to trigger rerenders
+        setLastUpdateTimestamp(Date.now())
+    })
+  }
+
+
+  function handleRequestSort(orderByReq, order) {
+    let newOrder = 'desc';
+
+    if (orderBy === orderByReq && order === 'desc') { newOrder = 'asc' };
+
+    setOrder(newOrder);
+    setOrderBy(orderByReq);
+  };
+
+
+  function handleChangePage(event, page) {
+    setPage(page);
+  };
+
+  function handleChangeRowsPerPage(event) { setRowsPerPage(event.target.value) };
+
+  function  handleRestoreClick(id) {
+    const retrievedNews = data;
+    const index = retrievedNews.findIndex(x => x._id == id);
+    const discarded_new = retrievedNews[index]
+    axios.post('/rss-news/news/', 
+                discarded_new, 
+                {headers: {'Content-Type': 'application/json' }}
+    ).then((res) => {
+        axios.delete('/rss-discarded-news/identifier/'+ id)
+        .then((res) => {
+            // Update the state after response
+            // We have used an "update timestamp" to trigger rerenders
+            setLastUpdateTimestamp(Date.now())
+        })  
+    })
+  }
+
+  // Sorting data
+  filteredData.sort(getSorting(orderBy, order));
+
+  return (
+    <div>
+      {errorStatus.error &&
+        <div className={classes.error}>
+          &nbsp;<ErrorIcon style={{verticalAlign: 'middle'}}/>&nbsp;{errorStatus.message}
+        </div>}
+
+      {loading &&
+        <div className={classes.loading}>
+          <CircularProgress size={24} thickness={4} />
+        </div>
+      }
+
+      {!loading && !errorStatus.error &&
+        <Paper className={classes.root}>
+        <div className={classes.tableWrapper}>
+          <Table className={classes.table} aria-labelledby="tableTitle">
+            {data.length > 0 && (
+              <NewsTableHead
+                order = { order }
+                orderBy = { orderBy }
+                onRequestSort = { handleRequestSort }
+              />
+            )}
+            <TableBody>
+            {filteredData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(u => {
+              return (                    
+                <DiscardedNewsTableRow
+                //TODO:check what are keys for. They should be unique and cannot be rendered in the DOM
+                // using prop.key
+                  key={ u._id }
+                  published={ u.published }
+                  docId={ u._id }
+                  title={ u.title }
+                  topics={ u.hasOwnProperty("topics") && u.topics != ""? u.topics.split(",") : [] }
+                  allPossibleTopics= { allTopics }
+                  source_id={ u.source_id }
+                  source_name={ u.source_name }
+                  link={ u.link }
+                  summary={ u.summary }
+                  handleRestoreClick = { handleRestoreClick }
+                  handleUpdateTopics = { handleUpdateTopics }
+                  isUpdating = { false }
+                />
+              );
+            })} 
+            {filteredData.length === 0 && (
+              <TableRow>
+                <TableCell colSpan={4}>
+                  <RSSSnackbarContent
+                    variant="info"
+                    className={classes.margin}
+                    message="No hi ha dades per a aquesta cerca!"
+                  />
+                </TableCell>
+              </TableRow>
+            )}
+            {emptyRows > 0 && (
+              <TableRow style={{ height: 49 * emptyRows }}>
+                <TableCell colSpan={4} />
+              </TableRow>
+            )}
+            </TableBody>
+          </Table>
+        </div>
+        {filteredData.length > 0 && (
+          <TablePagination
+            component="div"
+            count={ filteredData.length }
+            rowsPerPage={ rowsPerPage }
+            page={ page }
+            backIconButtonProps={{
+              'aria-label': 'Previous Page',
+            }}
+            nextIconButtonProps={{
+              'aria-label': 'Next Page',
+            }}
+            onChangePage={ handleChangePage }
+            onChangeRowsPerPage={ handleChangeRowsPerPage }
+            rowsPerPageOptions={ all }
+          />
+        )}
+      </Paper>
+      }
+    </div>    
+  );
+}
