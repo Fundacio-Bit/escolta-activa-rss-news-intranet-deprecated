@@ -388,6 +388,8 @@ export const NewsTable = (props) => {
                   allPossibleTopics= { allTopics }
                   source_id={ u.source_id }
                   source_name={ u.source_name }
+                  section={ u.section }
+                  brand={ u.brand }
                   link={ u.link }
                   summary={ u.summary }
                   handleDeleteClick = { handleDeleteClick }

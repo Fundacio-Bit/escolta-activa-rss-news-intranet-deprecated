@@ -279,8 +279,9 @@ const styles = theme => ({
                 classes={{ tooltip: classes.customizedTooltip }}
                 title={
                   <React.Fragment>
-                    <strong>{this.props.source_name}</strong>
                     <p>{this.props.summary}</p>
+                    <p><strong>{this.props.source_name}</strong> - {this.props.section}</p>
+                    <p>Marca: <strong>{this.props.brand}</strong></p>
                   </React.Fragment>}
                 enterDelay={500}
                 leaveDelay={200}>

@@ -29,6 +29,7 @@ router.get("/entries", (req, res) =>
                 "link": 1,
                 "summary": 1,
                 "description": 1,
+                "section":1,
                 // "selected": 1,
                 "source_id": 1,
                 "source_name": 1
@@ -88,6 +89,7 @@ router.route('/identifier/:documentId')
                 res.status(500).send(err)
                 }
             else { 
+                console.log("Deletimg id " + req.params.documentId + ': ' + results)
                 res.json({ success: req.params.documentId })
             }
         });
