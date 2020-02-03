@@ -37,7 +37,7 @@ class DiscardedNews extends Component {
     this.state = {
       selectedDateFrom: yesterday,
       selectedDateTo: today,
-      searchType: '0',
+      searchType: 0,
       searchTerm: '',
     };
     

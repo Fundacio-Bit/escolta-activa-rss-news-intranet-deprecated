@@ -39,7 +39,7 @@ class News extends Component {
       selectedDateTo: today,
       selectedCountry: 'Tots', 
       isChecked: 0,
-      searchType: '0',
+      searchType: 0,
       searchTerm: '',
     };
     
