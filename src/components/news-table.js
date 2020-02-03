@@ -65,13 +65,14 @@ export const NewsTable = (props) => {
   const [orderBy, setOrderBy] = useState('published');
   const [data, setData] = useState([]);
   const [allTopics, setAllTopics] = useState([]);
+
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [errorStatus, setErrorStatus] = useState({error: false, message: ''});
   const [lastUpdateTimestamp, setLastUpdateTimestamp] = useState(Date.now())
 
-  const all = [5,10,25,(data.length)];
+  const all = [5,10,25,50];
   const emptyRows = rowsPerPage - Math.min(rowsPerPage, data.length - page * rowsPerPage);
 
   function filterByDate(pressNew) {
@@ -112,11 +113,14 @@ export const NewsTable = (props) => {
     else return false
   };
 
+// Funciona la búsqueda por término si antes haces una por topic
+
   // TODO: add search in full text
   function filterBySearchTerm(pressNew) {
     if (
-      pressNew.hasOwnProperty("title") && pressNew.title.toLowerCase().indexOf(props.searchTerm.toLowerCase())!== -1
-      ) {return true}
+      pressNew.hasOwnProperty("title") && pressNew.title.toLowerCase().indexOf(props.searchTerm.toLowerCase())!== -1){
+        return true
+      }
     else return false
   };
 
@@ -187,7 +191,7 @@ export const NewsTable = (props) => {
     const fetchData = () => {
       if (!unmounted) {
         setErrorStatus({error: false, message: ''});
-        setLoading(true);
+        // setLoading(true);
       }
 
       try {
@@ -239,53 +243,57 @@ export const NewsTable = (props) => {
 
   }, [lastUpdateTimestamp]);
 
-  // // Second useEffect. To retrieve the topics array. Executes on mounting and each time that "allTopics" changes.
-  // useEffect(() => {
+  // Second useEffect. To retrieve the topics array. Executes on mounting and each time that "allTopics" changes.
+  useEffect(() => {
     
-  //   let unmounted = false;
+    let unmounted = false;
 
-  //   const fetchData = () => {
-  //     if (!unmounted) {
-  //       setErrorStatus({error: false, message: ''});
-  //       setLoading(true);
-  //     }
+    const fetchData = () => {
+      // if (!unmounted) {
+      //   setErrorStatus({error: false, message: ''});
+      //   setLoading(true);
+      // }
 
-  //     try {
-  //       axios.get('/rss-topics/topics').then((results) => {               
-  //         if (results.data.results.length > 0) {            
-  //           // OK
-  //           setTimeout(() => {
-  //             if (!unmounted) {
-  //               setErrorStatus({error: false, message: ''});
-  //               setLoading(false);
-  //               setAllTopics(results.data.results);
-  //             }
-  //           }, 850);
-  //         }
-  //         else {
-  //           // Error
-  //           if (!unmounted) {
-  //             console.log(getErrorMessage(results));
-  //             setErrorStatus( { error: true, message: baseErrorMessage } );
-  //             setLoading(false);
-  //           }
-  //         }
-  //       });   
+      try {
+        axios.get('/rss-topics/topics').then((results) => {               
+          if (results.data.results.length > 0) {            
+            // OK
+            setTimeout(() => {
+              if (!unmounted) {
+                setErrorStatus({error: false, message: ''});
+                // setLoading(false);
+                setAllTopics(results.data.results);
+              }
+            }, 850);
+          }
+          else {
+            // Error
+            if (!unmounted) {
+              console.log(getErrorMessage(results));
+              setErrorStatus( { error: true, message: baseErrorMessage } );
+              // setLoading(false);
+            }
+          }
+        }).catch(error => {
+          console.log(getErrorMessage(error));
+          setErrorStatus( { error: true, message: baseErrorMessage } );
+          // setLoading(false);
+        }); 
 
-  //     } catch (error) {
-  //       if (!unmounted) {          
-  //         console.error(error);
-  //         setErrorStatus( { error: true, message: baseErrorMessage } );
-  //         setLoading(false);
-  //       }
-  //     }
-  //   }
+      } catch (error) {
+        if (!unmounted) {          
+          console.error(error);
+          setErrorStatus( { error: true, message: baseErrorMessage } );
+          // setLoading(false);
+        }
+      }
+    }
 
-  //   fetchData();
+    fetchData();
     
-  //   // Cleanup function. Here it is used to avoid the execution of setAllTopics on unmounted components.
-  //   return () => unmounted = true;
-  // }, [lastUpdateTimestamp]);
+    // Cleanup function. Here it is used to avoid the execution of setAllTopics on unmounted components.
+    return () => unmounted = true;
+  }, [lastUpdateTimestamp]);
 
   // TODO: handle the addition of topics with special chars or commas. Also avoid duplicates.
   function handleUpdateTopics(id, topicsString) {
@@ -384,6 +392,7 @@ export const NewsTable = (props) => {
                   summary={ u.summary }
                   handleDeleteClick = { handleDeleteClick }
                   handleUpdateTopics = { handleUpdateTopics }
+                  isUpdating = { false }
                 />
               );
             })} 
