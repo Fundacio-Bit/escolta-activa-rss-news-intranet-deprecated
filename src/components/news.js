@@ -20,14 +20,15 @@ const styles = theme => ({
 
 class News extends Component {
   constructor(props) {
-    var date = new Date();
-    var dd = String(date.getDate()).padStart(2, '0');
-    var mm = String(date.getMonth() + 1).padStart(2, '0'); //January is 0!
-    var yyyy = date.getFullYear();
-    var today = yyyy + '-' + mm + '-' + dd;
+    var today = new Date();
+    today.setDate(today.getDate() + 1);
+    var dd = String(today.getDate()).padStart(2, '0');
+    var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+    var yyyy = today.getFullYear();
+    today = yyyy + '-' + mm + '-' + dd;
   
     var yesterday = new Date();
-    yesterday.setDate(yesterday.getDate() - 1);
+    // yesterday.setDate(yesterday.getDate() - 1);
     dd = String(yesterday.getDate()).padStart(2, '0');
     mm = String(yesterday.getMonth() + 1).padStart(2, '0'); //January is 0!
     yyyy = yesterday.getFullYear();
