@@ -93,28 +93,28 @@ router.route('/identifier/:documentId')
         });
     })
 
-// // ######## UPDATE TOPICS ##############    
-// // Add route with parameters and different CRUD operations (GET, DELETE and PUT) 
-// router.route('/identifier/:documentId/topics/:topics')    
-//     .put((req, res)=>{
-//         var collection = db.collection("news");
-//         var query = {'_id': new mongo.ObjectID(req.params.documentId)};
-//         var topicsToAssign = req.params.topics == " "? "void_topics_string" : req.params.topics
-//         var updatedTopics = topicsToAssign === "void_topics_string"?
-//                                         {$unset: {topics: ""}}:
-//                                         {$set: {topics: topicsToAssign}};
+// ######## UPDATE TOPICS ##############    
+// Add route with parameters and different CRUD operations (GET, DELETE and PUT) 
+router.route('/identifier/:documentId/topics/:topics')    
+    .put((req, res)=>{
+        var collection = db.collection("news_discarded");
+        var query = {'_id': new mongo.ObjectID(req.params.documentId)};
+        var topicsToAssign = req.params.topics == " "? "void_topics_string" : req.params.topics
+        var updatedTopics = topicsToAssign === "void_topics_string"?
+                                        {$unset: {topics: ""}}:
+                                        {$set: {topics: topicsToAssign}};
 
-//         collection.updateOne(query, updatedTopics, function (err, results) {
-//             if (err)
-//                 {
-//                 console.log(err)
-//                 res.status(500).send(err)
-//                 }
-//             else {
-//                 res.json({ success: req.params.documentId })
-//             }
-//         })
-//     })
+        collection.updateOne(query, updatedTopics, function (err, results) {
+            if (err)
+                {
+                console.log(err)
+                res.status(500).send(err)
+                }
+            else {
+                res.json({ success: req.params.documentId })
+            }
+        })
+    })
 
 // // TODO: add timeout to responses:
 // // https://stackoverflow.com/questions/21708208/express-js-response-timeout
