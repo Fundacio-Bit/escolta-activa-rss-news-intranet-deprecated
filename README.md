@@ -1,5 +1,3 @@
-# rss_intranet
-
 RSS intranet
 ============
 
