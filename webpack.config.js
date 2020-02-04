@@ -35,10 +35,10 @@ module.exports = {
           presets: ['es2015', 'react', 'stage-2']
         }
       },
-      // {
-      //   test: /\.css$/,
-      //   loader: ExtractTextPlugin.extract('style', 'css')
-      // },
+      {
+        test: /\.css$/,
+        loader: ExtractTextPlugin.extract('style', 'css')
+      },
       {
         test: /\.css$/,
         loader: 'style-loader!css-loader'
@@ -49,10 +49,10 @@ module.exports = {
     new HtmlWebpackPlugin({
       template: __dirname + "/src/index.html"
     }),
-    // new ExtractTextPlugin("bundle.css"),
+    new ExtractTextPlugin("bundle.css"),
     // Descomentar para pasar a produccion
-    // new webpack.optimize.UglifyJsPlugin({ sourceMap: true }),
-    // new BundleAnalyzerPlugin(),
+    new webpack.optimize.UglifyJsPlugin({ sourceMap: true }),
+    new BundleAnalyzerPlugin(),
   ]
 }
 
