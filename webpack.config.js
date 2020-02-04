@@ -39,10 +39,10 @@ module.exports = {
         test: /\.css$/,
         loader: ExtractTextPlugin.extract('style', 'css')
       },
-      {
-        test: /\.css$/,
-        loader: 'style-loader!css-loader'
-      },
+      // {
+      //   test: /\.css$/,
+      //   loader: 'style-loader!css-loader'
+      // },
     ]
   },
   plugins: [
