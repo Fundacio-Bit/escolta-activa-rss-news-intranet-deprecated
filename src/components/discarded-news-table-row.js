@@ -40,9 +40,13 @@ const styles = theme => ({
     dateTableCell: {
       width: 90,
     },
+    tooltipContainer:{
+      overflow: 'visible'
+    },
     customizedTooltip: {
       fontSize: 14,
-      maxWidth: 600,
+      maxWidth: 400,
+      marginRight: 50
     },
     root: {
       overflowY:'hidden',
@@ -245,7 +249,6 @@ const styles = theme => ({
             });
           }
       }
- 
 
     render () {
       const { classes, theme } = this.props;
@@ -279,12 +282,13 @@ const styles = theme => ({
                 classes={{ tooltip: classes.customizedTooltip }}
                 title={
                   <React.Fragment>
-                    <p>{this.props.summary}</p>
+                    <p>{this.props.summary.length > 500 ? `${this.props.summary.slice(0,600)}...`: this.props.summary}</p>
                     <p><strong>{this.props.source_name}</strong> - {this.props.section}</p>
                     <p>Marca: <strong>{this.props.brand}</strong></p>
                   </React.Fragment>}
                 enterDelay={500}
-                leaveDelay={200}>
+                leaveDelay={200}
+                placement='bottom'>
                 <a href={this.props.link}  style={{ textDecoration: 'none' }} target="_blank"><h3>{this.props.title}</h3></a>
               </Tooltip>
             </div>
