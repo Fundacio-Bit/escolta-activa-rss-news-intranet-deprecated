@@ -14,24 +14,33 @@ MongoClient.connect("mongodb://localhost:27017/",  { useNewUrlParser: true, useU
     db = client.db('rss_fbit_db');
 });
 
-
-// get all entries from discarded news
-router.get("/entries", (req, res) =>
+// get all entries from news-discarded in a daterange
+router.get("/entries/starting-date/:startingDate/ending-date/:endingDate", (req, res) =>
 {
+    // var datesArray = req.params.daterange.split('_')
+    var startDate = req.params.startingDate
+    var endDate = req.params.endingDate
     var collection = db.collection("news_discarded");
-    collection.find({}, {
-                "_id": 1,
-                "published": 1,
-                "extraction_date": 1,
-                "brand": 1,
-                "title": 1,
-                "topics": 1,
-                "link": 1,
-                "summary": 1,
-                "description": 1,
-                "section": 1,
-                "source_id": 1,
-                "source_name": 1
+    collection.find(
+        {
+        'published': {
+            '$gte': new Date(startDate),
+            '$lt': new Date(endDate)
+            }
+        },
+        {
+            "_id": 1,
+            "published": 1,
+            "extraction_date": 1,
+            "brand": 1,
+            "title": 1,
+            "topics": 1,
+            "link": 1,
+            "summary": 1,
+            "description": 1,
+            "section":1,
+            "source_id": 1,
+            "source_name": 1
         }).sort( { 'published': -1 } ).toArray((err, docs) =>
     {
         if(err) {
@@ -49,6 +58,7 @@ router.route('/news-discarded')
 {
     var collection = db.collection("news_discarded");
     delete  req.body._id
+    req.body.published = new Date(req.body.published)    
     collection.insertOne(req.body, function (err, results) {
         if (err)
             {
