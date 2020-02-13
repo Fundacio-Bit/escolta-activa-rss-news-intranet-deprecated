@@ -184,7 +184,7 @@ export const NewsTable = (props) => {
   // Once the data have been updated in mongo a setLastUpdateTimestamp with the timestamp at that moment will
   // relaunch the useEfect as determined by its dependencies, thereby the whole updated data list will be retrieved
   // again.
-  useEffect(() => {
+  useEffect(() => {   
     
     let unmounted = false;
 
@@ -195,7 +195,7 @@ export const NewsTable = (props) => {
       }
 
       try {
-        axios.get('/rss-news/entries').then((results) => { 
+        axios.get(`/rss-news/entries/starting-date/${props.selectedDateFrom}/ending-date/${props.selectedDateTo}`).then((results) => { 
           if (results.data.results.length > 0) { 
             // OK
             // Beware with this:
@@ -241,7 +241,7 @@ export const NewsTable = (props) => {
     // https://en.reactjs.org/docs/hooks-effect.html#effects-with-cleanup
     return () => unmounted = true;
 
-  }, [lastUpdateTimestamp]);
+  }, [lastUpdateTimestamp, props.selectedDateFrom, props.selectedDateTo]);
 
   // Second useEffect. To retrieve the topics array. Executes on mounting and each time that "allTopics" changes.
   useEffect(() => {
@@ -293,7 +293,7 @@ export const NewsTable = (props) => {
     
     // Cleanup function. Here it is used to avoid the execution of setAllTopics on unmounted components.
     return () => unmounted = true;
-  }, [lastUpdateTimestamp]);
+  }, [lastUpdateTimestamp, props.selectedDateFrom, props.selectedDateTo]);
 
   // TODO: handle the addition of topics with special chars or commas. Also avoid duplicates.
   function handleUpdateTopics(id, topicsString) {
@@ -334,6 +334,7 @@ export const NewsTable = (props) => {
     const retrievedNews = data;
     const index = retrievedNews.findIndex(x => x._id == id);
     const removed_new = retrievedNews[index]
+
     axios.post('/rss-discarded-news/news-discarded/', 
                 removed_new, 
                 {headers: {'Content-Type': 'application/json' }}

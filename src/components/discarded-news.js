@@ -20,24 +20,19 @@ const styles = theme => ({
 
 class DiscardedNews extends Component {
   constructor(props) {
+
     var today = new Date();
     today.setDate(today.getDate() + 1);
     var dd = String(today.getDate()).padStart(2, '0');
     var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
     var yyyy = today.getFullYear();
-    today = yyyy + '-' + mm + '-' + dd;
-  
-    var yesterday = new Date();
-    // yesterday.setDate(yesterday.getDate() - 1);
-    dd = String(yesterday.getDate()).padStart(2, '0');
-    mm = String(yesterday.getMonth() + 1).padStart(2, '0'); //January is 0!
-    yyyy = yesterday.getFullYear();
-    yesterday = yyyy + '-' + mm + '-' + dd;
+    var today_str = yyyy + '-' + mm + '-' + dd;
+    var first_month_day_str = yyyy + '-' + mm + '-01'
 
     super(props);
     this.state = {
-      selectedDateFrom: yesterday,
-      selectedDateTo: today,
+      selectedDateFrom: first_month_day_str,
+      selectedDateTo: today_str,
       searchType: 0,
       searchTerm: '',
     };

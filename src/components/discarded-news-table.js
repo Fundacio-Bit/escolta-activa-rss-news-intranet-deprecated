@@ -120,16 +120,6 @@ export const DiscardedNewsTable = (props) => {
   if (props.selectedDateTo) {
     filteredData = filteredData.filter(filterByDate);
   } 
-  // if (props.isChecked) {
-  //   filteredData = filteredData.filter(filterByChecked);
-  //   console.log('time to filter') 
-  // }
-  // if (props.selectedCountry) {
-  //   if (props.selectedCountry != 'Tots') {
-  //     filteredData = filteredData.filter(filterByCountry);
-  //     console.log('time to filter')  
-  //   }
-  // } 
   if (props.searchType === 0){
     filteredData = filteredData.filter(filterBySearchTerm);
   }
@@ -152,7 +142,7 @@ export const DiscardedNewsTable = (props) => {
       }
 
       try {
-        axios.get('/rss-discarded-news/entries').then((results) => { 
+        axios.get(`/rss-discarded-news/entries/starting-date/${props.selectedDateFrom}/ending-date/${props.selectedDateTo}`).then((results) => { 
           if (results.data.results.length > 0) { 
             // OK
             setTimeout(() => {
@@ -192,7 +182,7 @@ export const DiscardedNewsTable = (props) => {
     // Cleanup function.
     return () => unmounted = true;
 
-  }, [lastUpdateTimestamp]);
+  }, [lastUpdateTimestamp, props.selectedDateFrom, props.selectedDateTo]);
 
   // Second useEffect. To retrieve the topics array. Executes on mounting and each time that "allTopics" changes.
   useEffect(() => {
@@ -244,7 +234,7 @@ export const DiscardedNewsTable = (props) => {
     
     // Cleanup function. Here it is used to avoid the execution of setAllTopics on unmounted components.
     return () => unmounted = true;
-  }, [lastUpdateTimestamp]);
+  }, [lastUpdateTimestamp, props.selectedDateFrom, props.selectedDateTo]);
 
   // TODO: handle the addition of topics with special chars or commas. Also avoid duplicates.
   function handleUpdateTopics(id, topicsString) {
