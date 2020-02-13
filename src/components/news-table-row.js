@@ -280,7 +280,7 @@ const styles = theme => ({
                 classes={{ tooltip: classes.customizedTooltip }}
                 title={
                   <React.Fragment>
-                    <p>{this.props.summary.length > 500 ? `${this.props.summary.slice(0,600)}...`: this.props.summary}</p>
+                    <p>{this.props.summary.length > 600 ? `${this.props.summary.slice(0,600)}...`: this.props.summary}</p>
                     <p><strong>{this.props.source_name}</strong> - {this.props.section}</p>
                     <p>Marca: <strong>{this.props.brand}</strong></p>
                   </React.Fragment>}
