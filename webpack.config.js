@@ -51,7 +51,7 @@ module.exports = {
     }),
     new ExtractTextPlugin("bundle.css"),
     // Descomentar para pasar a produccion
-    new webpack.optimize.UglifyJsPlugin({ sourceMap: true }),
+    // new webpack.optimize.UglifyJsPlugin({ sourceMap: true }),
     // new BundleAnalyzerPlugin(),
   ]
 }
