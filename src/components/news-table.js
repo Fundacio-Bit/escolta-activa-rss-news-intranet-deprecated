@@ -209,10 +209,11 @@ export const NewsTable = (props) => {
             }, 850);
           }
           else {
-            // Error
+            // No data returned
             if (!unmounted) {
-              console.log(getErrorMessage(results));
-              setErrorStatus( { error: true, message: baseErrorMessage } );
+              // console.log(getErrorMessage(results));
+              // setErrorStatus( { error: true, message: baseErrorMessage } );
+              setData([])
               setLoading(false);
             }
           }
@@ -249,42 +250,28 @@ export const NewsTable = (props) => {
     let unmounted = false;
 
     const fetchData = () => {
-      // if (!unmounted) {
-      //   setErrorStatus({error: false, message: ''});
-      //   setLoading(true);
-      // }
 
       try {
         axios.get('/rss-topics/topics').then((results) => {               
           if (results.data.results.length > 0) {            
             // OK
-            setTimeout(() => {
-              if (!unmounted) {
-                setErrorStatus({error: false, message: ''});
-                // setLoading(false);
-                setAllTopics(results.data.results);
-              }
-            }, 850);
+            setAllTopics(results.data.results);
           }
-          else {
-            // Error
-            if (!unmounted) {
-              console.log(getErrorMessage(results));
-              setErrorStatus( { error: true, message: baseErrorMessage } );
-              // setLoading(false);
-            }
-          }
-        }).catch(error => {
+          // else {
+          //   // Error
+          //   if (!unmounted) {
+          //     // console.log(getErrorMessage(results));
+          //     // setErrorStatus( { error: true, message: baseErrorMessage } );
+          //     // setLoading(false);
+          //   }
+          // }
+        }).catch(error => {        
           console.log(getErrorMessage(error));
-          setErrorStatus( { error: true, message: baseErrorMessage } );
-          // setLoading(false);
         }); 
 
       } catch (error) {
         if (!unmounted) {          
           console.error(error);
-          setErrorStatus( { error: true, message: baseErrorMessage } );
-          // setLoading(false);
         }
       }
     }
@@ -293,7 +280,7 @@ export const NewsTable = (props) => {
     
     // Cleanup function. Here it is used to avoid the execution of setAllTopics on unmounted components.
     return () => unmounted = true;
-  }, [lastUpdateTimestamp, props.selectedDateFrom, props.selectedDateTo]);
+  }, [lastUpdateTimestamp]);
 
   // TODO: handle the addition of topics with special chars or commas. Also avoid duplicates.
   function handleUpdateTopics(id, topicsString) {
@@ -349,8 +336,8 @@ export const NewsTable = (props) => {
   }
 
   // Sorting data
-  filteredData.sort(getSorting(orderBy, order));
-
+  // filteredData.sort(getSorting(orderBy, order));
+ 
   return (
     <div>
       {errorStatus.error &&
@@ -368,7 +355,7 @@ export const NewsTable = (props) => {
         <Paper className={classes.root}>
         <div className={classes.tableWrapper}>
           <Table className={classes.table} aria-labelledby="tableTitle">
-            {data.length > 0 && (
+            {filteredData.length > 0 && (
               <NewsTableHead
                 order = { order }
                 orderBy = { orderBy }
@@ -376,7 +363,7 @@ export const NewsTable = (props) => {
               />
             )}
             <TableBody>
-            {filteredData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(u => {
+            {filteredData.length > 0 && filteredData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(u => {
               return (                    
                 <NewsTableRow
                 //TODO:check what are keys for. They should be unique and cannot be rendered in the DOM
