@@ -15,17 +15,18 @@ MongoClient.connect("mongodb://localhost:27017/",  { useNewUrlParser: true, useU
 });
 
 // get all entries from news-discarded in a daterange
-router.get("/entries/starting-date/:startingDate/ending-date/:endingDate", (req, res) =>
+router.get("/entries/yearmonth/:yearmonth", (req, res) =>
 {
-    // var datesArray = req.params.daterange.split('_')
-    var startDate = req.params.startingDate
-    var endDate = req.params.endingDate
+    queryMonth = req.params.yearmonth.split('-')[1]
+    queryYear = req.params.yearmonth.split('-')[0]
+    var startDate = new Date(parseInt(queryYear), parseInt(queryMonth) - 1, 1)
+    var endDate = new Date(parseInt(queryYear), parseInt(queryMonth) , 1)
     var collection = db.collection("news_discarded");
     collection.find(
         {
         'published': {
-            '$gte': new Date(startDate),
-            '$lt': new Date(endDate)
+            '$gte': startDate,
+            '$lt': endDate
             }
         },
         {

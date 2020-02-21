@@ -20,40 +20,27 @@ const styles = theme => ({
 
 class DiscardedNews extends Component {
   constructor(props) {
-
     var today = new Date();
-    today.setDate(today.getDate() + 1);
-    var dd = String(today.getDate()).padStart(2, '0');
     var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
     var yyyy = today.getFullYear();
-    var today_str = yyyy + '-' + mm + '-' + dd;
-    var first_month_day_str = yyyy + '-' + mm + '-01'
+    var year_month_str = yyyy + '-' + mm
 
     super(props);
     this.state = {
-      selectedDateFrom: first_month_day_str,
-      selectedDateTo: today_str,
+      selectedMonth: year_month_str, 
       searchType: 0,
       searchTerm: '',
     };
     
-    // Create a ref b
-    // this.newsTableElement = React.createRef();
 
     // This binding is necessary to make `this` work in the callback
-    this.handleDateFrom = this.handleDateFrom.bind(this);
-    this.handleDateTo = this.handleDateTo.bind(this);
+    this.handleChangeMonth = this.handleChangeMonth.bind(this);
     this.handleSearchTermChange = this.handleSearchTermChange.bind(this);
     this.handleSearchTypeChange = this.handleSearchTypeChange.bind(this);
   }
-
-
-  handleDateFrom(enteredDate) {
-    this.setState({selectedDateFrom: enteredDate});
-  }
-
-  handleDateTo(enteredDate) {
-    this.setState({selectedDateTo: enteredDate});
+    
+  handleChangeMonth(enteredDate) {
+    this.setState({selectedMonth: enteredDate});
   }
 
   handleSearchTermChange(enteredSearchTerm){
@@ -72,19 +59,15 @@ class DiscardedNews extends Component {
             <Grid item xs={12}>
               <Paper className={classes.paper}>
                 <DiscardedNewsSearchAppBar
-                  selectedDateFrom = {this.state.selectedDateFrom}
-                  selectedDateTo = {this.state.selectedDateTo}
-                  onSelectDateFrom={this.handleDateFrom}
-                  onSelectDateTo={this.handleDateTo}
+                  selectedMonth = {this.state.selectedMonth}
+                  onSelectMonth={this.handleChangeMonth}
                   searchTerm={this.state.searchTerm}
                   searchType={this.state.searchType}
                   onSearchTermChange={this.handleSearchTermChange}
                   onSearchTypeChange={this.handleSearchTypeChange}
                 />
                 <DiscardedNewsTable
-                  // innerRef={this.newsTableElement}
-                  selectedDateFrom = {this.state.selectedDateFrom}
-                  selectedDateTo = {this.state.selectedDateTo}
+                  selectedMonth = {this.state.selectedMonth}
                   searchType = {this.state.searchType}
                   searchTerm = {this.state.searchTerm}
                 />     

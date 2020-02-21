@@ -15,47 +15,18 @@ MongoClient.connect("mongodb://localhost:27017/",  { useNewUrlParser: true, useU
 });
 
 
-// get all entries from news
-router.get("/entries", (req, res) =>
-{
-    var collection = db.collection("news");
-    collection.find({}, {
-                "_id": 1,
-                "published": 1,
-                "extraction_date": 1,
-                "brand": 1,
-                "title": 1,
-                "topics": 1,
-                "link": 1,
-                "summary": 1,
-                "description": 1,
-                "section":1,
-                // "selected": 1,
-                "source_id": 1,
-                "source_name": 1
-        }).sort( { 'published': -1 } ).toArray((err, docs) =>
-    {
-        if(err) {
-            console.log(err)
-            res.status(500).send(err)
-        } else {
-            res.json({"results": docs});
-        }
-    });
-});
-
-
 // get all entries from news in a daterange
-router.get("/entries/starting-date/:startingDate/ending-date/:endingDate", (req, res) =>
+router.get("/entries/yearmonth/:yearmonth", (req, res) =>
 {
-    // var datesArray = req.params.daterange.split('_')
-    var startDate = req.params.startingDate
-    var endDate = req.params.endingDate
+    queryMonth = req.params.yearmonth.split('-')[1]
+    queryYear = req.params.yearmonth.split('-')[0]
+    var startDate = new Date(parseInt(queryYear), parseInt(queryMonth) - 1, 1)
+    var endDate = new Date(parseInt(queryYear), parseInt(queryMonth) , 1)
     var collection = db.collection("news");
     collection.find({
         'published': {
-            '$gte': new Date(startDate),
-            '$lt': new Date(endDate)
+            '$gte': startDate,
+            '$lt': endDate
             }
         },{
             "_id": 1,
@@ -81,6 +52,7 @@ router.get("/entries/starting-date/:startingDate/ending-date/:endingDate", (req,
         }
     });
 });
+
 
 // Add route without parameters
 router.route('/news')
@@ -128,7 +100,7 @@ router.route('/identifier/:documentId')
                 res.status(500).send(err)
                 }
             else { 
-                console.log("Deletimg id " + req.params.documentId + ': ' + results)
+                console.log("Deleting id " + req.params.documentId + ': ' + results)
                 res.json({ success: req.params.documentId })
             }
         });

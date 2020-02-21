@@ -75,22 +75,7 @@ export const NewsTable = (props) => {
   const all = [5,10,25,50];
   const emptyRows = rowsPerPage - Math.min(rowsPerPage, data.length - page * rowsPerPage);
 
-  function filterByDate(pressNew) {
-    var dateFrom = props.selectedDateFrom.split("-");
-    var dateTo = props.selectedDateTo.split("-");
-
-    var from = new Date(dateFrom[0], parseInt(dateFrom[1])-1, dateFrom[2]);  // -1 because months are from 0 to 11
-    var to   = new Date(dateTo[0], parseInt(dateTo[1])-1, dateTo[2]);
-
-    if (pressNew.hasOwnProperty("published"))
-    {
-      var published = new Date(pressNew.published)
-      if (published >= from && published <= to){
-        return true
-      } else return false
-    }
-  };
-
+  
   function filterByCountry(pressNew) {
     if (pressNew.hasOwnProperty("source_id") && pressNew.source_id.includes(props.selectedCountry)) {
       return true
@@ -127,12 +112,6 @@ export const NewsTable = (props) => {
   // Filtering data
   let filteredData = data.slice();
 
-  if (props.selectedDateFrom) {
-    filteredData = filteredData.filter(filterByDate);
-  } 
-  if (props.selectedDateTo) {
-    filteredData = filteredData.filter(filterByDate);
-  } 
   if (props.isChecked) {
     filteredData = filteredData.filter(filterByChecked);
     console.log('time to filter') 
@@ -191,11 +170,11 @@ export const NewsTable = (props) => {
     const fetchData = () => {
       if (!unmounted) {
         setErrorStatus({error: false, message: ''});
-        // setLoading(true);
+        setLoading(true);
       }
 
       try {
-        axios.get(`/rss-news/entries/starting-date/${props.selectedDateFrom}/ending-date/${props.selectedDateTo}`).then((results) => { 
+        axios.get(`/rss-news/entries/yearmonth/${props.selectedMonth}`).then((results) => { 
           if (results.data.results.length > 0) { 
             // OK
             // Beware with this:
@@ -210,9 +189,7 @@ export const NewsTable = (props) => {
           }
           else {
             // No data returned
-            if (!unmounted) {
-              // console.log(getErrorMessage(results));
-              // setErrorStatus( { error: true, message: baseErrorMessage } );
+            if (!unmounted) {      
               setData([])
               setLoading(false);
             }
@@ -242,7 +219,7 @@ export const NewsTable = (props) => {
     // https://en.reactjs.org/docs/hooks-effect.html#effects-with-cleanup
     return () => unmounted = true;
 
-  }, [lastUpdateTimestamp, props.selectedDateFrom, props.selectedDateTo]);
+  }, [lastUpdateTimestamp, props.selectedMonth]);
 
   // Second useEffect. To retrieve the topics array. Executes on mounting and each time that "allTopics" changes.
   useEffect(() => {
@@ -257,14 +234,6 @@ export const NewsTable = (props) => {
             // OK
             setAllTopics(results.data.results);
           }
-          // else {
-          //   // Error
-          //   if (!unmounted) {
-          //     // console.log(getErrorMessage(results));
-          //     // setErrorStatus( { error: true, message: baseErrorMessage } );
-          //     // setLoading(false);
-          //   }
-          // }
         }).catch(error => {        
           console.log(getErrorMessage(error));
         }); 
@@ -366,8 +335,6 @@ export const NewsTable = (props) => {
             {filteredData.length > 0 && filteredData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(u => {
               return (                    
                 <NewsTableRow
-                //TODO:check what are keys for. They should be unique and cannot be rendered in the DOM
-                // using prop.key
                   key={ u._id }
                   published={ u.published }
                   docId={ u._id }
