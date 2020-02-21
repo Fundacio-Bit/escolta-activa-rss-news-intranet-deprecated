@@ -280,9 +280,12 @@ const styles = theme => ({
                 classes={{ tooltip: classes.customizedTooltip }}
                 title={
                   <React.Fragment>
-                    <p>{this.props.summary.length > 600 ? `${this.props.summary.slice(0,600)}...`: this.props.summary}</p>
-                    <p><strong>{this.props.source_name}</strong> - {this.props.section}</p>
-                    <p>Marca: <strong>{this.props.brand}</strong></p>
+                    <p>{ this.props.summary.length > 600 ? `${this.props.summary.slice(0,600)}...`: this.props.summary }</p>
+                    <p><strong>{this.props.source_name}</strong> </p>
+                    <p>{ this.props.section.split('\n').map((item, key) => {
+                        return <span key={key}>{item}<br/></span>
+                      })}</p>
+                    <p>Marca: <strong>{ this.props.brand }</strong></p>
                   </React.Fragment>}
                 enterDelay={500}
                 leaveDelay={200}>
