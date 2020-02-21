@@ -4,7 +4,9 @@
   "description": "RSS Intranet",
   "scripts": {
     "start": "node server.js",
-    "build": "webpack --config ./webpack.config.js --progress"
+    "build": "webpack --watch --colors",
+    "build_prod": "(if exist build rmdir /q /s build) && webpack --config webpack_prod.config.js",
+    "build_dev": "(if exist build rmdir /q /s build) && webpack --config webpack_dev.config.js"
   },
   "author": "omoya@funadciobit.org",
   "license": "undefined",
