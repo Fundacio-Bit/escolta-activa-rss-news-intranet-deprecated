@@ -30,32 +30,30 @@ const styles = theme => ({
   form: {
     flexBasis: '85%',
   },
-
   textField: {
-    marginLeft: 20,
-    width: '15%',
+    minWidth:'12%',
+    paddingRight: 10,
+    marginLeft: 10,
+    marginRight: 20, 
+    marginTop:10
   },
-
   selectMenu:{
     color: 'red',
-  },
-  
+  },  
   search: {
-    marginLeft: 15,
+    marginLeft: 10,
     display: 'flex',
-    alignItems: 'center',
-    width: "30%",
-    height: 50
+    height: 50,
+    marginTop:7
   },
 
-  select: {
-    width: '30%',
+  searchSelect: {
+    width: '30%'
   },
 
   input: {
     marginLeft: 8,
     height: 50,
-    marginTop: 15
   },
 
   iconButton: {
@@ -66,21 +64,16 @@ const styles = theme => ({
 class NewsSearchAppBar extends Component {
   constructor(props) {
     super(props);
-  
-    this.handleDateFrom = this.handleDateFrom.bind(this);
-    this.handleDateTo = this.handleDateTo.bind(this);
+
+    this.handleMonthChange = this.handleMonthChange.bind(this);
     this.handleRevisedSelectChange = this.handleRevisedSelectChange.bind(this);
     this.handleCountrySelectChange = this.handleCountrySelectChange.bind(this);
     this.handleSearchTermChange = this.handleSearchTermChange.bind(this);
     this.handleSearchTypeChange = this.handleSearchTypeChange.bind(this);
   }
-  
-  handleDateFrom(event){
-    this.props.onSelectDateFrom(event.target.value);
-  }
 
-  handleDateTo(event){
-    this.props.onSelectDateTo(event.target.value);
+  handleMonthChange(event){
+    this.props.onSelectMonth(event.target.value);
   }
 
   handleRevisedSelectChange(event){
@@ -114,25 +107,14 @@ class NewsSearchAppBar extends Component {
               <form className={classes.container} noValidate>
                 <TextField
                   id="dateFrom"
-                  label="Des de"
-                  type="date"
-                  value={this.props.selectedDateFrom}
+                  label="Mes"
+                  type="month"                 
+                  value={this.props.selectedMonth}
                   className={classes.textField}
                   InputLabelProps={{
                     shrink: true,
                   }}
-                  onChange={this.handleDateFrom}
-                />
-                <TextField
-                  id="dateTo"
-                  label="Fins a"
-                  type="date"
-                  value={this.props.selectedDateTo}
-                  className={classes.textField}
-                  InputLabelProps={{
-                    shrink: true,
-                  }}
-                  onChange={this.handleDateTo}
+                  onChange={this.handleMonthChange}
                 />
                 <TextField
                   select
@@ -162,7 +144,7 @@ class NewsSearchAppBar extends Component {
                 <Paper className={classes.search} elevation={1}>
                   <TextField
                     select
-                    className={classes.select}
+                    className={classes.searchSelect}
                     value={this.props.searchType}
                     onChange={this.handleSearchTypeChange}
                     variant="filled"
