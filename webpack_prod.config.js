@@ -2,6 +2,7 @@ const webpack = require('webpack');
 var path = require('path');
 var HtmlWebpackPlugin = require('html-webpack-plugin');
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
+const CleanWebpackPlugin = require("clean-webpack-plugin");
 
 module.exports = {
   // Options for devtool at:
@@ -50,6 +51,7 @@ module.exports = {
     }),
     new ExtractTextPlugin("bundle.css"),
     new webpack.optimize.UglifyJsPlugin({ sourceMap: true }),
+    new CleanWebpackPlugin(["build"], { root: __dirname })
   ]
 }
 
