@@ -306,7 +306,7 @@ export const NewsTable = (props) => {
 
   // Sorting data
   // filteredData.sort(getSorting(orderBy, order));
- 
+
   return (
     <div>
       {errorStatus.error &&
