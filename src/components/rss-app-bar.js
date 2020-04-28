@@ -4,6 +4,7 @@ import { withStyles } from '@material-ui/core/styles';
 import { AppBar, Tabs, Tab, Popover, MenuItem} from "@material-ui/core";
 import News from './news';
 import DiscardedNews from './discarded-news';
+import { Topics } from './topics';
 import Graphs from './graphs';
 import FilterableSourcesTable from './filterable-sources-table';
 import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
@@ -91,17 +92,19 @@ class RSSAppBar extends Component {
         >
           <Tabs className={classes.tabs} value={value} onChange={this.handleChange}>
               <Tab
-                  label="NOTICIAS" 
+                  label="NOTÍCIES" 
                   classes = {{wrapper: classes.Tab}}
                   value = {0}
                   icon = {< ArrowDropDownIcon onClick = {this.handleClick}/>}
                   onClick = {() => this.setState({content: <News/>})
                 }
             />
-            <Tab label="FUENTES" value="1"  
+            <Tab label="FONTS" value="1"  
               onClick={() => this.setState({ content: <FilterableSourcesTable/> })}/>
-            <Tab label="GRAPHS" value="2"
+            <Tab label="GRÀFIQUES" value="2"
               onClick={() => this.setState({ content: <Graphs/> })}/>
+            <Tab label="TEMES" value="3"
+              onClick={() => this.setState({ content: <Topics/> })}/>
           </Tabs>
         </AppBar>
         {/* {value === 0 && <News/>}
@@ -127,10 +130,10 @@ class RSSAppBar extends Component {
           }
         >
           <MenuItem onClick = {() => this.handleMenuItemClick(0)}>
-            Noticias
+            Notícies
           </MenuItem>
           <MenuItem onClick = {() => this.handleMenuItemClick(3)}>
-            Descartadas
+            Descartades
           </MenuItem>
         </Popover>
       </div>
