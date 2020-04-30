@@ -5,8 +5,8 @@
   "scripts": {
     "start": "node server.js",
     "build": "webpack --watch --colors",
-    "build_prod": "webpack --config webpack_prod.config.js",
-    "build_dev": "(if exist build rmdir /q /s build) && webpack --config webpack_dev.config.js"
+    "build:prod": "webpack --config webpack_prod.config.js",
+    "build:dev": "(if exist build rmdir /q /s build) && webpack --config webpack_dev.config.js & node server.js"
   },
   "author": "omoya@fundaciobit.org",
   "license": "undefined",
