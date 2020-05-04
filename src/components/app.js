@@ -3,6 +3,9 @@ import RSSAppBar from './rss-app-bar';
 import { createMuiTheme } from '@material-ui/core/styles';
 import { MuiThemeProvider } from '@material-ui/core/styles';
 
+// TODO: minimize bundle size:
+// https://material-ui.com/es/guides/minimizing-bundle-size/
+
 // Migration to Typography 2
 // https://v3.material-ui.com/style/typography/#migration-to-typography-v2
 const theme = createMuiTheme({

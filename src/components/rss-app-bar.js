@@ -1,32 +1,30 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
-import { AppBar, Tabs, Tab, Popover, MenuItem} from "@material-ui/core";
-import News from './news';
-import DiscardedNews from './discarded-news';
-import Graphs from './graphs';
-import FilterableSourcesTable from './filterable-sources-table';
+import React, { Component } from "react";
+import PropTypes from "prop-types";
+import { withStyles } from "@material-ui/core/styles";
+import { AppBar, Tabs, Tab, Popover, MenuItem } from "@material-ui/core";
+import News from "./news";
+import DiscardedNews from "./discarded-news";
+import { Topics } from "./topics";
+import Graphs from "./graphs";
+import FilterableSourcesTable from "./filterable-sources-table";
 import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
 
 const styles = {
-    root: {
-        flexGrow: 1,
-    },
-    appBar: {
-        flexWrap: 'wrap',
-    },
-    tabs: {
-        width: '100%',
-    },
-    Tab: {
-        flexDirection: "row-reverse"
-    }
+  root: {
+    flexGrow: 1,
+  },
+  appBar: {
+    flexWrap: "wrap",
+  },
+  tabs: {
+    width: "100%",
+  },
+  Tab: {
+    flexDirection: "row-reverse",
+  },
 };
 
-
-
 class RSSAppBar extends Component {
-  
   // state = {
   //   value: 0,
   // };
@@ -35,8 +33,8 @@ class RSSAppBar extends Component {
     super(props);
     this.state = {
       value: 0,
-      content: <News/>,
-      anchorEl: null
+      content: <News />,
+      anchorEl: null,
     };
     // This binding is necessary to make `this` work in the callback
     this.handleChange = this.handleChange.bind(this);
@@ -44,7 +42,7 @@ class RSSAppBar extends Component {
     this.handleClose = this.handleClose.bind(this);
     this.handleMenuItemClick = this.handleMenuItemClick.bind(this);
   }
-  
+
   handleChange(event, value) {
     this.setState({ value });
   }
@@ -52,56 +50,65 @@ class RSSAppBar extends Component {
   handleClick(event) {
     event.stopPropagation();
     this.setState({
-      anchorEl: event.currentTarget
+      anchorEl: event.currentTarget,
     });
   }
 
   handleClose() {
     this.setState({
-      anchorEl: null
+      anchorEl: null,
     });
   }
 
   handleMenuItemClick(menuItem) {
-    this.handleClose()
-    var content = null
+    this.handleClose();
+    var content = null;
     if (menuItem === 0) {
-      content = <News/>
-    }
-    else if (menuItem === 3) {
-      content = <DiscardedNews/>
+      content = <News />;
+    } else if (menuItem === 3) {
+      content = <DiscardedNews />;
     }
     this.setState({
       // label: menuItem,
       content: content,
-      value: 0
+      value: 0,
     });
   }
 
-  render () {
+  render() {
     const { classes } = this.props;
     const { value } = this.state;
     const open = Boolean(this.state.anchorEl);
-    
+
     return (
       <div className={classes.root}>
-        <AppBar
-          position="static"
-          className={classes.appBar}
-        >
-          <Tabs className={classes.tabs} value={value} onChange={this.handleChange}>
-              <Tab
-                  label="NOTICIAS" 
-                  classes = {{wrapper: classes.Tab}}
-                  value = {0}
-                  icon = {< ArrowDropDownIcon onClick = {this.handleClick}/>}
-                  onClick = {() => this.setState({content: <News/>})
-                }
+        <AppBar position="static" className={classes.appBar}>
+          <Tabs
+            className={classes.tabs}
+            value={value}
+            onChange={this.handleChange}
+          >
+            <Tab
+              label="NOTÍCIES"
+              classes={{ wrapper: classes.Tab }}
+              value={0}
+              icon={<ArrowDropDownIcon onClick={this.handleClick} />}
+              onClick={() => this.setState({ content: <News /> })}
             />
-            <Tab label="FUENTES" value="1"  
-              onClick={() => this.setState({ content: <FilterableSourcesTable/> })}/>
-            <Tab label="GRAPHS" value="2"
-              onClick={() => this.setState({ content: <Graphs/> })}/>
+            <Tab
+              label="FONTS"
+              value="1"
+              onClick={() =>
+                this.setState({ content: <FilterableSourcesTable /> })
+              }
+            />
+            {/* <Tab label="GRÀFIQUES" value="2"
+              onClick={() => this.setState({ content: <Graphs/> })}/> */}
+            <Tab
+              label="TEMES"
+              value="3"
+              onClick={() => this.setState({ content: <Topics /> })}
+            />
           </Tabs>
         </AppBar>
         {/* {value === 0 && <News/>}
@@ -110,31 +117,27 @@ class RSSAppBar extends Component {
         {value === 3 && <DiscardedNews/>} */}
         {this.state.content}
         <Popover
-          open = {open}
-          anchorEl = {this.state.anchorEl}
-          onClose = {this.handleClose}
-          anchorOrigin = {
-            {
-              vertical: "bottom",
-              horizontal: "center"
-            }
-          }
-          transformOrigin = {
-            {
-              vertical: "top",
-              horizontal: "center"
-            }
-          }
+          open={open}
+          anchorEl={this.state.anchorEl}
+          onClose={this.handleClose}
+          anchorOrigin={{
+            vertical: "bottom",
+            horizontal: "center",
+          }}
+          transformOrigin={{
+            vertical: "top",
+            horizontal: "center",
+          }}
         >
-          <MenuItem onClick = {() => this.handleMenuItemClick(0)}>
-            Noticias
+          <MenuItem onClick={() => this.handleMenuItemClick(0)}>
+            Notícies
           </MenuItem>
-          <MenuItem onClick = {() => this.handleMenuItemClick(3)}>
-            Descartadas
+          <MenuItem onClick={() => this.handleMenuItemClick(3)}>
+            Descartades
           </MenuItem>
         </Popover>
       </div>
-    )
+    );
   }
 }
 

@@ -93,7 +93,7 @@ class DiscardedNewsSearchAppBar extends Component {
           <Toolbar>
             <div className={classes.title}>
               <Typography variant="h6" id="tableTitle">
-                Noticias descartadas
+                Notícies descartades
               </Typography>
             </div>
             <div className={classes.form}>
