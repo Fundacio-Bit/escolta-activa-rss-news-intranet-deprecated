@@ -11,6 +11,7 @@ import Typography from "@material-ui/core/Typography";
 
 const useStyles = makeStyles((theme) => ({
   root: {
+    fontFamily: "Roboto",
     // flexGrow: 1,
     // width: '100%',
     // height: '100%',
@@ -25,6 +26,64 @@ const useStyles = makeStyles((theme) => ({
     color: theme.palette.text.secondary,
     boxShadow:
       "0px 2px 1px -1px rgba(0,0,0,0.2), 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 1px 3px 0px rgba(0,0,0,0.12)",
+  },
+  highlightedTitle: {
+    fontWeight: "bold",
+    color: "#26c6da",
+    fontSize: "1.5em",
+  },
+  highlightedText: {
+    fontWeight: "bold",
+    color: "#26c6da",
+    fontSize: "1em",
+  },
+  overviewPanel: {
+    justifyContent: "left",
+    padding: "unset!important",
+    paddingBottom: "10px!important",
+    width: "100%",
+    margin: "unset",
+    // height: 150,
+    // width: 150,
+  },
+  overviewItem: {
+    background: "linear-gradient(60deg, #26c6da, #00acc1)",
+    boxShadow:
+      "0 4px 20px 0 rgba(0, 0, 0,.14), 0 7px 10px -5px rgba(0, 172, 193,.4)",
+    width: "150px",
+    height: "150px",
+    // overflow: "unset",
+    // fontSize: "1.5em",
+    // textAlign: "center",
+    marginBottom: "3px",
+  },
+  overviewTitle: {
+    textAlign: "center",
+    fontSize: "1.2em",
+    lineHeight: "1.2em",
+    color: "white",
+    padding: "10px",
+    margin: "unset",
+    // fontFamily: "Roboto",
+  },
+  overviewFigure: {
+    textAlign: "center",
+    fontSize: "3em",
+    fontWeight: "bold",
+    color: "white",
+    padding: "5px",
+    margin: "unset",
+    fontFamily: "Roboto",
+  },
+  newInput: {
+    color: "#898d91",
+    textDecoration: "unset",
+    fontWeight: "500",
+    "&:hover": {
+      textDecoration: "underline",
+      fontWeight: "600",
+      color: "#3f51b5",
+    },
   },
   topicsGridxs12: {
     display: "flex",
@@ -197,6 +256,20 @@ export const Topics = (props) => {
     return () => (unmounted = true);
   }, [selectedMonth]);
 
+  // get figures for the overview panel
+  const overviewFigures = {
+    totalNews: data.length,
+    spanishNews: data.filter(
+      (entry) =>
+        entry.source_id.includes("ES") | entry.source_id.includes("AIR")
+    ).length,
+    britishNews: data.filter((entry) => entry.source_id.includes("UK")).length,
+    germanNews: data.filter((entry) => entry.source_id.includes("DE")).length,
+    italianNews: data.filter((entry) => entry.source_id.includes("IT")).length,
+    frenchNews: data.filter((entry) => entry.source_id.includes("FR")).length,
+    topicsCount: data.filter((entry) => entry.source_id.includes("ES")).length,
+  };
+
   {
     /* <Grid container className={classes.root} spacing={2}>
   <Grid item xs={12}>
@@ -222,7 +295,7 @@ export const Topics = (props) => {
             />
           </Paper>
         </Grid>
-        <Grid item className={classes.test2} xs={12}>
+        {/* <Grid item className={classes.test2} xs={12}>
           <div className={classes.test4}>
             <div className={classes.title}>
               <Typography variant="h6" id="tableTitle">
@@ -230,22 +303,96 @@ export const Topics = (props) => {
               </Typography>
             </div>
             <Grid item xs={1}>
-              Temes: 20
+              Temes tractats: {overviewFigures.totalNews}
             </Grid>
             <Grid item xs={1}>
-              Notícies seleccionades: 157
+              Notícies seleccionades: {overviewFigures.totalNews}
             </Grid>
             <Grid item xs={1}>
-              Espanyols: 37
+              Mitjans espanyols: {overviewFigures.spanishNews}
             </Grid>
             <Grid item xs={1}>
-              Alemanys: 12
+              Mitjans alemanys: {overviewFigures.germanNews}
             </Grid>
             <Grid item xs={1}>
-              Italians: 7
+              Mitjans italians: {overviewFigures.italianNews}
             </Grid>
             <Grid item xs={1}>
-              Francesos: 0
+              Mitjans francesos: {overviewFigures.frenchNews}
+            </Grid>
+          </div>
+        </Grid> */}
+        <Grid item className={classes.overviewPanel} xs={12}>
+          <div className={classes.test4}>
+            <div className={classes.title}>
+              <Typography variant="h6" id="tableTitle">
+                <span className={classes.highlightedTitle}>
+                  {" "}
+                  {selectedMonth}
+                  {"   "}
+                </span>
+                Indicadors globals{" "}
+              </Typography>
+            </div>
+            <Grid item className={classes.overviewPanel} xs={12}>
+              <Grid container spacing={6}>
+                <Grid item>
+                  <div className={classes.overviewItem}>
+                    <p className={classes.overviewTitle}>
+                      Notícies seleccionades
+                    </p>
+                    <p className={classes.overviewFigure}>
+                      {overviewFigures.totalNews}
+                    </p>
+                  </div>
+                </Grid>
+                <Grid item>
+                  <div className={classes.overviewItem}>
+                    <p className={classes.overviewTitle}>Mitjans espanyols</p>
+                    <p className={classes.overviewFigure}>
+                      {overviewFigures.spanishNews}
+                    </p>
+                  </div>
+                </Grid>
+                <Grid item>
+                  <div className={classes.overviewItem}>
+                    <p className={classes.overviewTitle}>Mitjans britànics</p>
+                    <p className={classes.overviewFigure}>
+                      {overviewFigures.britishNews}
+                    </p>
+                  </div>
+                </Grid>
+                <Grid item>
+                  <div className={classes.overviewItem}>
+                    <p className={classes.overviewTitle}>Mitjans alemanys</p>
+                    <p className={classes.overviewFigure}>
+                      {overviewFigures.germanNews}
+                    </p>
+                  </div>
+                </Grid>
+                <Grid item>
+                  <div className={classes.overviewItem}>
+                    <p className={classes.overviewTitle}>Mitjans italians</p>
+                    <p className={classes.overviewFigure}>
+                      {overviewFigures.italianNews}
+                    </p>
+                  </div>
+                </Grid>
+                <Grid item>
+                  <div className={classes.overviewItem}>
+                    <p className={classes.overviewTitle}>Mitjans francesos</p>
+                    <p className={classes.overviewFigure}>
+                      {overviewFigures.frenchNews}
+                    </p>
+                  </div>
+                </Grid>
+
+                {/* {[0, 1, 2].map((value) => (
+                  <Grid key={value} item>
+                    <Paper className={classes.overview} />
+                  </Grid>
+                ))} */}
+              </Grid>
             </Grid>
           </div>
         </Grid>
@@ -253,7 +400,7 @@ export const Topics = (props) => {
           <div className={classes.test}>
             <div className={classes.title}>
               <Typography variant="h6" id="tableTitle">
-                Rànquing de temes ({selectedMonth})
+                Rànquing de temes
               </Typography>
             </div>
             <TopicsRanking
@@ -267,9 +414,16 @@ export const Topics = (props) => {
           <div className={classes.test}>
             <div className={classes.title}>
               <Typography variant="h6" id="tableTitle">
-                {selectedTopic == ""
-                  ? "Totes les notícies del mes"
-                  : "Notícies sobre " + selectedTopic}
+                {selectedTopic == "" ? (
+                  "Totes les notícies del mes"
+                ) : (
+                  <span>
+                    Notícies sobre{" "}
+                    <span className={classes.highlightedText}>
+                      {selectedTopic}
+                    </span>{" "}
+                  </span>
+                )}
               </Typography>
             </div>
             {filteredData.length > 0 &&
@@ -277,7 +431,7 @@ export const Topics = (props) => {
                 return (
                   <a
                     href={u.link}
-                    className={classes.topicNew}
+                    className={classes.newInput}
                     key={index}
                     target="_blank"
                   >
