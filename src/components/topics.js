@@ -3,6 +3,8 @@ import axios from "axios";
 import PropTypes from "prop-types";
 import { TopicsRanking } from "./topics-ranking";
 import TopicsSearchAppBar from "./topics-search-app-bar";
+// import TopicsTimeSeries from "./topics-time-series";
+import TopicsBarChart from "./topics-bar";
 import Grid from "@material-ui/core/Grid";
 import Paper from "@material-ui/core/Paper";
 import { baseErrorMessage, getErrorMessage } from "./utils/getErrorMessage.js";
@@ -270,20 +272,6 @@ export const Topics = (props) => {
     topicsCount: data.filter((entry) => entry.source_id.includes("ES")).length,
   };
 
-  {
-    /* <Grid container className={classes.root} spacing={2}>
-  <Grid item xs={12}>
-    <Grid container justify="center" spacing={2}>
-      {[0, 1, 2].map((value) => (
-        <Grid key={value} item>
-          <Paper className={classes.paper} />
-        </Grid>
-      ))}
-    </Grid>
-  </Grid>
-</Grid> */
-  }
-
   return (
     <div className={classes.root}>
       <Grid container className={classes.test2} spacing={10}>
@@ -295,33 +283,6 @@ export const Topics = (props) => {
             />
           </Paper>
         </Grid>
-        {/* <Grid item className={classes.test2} xs={12}>
-          <div className={classes.test4}>
-            <div className={classes.title}>
-              <Typography variant="h6" id="tableTitle">
-                Indicadors globals ({selectedMonth})
-              </Typography>
-            </div>
-            <Grid item xs={1}>
-              Temes tractats: {overviewFigures.totalNews}
-            </Grid>
-            <Grid item xs={1}>
-              Notícies seleccionades: {overviewFigures.totalNews}
-            </Grid>
-            <Grid item xs={1}>
-              Mitjans espanyols: {overviewFigures.spanishNews}
-            </Grid>
-            <Grid item xs={1}>
-              Mitjans alemanys: {overviewFigures.germanNews}
-            </Grid>
-            <Grid item xs={1}>
-              Mitjans italians: {overviewFigures.italianNews}
-            </Grid>
-            <Grid item xs={1}>
-              Mitjans francesos: {overviewFigures.frenchNews}
-            </Grid>
-          </div>
-        </Grid> */}
         <Grid item className={classes.overviewPanel} xs={12}>
           <div className={classes.test4}>
             <div className={classes.title}>
@@ -386,12 +347,6 @@ export const Topics = (props) => {
                     </p>
                   </div>
                 </Grid>
-
-                {/* {[0, 1, 2].map((value) => (
-                  <Grid key={value} item>
-                    <Paper className={classes.overview} />
-                  </Grid>
-                ))} */}
               </Grid>
             </Grid>
           </div>
@@ -425,6 +380,7 @@ export const Topics = (props) => {
                   </span>
                 )}
               </Typography>
+              <TopicsBarChart></TopicsBarChart>
             </div>
             {filteredData.length > 0 &&
               filteredData.map((u, index) => {
