@@ -1,36 +1,92 @@
 import React, { useEffect, useRef, useState } from "react";
 import Chartjs from "chart.js";
 import axios from "axios";
+import CircularProgress from "@material-ui/core/CircularProgress";
+
+import ErrorIcon from "@material-ui/icons/Error";
 import { baseErrorMessage, getErrorMessage } from "./utils/getErrorMessage.js";
+import { makeStyles } from "@material-ui/core/styles";
 
-const randomInt = () => Math.floor(Math.random() * (10 - 1 + 1)) + 1;
+const useStyles = makeStyles((theme) => ({
+  error: {
+    marginTop: theme.spacing(1),
+    color: "#e91e63",
+  },
+  loading: {
+    flexGrow: 1,
+    marginTop: theme.spacing(4),
+    textAlign: "center",
+  },
+}));
 
-const TopicsBarChart = () => {
+const TopicsBarChart = (props) => {
+  const classes = useStyles();
+
   const [loading, setLoading] = useState(true);
   const [errorStatus, setErrorStatus] = useState({ error: false, message: "" });
-  const chartContainer = useRef(null);
+  const [chartData, setChartData] = useState({ months: [], counts: [] });
   const [chartInstance, setChartInstance] = useState(null);
-  const [chartData, setChartData] = useState(null);
+  const chartContainer = useRef(null);
 
   // create a barchart instance
   useEffect(() => {
     if (chartContainer && chartContainer.current) {
       const myChartRef = chartContainer.current.getContext("2d");
 
+      // create an array of bar colors with the selected Month highlighted
       let gradient = myChartRef.createLinearGradient(0, 0, 0, 400);
       gradient.addColorStop(0, "#26c6da");
       gradient.addColorStop(1, "#00acc1");
 
+      let highlightedGradient = myChartRef.createLinearGradient(0, 0, 0, 400);
+      highlightedGradient.addColorStop(0, "#e3a7b2");
+      highlightedGradient.addColorStop(1, "#da2647");
+
+      let gradientsArray = Array(chartData.months.length).fill(gradient);
+      let highlightedGradientsArray = gradientsArray;
+      if (chartData.selectedMonthIndex !== -1) {
+        gradientsArray[chartData.selectedMonthIndex - 1] = highlightedGradient;
+      }
+
+      // create an array of bar border colors with the selected Month highlighted
+      let bordersArray = Array(chartData.months.length).fill("#00acc1");
+      let highlightedbordersArray = bordersArray;
+      if (chartData.selectedMonthIndex !== -1) {
+        bordersArray[chartData.selectedMonthIndex - 1] = "#da2647";
+      }
+
+      let monthsCatalan = {
+        0: "gener",
+        1: "febrer",
+        2: "març",
+        3: "abril",
+        4: "maig",
+        5: "juny",
+        6: "juliol",
+        7: "agost",
+        8: "setembre",
+        9: "octubre",
+        10: "novembre",
+        11: "desembre",
+      };
+
+      // create catalan version of months
+      let formattedMonths = chartData.months.map((month) => {
+        let monthName = monthsCatalan[month.split("-")[1]];
+        let year = month.split("-")[0];
+        return monthName + "-" + year;
+      });
+
       const chartConfig = {
         type: "bar",
         data: {
-          labels: ["Red", "Blue", "Yellow", "Green", "Purple", "Orange"],
+          labels: formattedMonths,
           datasets: [
             {
               label: "notícies",
-              data: [12, 19, 3, 5, 2, 3],
-              backgroundColor: gradient,
-              borderColor: "#00acc1",
+              data: chartData.counts,
+              backgroundColor: highlightedGradientsArray,
+              borderColor: highlightedbordersArray,
               borderWidth: 2,
             },
           ],
@@ -45,7 +101,6 @@ const TopicsBarChart = () => {
               {
                 gridLines: { display: false },
                 ticks: { source: "labels", autoSkip: false },
-                // scaleLabel: { display: true, labelString: "Data" },
               },
             ],
             yAxes: [
@@ -64,7 +119,7 @@ const TopicsBarChart = () => {
       const newChartInstance = new Chartjs(chartContainer.current, chartConfig);
       setChartInstance(newChartInstance);
     }
-  }, [chartContainer]);
+  }, [chartData]);
 
   // Get the bar chart data.
   useEffect(() => {
@@ -78,40 +133,39 @@ const TopicsBarChart = () => {
 
       try {
         axios
-          // .get(`/rss-chart/topics/barchart/${selectedMonth}`)
-          .get(`/rss-chart/topics/barchart/any`)
+          .get(
+            `/rss-chart/topics/barchart/month/${props.selectedMonth}/topic/${props.selectedTopic}`
+          )
           .then((results) => {
-            if (results.data.results.length > 0) {
+            if (
+              Object.keys(results.data.results).length > 0 &&
+              results.data.results.constructor === Object
+            ) {
               // OK
               // Beware with this:
               // https://overreacted.io/a-complete-guide-to-useeffect/#each-render-has-its-own-event-handlers
               setTimeout(() => {
                 if (!unmounted) {
-                  console.log("HI1");
                   setErrorStatus({ error: false, message: "" });
                   setLoading(false);
-                  console.log(results.data.results);
                   setChartData(results.data.results);
                 }
               }, 850);
             } else {
               // No data returned
               if (!unmounted) {
-                console.log("HI2");
                 setChartData([]);
                 setLoading(false);
               }
             }
           })
           .catch((error) => {
-            console.log("HI3");
             console.log(getErrorMessage(error));
             setErrorStatus({ error: true, message: baseErrorMessage });
             setLoading(false);
           });
       } catch (error) {
         if (!unmounted) {
-          console.log(error);
           console.log(getErrorMessage(error));
           setErrorStatus({ error: true, message: baseErrorMessage });
           setLoading(false);
@@ -123,37 +177,37 @@ const TopicsBarChart = () => {
 
     // Cleanup function. useEffect uses the cleanup function to execute operations useful on component unmount.
     return () => (unmounted = true);
-  }, []);
-
-  const updateDataset = (datasetIndex, newData) => {
-    chartInstance.data.datasets[datasetIndex].data = newData;
-    chartInstance.update();
-  };
-
-  const onButtonClick = () => {
-    const data = [
-      randomInt(),
-      randomInt(),
-      randomInt(),
-      randomInt(),
-      randomInt(),
-      randomInt(),
-    ];
-    updateDataset(0, data);
-  };
+  }, [props.selectedTopic, props.selectedMonth]);
 
   return (
-    <div
-      style={{
-        height: "200px",
-        width: "70%",
-        position: "relative",
-        marginTop: "20px",
-        marginBottom: "70px",
-      }}
-    >
-      <button onClick={onButtonClick}>Randomize!</button>
-      <canvas ref={chartContainer} />
+    <div>
+      {errorStatus.error && (
+        <div className={classes.error}>
+          &nbsp;
+          <ErrorIcon style={{ verticalAlign: "middle" }} />
+          &nbsp;{errorStatus.message}
+        </div>
+      )}
+
+      {loading && (
+        <div className={classes.loading}>
+          <CircularProgress size={24} thickness={4} />
+        </div>
+      )}
+
+      {!loading && !errorStatus.error && (
+        <div
+          style={{
+            height: "250px",
+            width: "100%",
+            position: "relative",
+            marginTop: "20px",
+            marginBottom: "70px",
+          }}
+        >
+          <canvas ref={chartContainer} />
+        </div>
+      )}
     </div>
   );
 };
