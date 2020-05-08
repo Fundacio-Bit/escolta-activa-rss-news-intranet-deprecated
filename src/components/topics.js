@@ -162,7 +162,7 @@ export const Topics = (props) => {
   const [loading, setLoading] = useState(true);
   const [errorStatus, setErrorStatus] = useState({ error: false, message: "" });
   const [selectedMonth, setSelectedMonth] = useState(year_month_str);
-  const [selectedTopic, setSelectedTopic] = useState("");
+  const [selectedTopic, setSelectedTopic] = useState("all");
 
   const classes = useStyles();
 
@@ -202,7 +202,7 @@ export const Topics = (props) => {
     } else return false;
   };
 
-  let filteredData = selectedTopic == "" ? data : data.filter(filterByTopic);
+  let filteredData = selectedTopic == "all" ? data : data.filter(filterByTopic);
 
   // Get the news related to a topic.
   useEffect(() => {
@@ -368,7 +368,7 @@ export const Topics = (props) => {
           <div className={classes.test}>
             <div className={classes.title}>
               <Typography variant="h6" id="tableTitle">
-                {selectedTopic == "" ? (
+                {selectedTopic == "all" ? (
                   "Totes les notícies del mes"
                 ) : (
                   <span>
@@ -379,7 +379,10 @@ export const Topics = (props) => {
                   </span>
                 )}
               </Typography>
-              <TopicsBarChart></TopicsBarChart>
+              <TopicsBarChart
+                selectedMonth={selectedMonth}
+                selectedTopic={selectedTopic}
+              ></TopicsBarChart>
             </div>
             {filteredData.length > 0 &&
               filteredData.map((u, index) => {
