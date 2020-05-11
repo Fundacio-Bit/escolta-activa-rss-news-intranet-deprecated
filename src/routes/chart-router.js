@@ -25,7 +25,6 @@ router.get("/topics/barchart/month/:month/topic/:topic", (req, res) => {
     req.params.month[5] == "0"
       ? req.params.month.replace("-0", "-")
       : req.params.month;
-  console.log(queryMonth);
   let mongoQuery = {};
   let mongoProjection = {
     _id: 1,
