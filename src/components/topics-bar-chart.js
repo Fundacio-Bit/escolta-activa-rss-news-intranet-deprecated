@@ -45,29 +45,29 @@ const TopicsBarChart = (props) => {
       let gradientsArray = Array(chartData.months.length).fill(gradient);
       let highlightedGradientsArray = gradientsArray;
       if (chartData.selectedMonthIndex !== -1) {
-        gradientsArray[chartData.selectedMonthIndex - 1] = highlightedGradient;
+        gradientsArray[chartData.selectedMonthIndex] = highlightedGradient;
       }
 
       // create an array of bar border colors with the selected Month highlighted
       let bordersArray = Array(chartData.months.length).fill("#00acc1");
       let highlightedbordersArray = bordersArray;
       if (chartData.selectedMonthIndex !== -1) {
-        bordersArray[chartData.selectedMonthIndex - 1] = "#da2647";
+        bordersArray[chartData.selectedMonthIndex] = "#da2647";
       }
 
       let monthsCatalan = {
-        0: "gener",
-        1: "febrer",
-        2: "març",
-        3: "abril",
-        4: "maig",
-        5: "juny",
-        6: "juliol",
-        7: "agost",
-        8: "setembre",
-        9: "octubre",
-        10: "novembre",
-        11: "desembre",
+        1: "gener",
+        2: "febrer",
+        3: "març",
+        4: "abril",
+        5: "maig",
+        6: "juny",
+        7: "juliol",
+        8: "agost",
+        9: "setembre",
+        10: "octubre",
+        11: "novembre",
+        12: "desembre",
       };
 
       // create catalan version of months

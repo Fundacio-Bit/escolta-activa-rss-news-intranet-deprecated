@@ -63,12 +63,12 @@ router.get("/topics/barchart/month/:month/topic/:topic", (req, res) => {
           queryTopic === "all" ? docs : docs.filter(filterByTopic);
         let monthsWithNews = docs.map((doc) => {
           let aDate = new Date(doc.published);
-          return aDate.getFullYear() + "-" + aDate.getMonth();
+          return aDate.getFullYear() + "-" + (aDate.getMonth() + 1);
         });
 
         let monthsWithFilteredNews = includedDocs.map((doc) => {
           let aDate = new Date(doc.published);
-          return aDate.getFullYear() + "-" + aDate.getMonth();
+          return aDate.getFullYear() + "-" + (aDate.getMonth() + 1);
         });
 
         let uniqueMonthsWithNews = [...new Set(monthsWithNews)].reverse();
@@ -80,6 +80,7 @@ router.get("/topics/barchart/month/:month/topic/:topic", (req, res) => {
           let monthPosition = uniqueMonthsWithNews.indexOf(
             monthWithFilteredNews
           );
+          // add one per each time the month appears in the monthsWithFilteredNews Array
           countsPerMonth[monthPosition] = countsPerMonth[monthPosition] + 1;
         });
 
