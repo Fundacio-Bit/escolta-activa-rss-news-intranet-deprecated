@@ -100,7 +100,7 @@ const TopicsBarChart = (props) => {
             xAxes: [
               {
                 gridLines: { display: false },
-                ticks: { source: "labels", autoSkip: false },
+                ticks: { source: "labels", autoSkip: true, maxTicksLimit: 30 },
               },
             ],
             yAxes: [
