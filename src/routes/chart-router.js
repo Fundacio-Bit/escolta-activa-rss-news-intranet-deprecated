@@ -59,28 +59,37 @@ router.get("/topics/barchart/month/:month/topic/:topic", (req, res) => {
         console.log(err);
         res.status(500).send(err);
       } else {
+        // if "all" is provided as query topic all docs will be included.
+        // if not only docs that have the topic will
         let includedDocs =
           queryTopic === "all" ? docs : docs.filter(filterByTopic);
+
+        // the x axis will cover all months with news
         let monthsWithNews = docs.map((doc) => {
           let aDate = new Date(doc.published);
           return aDate.getFullYear() + "-" + (aDate.getMonth() + 1);
         });
 
+        // however not necessarily all months will be present in filtered news
         let monthsWithFilteredNews = includedDocs.map((doc) => {
           let aDate = new Date(doc.published);
           return aDate.getFullYear() + "-" + (aDate.getMonth() + 1);
         });
 
+        // Array of month names (unique). It will be used as labels for the X-Axis
         let uniqueMonthsWithNews = [...new Set(monthsWithNews)].reverse();
+
+        // The position of the query monthin the array of unique months
         let monthIndex = uniqueMonthsWithNews.indexOf(queryMonth);
 
+        // Init an Array with 0s with length equal to the unique months Array
         let countsPerMonth = new Array(uniqueMonthsWithNews.length).fill(0);
 
+        // Count apparitions per month in the monthsWithFilteredNews Array
         monthsWithFilteredNews.forEach((monthWithFilteredNews) => {
           let monthPosition = uniqueMonthsWithNews.indexOf(
             monthWithFilteredNews
           );
-          // add one per each time the month appears in the monthsWithFilteredNews Array
           countsPerMonth[monthPosition] = countsPerMonth[monthPosition] + 1;
         });
 
