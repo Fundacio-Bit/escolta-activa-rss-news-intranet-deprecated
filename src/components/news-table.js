@@ -114,12 +114,10 @@ export const NewsTable = (props) => {
 
   if (props.isChecked) {
     filteredData = filteredData.filter(filterByChecked);
-    console.log('time to filter') 
   }
   if (props.selectedCountry) {
     if (props.selectedCountry != 'Tots') {
       filteredData = filteredData.filter(filterByCountry);
-      console.log('time to filter')  
     }
   } 
   if (props.searchType === 0){
@@ -326,6 +324,8 @@ export const NewsTable = (props) => {
           <Table className={classes.table} aria-labelledby="tableTitle">
             {filteredData.length > 0 && (
               <NewsTableHead
+                data = {filteredData}
+                selectedMonth = {props.selectedMonth}
                 order = { order }
                 orderBy = { orderBy }
                 onRequestSort = { handleRequestSort }

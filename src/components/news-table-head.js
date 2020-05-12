@@ -6,6 +6,9 @@ import Tooltip from '@material-ui/core/Tooltip';
 import { withStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
 import TableHead from '@material-ui/core/TableHead';
+import { CSVLink, CSVDownload } from "react-csv";
+import { faFileCsv } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 
 const styles = theme => ({
@@ -14,6 +17,13 @@ const styles = theme => ({
   },
 });
 
+
+const csvHeaders = [
+  { label: "Data", key: "published" },
+  { label: "Títol", key: "title" },
+  { label: "Link", key: "link" },
+  { label: "Temas", key: "tags" }
+];
 
 class NewsTableHead extends React.Component {
   constructor(props) {
@@ -46,7 +56,9 @@ class NewsTableHead extends React.Component {
             </Tooltip>
           </TableCell>
           <TableCell><h2>Notícia</h2></TableCell>
-          <TableCell></TableCell>
+          <TableCell>
+            <CSVLink data={this.props.data} headers = {csvHeaders} filename={"rss-news-" + this.props.selectedMonth + ".csv"}><FontAwesomeIcon icon={faFileCsv} size="3x" /></CSVLink>
+          </TableCell>
         </TableRow>
       </TableHead>
     );

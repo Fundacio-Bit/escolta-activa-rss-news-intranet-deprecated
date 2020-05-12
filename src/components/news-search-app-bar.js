@@ -5,6 +5,7 @@ import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import InputBase from '@material-ui/core/InputBase';
 import Paper from '@material-ui/core/Paper';
+import Grid from '@material-ui/core/Grid';
 import { withStyles } from '@material-ui/core/styles';
 import SearchIcon from '@material-ui/icons/Search';
 import IconButton from '@material-ui/core/IconButton';
@@ -18,6 +19,7 @@ const styles = theme => ({
   title: {
     // flexGrow: 1,
     // margin: theme.spacing(y),
+    paddingTop: '15px',
     textAlign: 'left',
     flexBasis: '15%'
   },
@@ -53,10 +55,12 @@ const styles = theme => ({
 
   input: {
     marginLeft: 8,
+    marginTop: 8,
     height: 50,
   },
 
   iconButton: {
+    marginTop: 8,
     padding: 10,
   },
 });
@@ -98,84 +102,100 @@ class NewsSearchAppBar extends Component {
       <div className={classes.root}>
         <AppBar position="static" color="inherit">
           <Toolbar>
-            <div className={classes.title}>
-              <Typography variant="h6" id="tableTitle">
-                Noticias
-              </Typography>
-            </div>
-            <div className={classes.form}>
-              <form className={classes.container} noValidate>
-                <TextField
-                  id="dateFrom"
-                  label="Mes"
-                  type="month"                 
-                  value={this.props.selectedMonth}
-                  className={classes.textField}
-                  InputLabelProps={{
-                    shrink: true,
-                  }}
-                  onChange={this.handleMonthChange}
-                />
-                <TextField
-                  select
-                  className={classes.textField}
-                  label="Revisat"
-                  value={this.props.isChecked}
-                  onChange={this.handleRevisedSelectChange}
-                >
-                  <MenuItem value={0}><em>Tots</em></MenuItem>
-                  <MenuItem value={1}>Revisats</MenuItem>
-                  <MenuItem value={-1}>No revisats</MenuItem>
-                </TextField>
-                <TextField
-                  select
-                  className={classes.textField}
-                  label="País"
-                  value={this.props.selectedCountry}
-                  onChange={this.handleCountrySelectChange}
-                >        
-                  <MenuItem value={"Tots"}><em>Tots</em></MenuItem>
-                  <MenuItem value={"ES"}>Espanya</MenuItem>
-                  <MenuItem value={"DE"}>Alemanya</MenuItem>
-                  <MenuItem value={"UK"}>Regne Unit</MenuItem>
-                  <MenuItem value={"FR"}>França</MenuItem>
-                  <MenuItem value={"IT"}>Itàlia</MenuItem>
-                </TextField>
-                <Paper className={classes.search} elevation={1}>
-                  <TextField
-                    select
-                    className={classes.searchSelect}
-                    value={this.props.searchType}
-                    onChange={this.handleSearchTypeChange}
-                    variant="filled"
-                    InputProps={{
-                      disableUnderline: true,
-                    }}
-                    InputLabelProps={{
-                      margin: "dense"
-                    }}
-                  >        
-                    <MenuItem value={0}>Text</MenuItem>
-                    <MenuItem value={1}>Tema</MenuItem>
-                  </TextField>
-                  <InputBase
-                    value={this.props.searchTerm}
-                    onChange={this.handleSearchTermChange}
-                    // Prevent form submission a data reload when the Enter Key is pressed
-                    onKeyPress={(event) => {
-                      if (event.key === 'Enter') {
-                        event.preventDefault();
-                      }
-                    }}
-                    placeholder="Cerca…"
-                    className={classes.input}
-                  />
-                  <IconButton className={classes.iconButton} aria-label="Search">
-                    <SearchIcon />
-                  </IconButton>
-                </Paper>
-              </form>
-            </div>
+            <Grid container spacing={2}>
+              <Grid item xs={2}>
+                <div className={classes.title}>
+                  <Typography variant="h6" id="tableTitle">
+                    Noticias
+                  </Typography>
+                </div>
+                </Grid>
+                <Grid item xs={10}>
+                  <div className={classes.form}>
+                    <form className={classes.container} noValidate>
+                    <Grid container spacing={3}>
+                      <Grid item xs={3}>
+                          <TextField
+                            id="dateFrom"
+                            label="Mes"
+                            type="month"                 
+                            value={this.props.selectedMonth}
+                            className={classes.textField}
+                            InputLabelProps={{
+                              shrink: true,
+                            }}
+                            onChange={this.handleMonthChange}
+                          />
+                        </Grid>
+                        <Grid item xs={2}>
+                          <TextField
+                            select
+                            className={classes.textField}
+                            label="Revisat"
+                            value={this.props.isChecked}
+                            onChange={this.handleRevisedSelectChange}
+                          >
+                            <MenuItem value={0}><em>Tots</em></MenuItem>
+                            <MenuItem value={1}>Revisats</MenuItem>
+                            <MenuItem value={-1}>No revisats</MenuItem>
+                          </TextField>
+                        </Grid>
+                        <Grid item xs={2}>
+                          <TextField
+                            select
+                            className={classes.textField}
+                            label="País"
+                            value={this.props.selectedCountry}
+                            onChange={this.handleCountrySelectChange}
+                          >        
+                            <MenuItem value={"Tots"}><em>Tots</em></MenuItem>
+                            <MenuItem value={"ES"}>Espanya</MenuItem>
+                            <MenuItem value={"DE"}>Alemanya</MenuItem>
+                            <MenuItem value={"UK"}>Regne Unit</MenuItem>
+                            <MenuItem value={"FR"}>França</MenuItem>
+                            <MenuItem value={"IT"}>Itàlia</MenuItem>
+                          </TextField>
+                        </Grid>
+                        <Grid item xs={5}>
+                          <Paper className={classes.search} elevation={1}>
+                            <TextField
+                              select
+                              className={classes.searchSelect}
+                              value={this.props.searchType}
+                              onChange={this.handleSearchTypeChange}
+                              variant="filled"
+                              InputProps={{
+                                disableUnderline: true,
+                              }}
+                              InputLabelProps={{
+                                margin: "dense"
+                              }}
+                            >        
+                              <MenuItem value={0}>Text</MenuItem>
+                              <MenuItem value={1}>Tema</MenuItem>
+                            </TextField>
+                            <InputBase
+                              value={this.props.searchTerm}
+                              onChange={this.handleSearchTermChange}
+                              // Prevent form submission a data reload when the Enter Key is pressed
+                              onKeyPress={(event) => {
+                                if (event.key === 'Enter') {
+                                  event.preventDefault();
+                                }
+                              }}
+                              placeholder="Cerca…"
+                              className={classes.input}
+                            />
+                            <IconButton className={classes.iconButton} aria-label="Search">
+                              <SearchIcon />
+                            </IconButton>
+                          </Paper>
+                        </Grid>
+                      </Grid>
+                    </form>
+                  </div>
+              </Grid>
+            </Grid>
           </Toolbar>
         </AppBar>
       </div>
