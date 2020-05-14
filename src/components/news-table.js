@@ -361,52 +361,24 @@ export const NewsTable = (props) => {
                   handleUpdateTopics = { handleUpdateTopics }
                   isUpdating = { false }
                 />
+              );
+              })}
+              {filteredData.length === 0 && (
+                <TableRow>
+                  <TableCell colSpan={4}>
+                    <RSSSnackbarContent
+                      variant="info"
+                      className={classes.margin}
+                      message="No hi ha dades per a aquesta cerca!"
+                    />
+                  </TableCell>
+                </TableRow>
               )}
-              <TableBody>
-                {filteredData.length > 0 &&
-                  filteredData
-                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                    .map((u) => {
-                      return (
-                        <NewsTableRow
-                          key={u._id}
-                          published={u.published}
-                          docId={u._id}
-                          title={u.title}
-                          topics={
-                            u.hasOwnProperty("topics") && u.topics != ""
-                              ? u.topics.split(",")
-                              : []
-                          }
-                          allPossibleTopics={allTopics}
-                          source_id={u.source_id}
-                          source_name={u.source_name}
-                          section={u.section}
-                          brand={u.brand}
-                          link={u.link}
-                          summary={u.summary}
-                          handleDeleteClick={handleDeleteClick}
-                          handleUpdateTopics={handleUpdateTopics}
-                          isUpdating={false}
-                        />
-                      );
-                    })}
-                {filteredData.length === 0 && (
-                  <TableRow>
-                    <TableCell colSpan={4}>
-                      <RSSSnackbarContent
-                        variant="info"
-                        className={classes.margin}
-                        message="No hi ha dades per a aquesta cerca!"
-                      />
-                    </TableCell>
-                  </TableRow>
-                )}
-                {emptyRows > 0 && (
-                  <TableRow style={{ height: 49 * emptyRows }}>
-                    <TableCell colSpan={4} />
-                  </TableRow>
-                )}
+              {emptyRows > 0 && (
+                <TableRow style={{ height: 49 * emptyRows }}>
+                  <TableCell colSpan={4} />
+                </TableRow>
+              )}
               </TableBody>
             </Table>
           </div>
