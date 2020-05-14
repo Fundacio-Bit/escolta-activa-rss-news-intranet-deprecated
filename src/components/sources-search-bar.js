@@ -128,6 +128,10 @@ class SearchBar extends Component {
                     <MenuItem value={"UK"}>Regne Unit</MenuItem>
                     <MenuItem value={"FR"}>França</MenuItem>
                     <MenuItem value={"IT"}>Itàlia</MenuItem>
+                    <MenuItem value={"AT"}>Àustria</MenuItem>
+                    <MenuItem value={"NL"}>Holanda</MenuItem>
+                    <MenuItem value={"SE"}>Suècia</MenuItem>
+                    <MenuItem value={"SZ"}>Suïssa</MenuItem>
                   </Select>
                 </FormControl>
 
