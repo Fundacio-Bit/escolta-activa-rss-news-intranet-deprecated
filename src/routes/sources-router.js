@@ -1,39 +1,46 @@
-var express = require('express')
+var express = require("express");
 var router = express();
-var mongo = require('mongodb');
-var MongoClient = require('mongodb').MongoClient;
+var mongo = require("mongodb");
+var MongoClient = require("mongodb").MongoClient;
 var db;
 
 // Initialize connection once
-MongoClient.connect("mongodb://localhost:27017/",  { useNewUrlParser: true, useUnifiedTopology: true }, (err, client) =>
-{
-    if(err) throw err;
-    db = client.db('rss_fbit_db');
-});
-
+MongoClient.connect(
+  "mongodb://localhost:27017/",
+  { useNewUrlParser: true, useUnifiedTopology: true },
+  (err, client) => {
+    if (err) throw err;
+    db = client.db("rss_fbit_db");
+  }
+);
 
 // Reuse database object in request handlers
-router.get("/sources", (req, res) =>
-{
-    var collection = db.collection("rss_feeds");
-    collection.find({},{"_id":1,
-                                "source_name":1,
-                                "source_id":1,
-                                "is_active":1,
-                                "section":1,
-                                "is_operative":1,
-                                "feed_url":1,
-                                "average_mins_between_news":1}).toArray((err, docs) =>
-    {
-        if(err) {
-            console.log(err)
-            res.status(500).send(err)
-        } else {
-            res.json({"results": docs});
-        }
+router.get("/sources", (req, res) => {
+  var collection = db.collection("rss_feeds");
+  collection
+    .find(
+      {},
+      {
+        _id: 1,
+        source_name: 1,
+        source_id: 1,
+        is_active: 1,
+        section: 1,
+        is_operative: 1,
+        feed_url: 1,
+        average_mins_between_news: 1,
+      }
+    )
+    .toArray((err, docs) => {
+      if (err) {
+        console.log(err);
+        res.status(500).send(err);
+      } else {
+        res.json({ results: docs });
+      }
     });
 });
-  
+
 // // Add route without parameters
 // router.route('/')
 //     .get((req, res) =>
@@ -66,76 +73,70 @@ router.get("/sources", (req, res) =>
 //             })
 //     })
 
-// Add route with parameters and different CRUD operations (GET, DELETE and PUT) 
-router.route('/identifier/:sourceId')
-    .get((req, res) =>
-    {
-        var o_id = new mongo.ObjectID(req.params.documentId);
-        
-        var collection = db.collection("rss_feeds");
-        collection.find({"source_id": req.params.sourceId}).toArray((err, docs) =>
-            {
-                if(err) {
-                    console.log("error: " + err)
-                    res.status(500).send(err)
-                } else {
-                    res.json({"results": docs});
-                }
-            });
-    })
-    // .delete((req, res)=>
-    // {
-    //     var collection = db.collection("news");
-    //     var query = { _id: new mongo.ObjectId(req.params.documentId) };
-    //     collection.deleteOne(query, function (err, results) {
-    //         if (err)
-    //             {
-    //             console.log(err)
-    //             res.status(500).send(err)
-    //             }
-    //     });
-      
-    //     res.json({ success: req.params.documentId })
-    // })
+// Add route with parameters and different CRUD operations (GET, DELETE and PUT)
+router.route("/identifier/:sourceId").get((req, res) => {
+  var o_id = new mongo.ObjectID(req.params.documentId);
 
+  var collection = db.collection("rss_feeds");
+  collection.find({ source_id: req.params.sourceId }).toArray((err, docs) => {
+    if (err) {
+      console.log("error: " + err);
+      res.status(500).send(err);
+    } else {
+      res.json({ results: docs });
+    }
+  });
+});
+// .delete((req, res)=>
+// {
+//     var collection = db.collection("news");
+//     var query = { _id: new mongo.ObjectId(req.params.documentId) };
+//     collection.deleteOne(query, function (err, results) {
+//         if (err)
+//             {
+//             console.log(err)
+//             res.status(500).send(err)
+//             }
+//     });
 
-// Add route with parameters and different CRUD operations (GET, DELETE and PUT) 
-router.route('/country/:countryISOCode')
-    .get((req, res) =>
-    {     
-        
-        var collection = db.collection("rss_feeds");
-        collection.find({"source_id": {$regex: 'RSS_'+ req.params.countryISOCode}},{"_id":0, "name":1, "source_id":1}).toArray((err, docs) =>
-            {
-                if(err) {
-                    console.log("error: " + err)
-                    res.status(500).send(err)
-                } else {
-                    res.json({"results": docs});
-                }
-            });
-    })
+//     res.json({ success: req.params.documentId })
+// })
 
-// Add route with parameters and different CRUD operations (GET, DELETE and PUT) 
-router.route('/identifier/:feedId/active/:active')
-    .put((req, res)=>{
-        var collection = db.collection("rss_feeds");
-        var query = {'_id': new mongo.ObjectID(req.params.feedId)};
-        var newvalues = { $set: {is_active: (req.params.active === 'true') } };
-        collection.updateOne(query, newvalues, function (err, results) {
-            if (err)
-                {
-                console.log(err)
-                res.status(500).send(err)
-                }
-            else {
-                res.json({ success: req.params.feedId })
-            }
-        })
-    })
+// Add route with parameters and different CRUD operations (GET, DELETE and PUT)
+router.route("/country/:countryISOCode").get((req, res) => {
+  var collection = db.collection("rss_feeds");
+  collection
+    .find(
+      { source_id: { $regex: "RSS_" + req.params.countryISOCode } },
+      { _id: 0, name: 1, source_id: 1 }
+    )
+    .toArray((err, docs) => {
+      if (err) {
+        console.log("error: " + err);
+        res.status(500).send(err);
+      } else {
+        res.json({ results: docs });
+      }
+    });
+});
+
+// Add route with parameters and different CRUD operations (GET, DELETE and PUT)
+router.route("/identifier/:feedId/active/:active").put((req, res) => {
+  var collection = db.collection("rss_feeds");
+  var query = { _id: new mongo.ObjectID(req.params.feedId) };
+  var newvalues = { $set: { is_active: req.params.active === "true" } };
+  collection.updateOne(query, newvalues, function (err, results) {
+    if (err) {
+      console.log(err);
+      res.status(500).send(err);
+    } else {
+      res.json({ success: req.params.feedId });
+    }
+  });
+});
 
 // // TODO: add timeout to responses:
 // // https://stackoverflow.com/questions/21708208/express-js-response-timeout
-// // So far we have added a timeout to the whole cron job, but not to the responses of every API call.   
-        
-module.exports = router
+// // So far we have added a timeout to the whole cron job, but not to the responses of every API call.
+
+module.exports = router;
