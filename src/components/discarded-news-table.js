@@ -6,7 +6,7 @@ import TableBody from '@material-ui/core/TableBody';
 import TableRow from '@material-ui/core/TableRow'
 import TableCell from '@material-ui/core/TableCell'
 import DiscardedNewsTableRow from './discarded-news-table-row'
-import NewsTableHead from './news-table-head'
+import DiscardedNewsTableHead from './discarded-news-table-head'
 import Paper from '@material-ui/core/Paper';
 import TablePagination from '@material-ui/core/TablePagination'
 import RSSSnackbarContent from './rss-snackbar-content'
@@ -243,7 +243,7 @@ export const DiscardedNewsTable = (props) => {
         <div className={classes.tableWrapper}>
           <Table className={classes.table} aria-labelledby="tableTitle">
             {filteredData.length > 0 && (
-              <NewsTableHead
+              <DiscardedNewsTableHead
                 order = { order }
                 orderBy = { orderBy }
                 onRequestSort = { handleRequestSort }

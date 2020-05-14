@@ -33,19 +33,23 @@ The following line should be uncommented in "webpack.config.js" to generate the 
 new webpack.optimize.UglifyJsPlugin()
 ```
 
-Then write the building command in the console:
+Then write the building command in the console for **development mode**:
 ```
-npm run build
+npm run build:dev
+```
+This will generate a minimized bundle.js file on the `build` folder and start node server application.
+
+Or write the building command in the console for **production mode**:
+```
+npm run build:prod
+```
+This will generate a minimized bundle.js file on the `build` folder. Production mode does an uglify (minification) and uses the ExtractText Plugin that separates the bundle into multiple files.
+
+Then  start the node server:
+```
+npm run start
 ```
 
-This will generate a minimized bundle.js file on the `build` folder.
-
-Execute this command after doing code modifications.
-
-**Start the Node server**
-```
-node server.js
-```
 Open http://localhost:8000 in your browser.
 
 Static files are served from the `build` folder, project JavaScript files are bundled from the `src` folder.
