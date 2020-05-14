@@ -330,13 +330,36 @@ export const NewsTable = (props) => {
 
       {!loading && !errorStatus.error && (
         <Paper className={classes.root}>
-          <div className={classes.tableWrapper}>
-            <Table className={classes.table} aria-labelledby="tableTitle">
-              {filteredData.length > 0 && (
-                <NewsTableHead
-                  order={order}
-                  orderBy={orderBy}
-                  onRequestSort={handleRequestSort}
+        <div className={classes.tableWrapper}>
+          <Table className={classes.table} aria-labelledby="tableTitle">
+            {filteredData.length > 0 && (
+              <NewsTableHead
+                data = {filteredData}
+                selectedMonth = {props.selectedMonth}
+                order = { order }
+                orderBy = { orderBy }
+                onRequestSort = { handleRequestSort }
+              />
+            )}
+            <TableBody>
+            {filteredData.length > 0 && filteredData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(u => {
+              return (                    
+                <NewsTableRow
+                  key={ u._id }
+                  published={ u.published }
+                  docId={ u._id }
+                  title={ u.title }
+                  topics={ u.hasOwnProperty("topics") && u.topics != ""? u.topics.split(",") : [] }
+                  allPossibleTopics= { allTopics }
+                  source_id={ u.source_id }
+                  source_name={ u.source_name }
+                  section={ u.section }
+                  brand={ u.brand }
+                  link={ u.link }
+                  summary={ u.summary }
+                  handleDeleteClick = { handleDeleteClick }
+                  handleUpdateTopics = { handleUpdateTopics }
+                  isUpdating = { false }
                 />
               )}
               <TableBody>
