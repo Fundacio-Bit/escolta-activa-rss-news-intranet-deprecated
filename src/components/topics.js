@@ -268,7 +268,7 @@ export const Topics = (props) => {
     germanNews: data.filter((entry) => entry.source_id.includes("DE")).length,
     italianNews: data.filter((entry) => entry.source_id.includes("IT")).length,
     frenchNews: data.filter((entry) => entry.source_id.includes("FR")).length,
-    topicsCount: data.filter((entry) => entry.source_id.includes("ES")).length,
+    // topicsCount: data.filter((entry) => entry.source_id.includes("ES")).length,
   };
 
   return (
