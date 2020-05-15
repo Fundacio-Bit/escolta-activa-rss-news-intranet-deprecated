@@ -268,6 +268,10 @@ export const Topics = (props) => {
     germanNews: data.filter((entry) => entry.source_id.includes("DE")).length,
     italianNews: data.filter((entry) => entry.source_id.includes("IT")).length,
     frenchNews: data.filter((entry) => entry.source_id.includes("FR")).length,
+    austrianNews: data.filter((entry) => entry.source_id.includes("AT")).length,
+    dutchNews: data.filter((entry) => entry.source_id.includes("NL")).length,
+    swedishNews: data.filter((entry) => entry.source_id.includes("SE")).length,
+    swissNews: data.filter((entry) => entry.source_id.includes("SZ")).length,
     // topicsCount: data.filter((entry) => entry.source_id.includes("ES")).length,
   };
 
@@ -343,6 +347,38 @@ export const Topics = (props) => {
                     <p className={classes.overviewTitle}>Mitjans francesos</p>
                     <p className={classes.overviewFigure}>
                       {overviewFigures.frenchNews}
+                    </p>
+                  </div>
+                </Grid>
+                <Grid item>
+                  <div className={classes.overviewItem}>
+                    <p className={classes.overviewTitle}>Mitjans austríacs</p>
+                    <p className={classes.overviewFigure}>
+                      {overviewFigures.austrianNews}
+                    </p>
+                  </div>
+                </Grid>
+                <Grid item>
+                  <div className={classes.overviewItem}>
+                    <p className={classes.overviewTitle}>Mitjans holandesos</p>
+                    <p className={classes.overviewFigure}>
+                      {overviewFigures.dutchNews}
+                    </p>
+                  </div>
+                </Grid>
+                <Grid item>
+                  <div className={classes.overviewItem}>
+                    <p className={classes.overviewTitle}>Mitjans suecs</p>
+                    <p className={classes.overviewFigure}>
+                      {overviewFigures.swedishNews}
+                    </p>
+                  </div>
+                </Grid>
+                <Grid item>
+                  <div className={classes.overviewItem}>
+                    <p className={classes.overviewTitle}>Mitjans suïssos</p>
+                    <p className={classes.overviewFigure}>
+                      {overviewFigures.swissNews}
                     </p>
                   </div>
                 </Grid>
