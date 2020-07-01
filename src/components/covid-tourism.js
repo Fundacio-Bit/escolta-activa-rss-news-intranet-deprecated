@@ -216,7 +216,7 @@ export const CovidTourism = (props) => {
 
       try {
         axios
-          .get(`/rss-news/entries/yearmonth/${selectedMonth}`)
+          .get("/rss-covid-tourism/folders")
           .then((results) => {
             if (results.data.results.length > 0) {
               // OK
@@ -255,25 +255,26 @@ export const CovidTourism = (props) => {
 
     // Cleanup function. useEffect uses the cleanup function to execute operations useful on component unmount.
     return () => (unmounted = true);
-  }, [selectedMonth]);
+  }, []);
 
   // get figures for the overview panel
-  const overviewFigures = {
-    totalNews: data.length,
-    spanishNews: data.filter(
-      (entry) =>
-        entry.source_id.includes("ES") | entry.source_id.includes("AIR")
-    ).length,
-    britishNews: data.filter((entry) => entry.source_id.includes("UK")).length,
-    germanNews: data.filter((entry) => entry.source_id.includes("DE")).length,
-    italianNews: data.filter((entry) => entry.source_id.includes("IT")).length,
-    frenchNews: data.filter((entry) => entry.source_id.includes("FR")).length,
-    austrianNews: data.filter((entry) => entry.source_id.includes("AT")).length,
-    dutchNews: data.filter((entry) => entry.source_id.includes("NL")).length,
-    swedishNews: data.filter((entry) => entry.source_id.includes("SE")).length,
-    swissNews: data.filter((entry) => entry.source_id.includes("SZ")).length,
-  };
+  // const overviewFigures = {
+  //   totalNews: data.length,
+  //   spanishNews: data.filter(
+  //     (entry) =>
+  //       entry.source_id.includes("ES") | entry.source_id.includes("AIR")
+  //   ).length,
+  //   britishNews: data.filter((entry) => entry.source_id.includes("UK")).length,
+  //   germanNews: data.filter((entry) => entry.source_id.includes("DE")).length,
+  //   italianNews: data.filter((entry) => entry.source_id.includes("IT")).length,
+  //   frenchNews: data.filter((entry) => entry.source_id.includes("FR")).length,
+  //   austrianNews: data.filter((entry) => entry.source_id.includes("AT")).length,
+  //   dutchNews: data.filter((entry) => entry.source_id.includes("NL")).length,
+  //   swedishNews: data.filter((entry) => entry.source_id.includes("SE")).length,
+  //   swissNews: data.filter((entry) => entry.source_id.includes("SZ")).length,
+  // };
 
+  console.log(data);
   return (
     <div className={classes.root}>
       <Grid container className={classes.test2} spacing={10}>
@@ -299,88 +300,20 @@ export const CovidTourism = (props) => {
             </div>
             <Grid item className={classes.overviewPanel} xs={12}>
               <Grid container spacing={6}>
-                <Grid item>
-                  <div className={classes.overviewItem}>
-                    <p className={classes.overviewTitle}>
-                      Notícies seleccionades
-                    </p>
-                    <p className={classes.overviewFigure}>
-                      {overviewFigures.totalNews}
-                    </p>
-                  </div>
-                </Grid>
-                <Grid item>
-                  <div className={classes.overviewItem}>
-                    <p className={classes.overviewTitle}>Mitjans espanyols</p>
-                    <p className={classes.overviewFigure}>
-                      {overviewFigures.spanishNews}
-                    </p>
-                  </div>
-                </Grid>
-                <Grid item>
-                  <div className={classes.overviewItem}>
-                    <p className={classes.overviewTitle}>Mitjans britànics</p>
-                    <p className={classes.overviewFigure}>
-                      {overviewFigures.britishNews}
-                    </p>
-                  </div>
-                </Grid>
-                <Grid item>
-                  <div className={classes.overviewItem}>
-                    <p className={classes.overviewTitle}>Mitjans alemanys</p>
-                    <p className={classes.overviewFigure}>
-                      {overviewFigures.germanNews}
-                    </p>
-                  </div>
-                </Grid>
-                <Grid item>
-                  <div className={classes.overviewItem}>
-                    <p className={classes.overviewTitle}>Mitjans italians</p>
-                    <p className={classes.overviewFigure}>
-                      {overviewFigures.italianNews}
-                    </p>
-                  </div>
-                </Grid>
-                <Grid item>
-                  <div className={classes.overviewItem}>
-                    <p className={classes.overviewTitle}>Mitjans francesos</p>
-                    <p className={classes.overviewFigure}>
-                      {overviewFigures.frenchNews}
-                    </p>
-                  </div>
-                </Grid>
-                <Grid item>
-                  <div className={classes.overviewItem}>
-                    <p className={classes.overviewTitle}>Mitjans austríacs</p>
-                    <p className={classes.overviewFigure}>
-                      {overviewFigures.austrianNews}
-                    </p>
-                  </div>
-                </Grid>
-                <Grid item>
-                  <div className={classes.overviewItem}>
-                    <p className={classes.overviewTitle}>Mitjans holandesos</p>
-                    <p className={classes.overviewFigure}>
-                      {overviewFigures.dutchNews}
-                    </p>
-                  </div>
-                </Grid>
-                <Grid item>
-                  <div className={classes.overviewItem}>
-                    <p className={classes.overviewTitle}>Mitjans suecs</p>
-                    <p className={classes.overviewFigure}>
-                      {overviewFigures.swedishNews}
-                    </p>
-                  </div>
-                </Grid>
-                <Grid item>
-                  <div className={classes.overviewItem}>
-                    <p className={classes.overviewTitle}>Mitjans suïssos</p>
-                    <p className={classes.overviewFigure}>
-                      {overviewFigures.swissNews}
-                    </p>
-                  </div>
-                </Grid>
+                {data.length > 0 &&
+                  data.map((file) => {
+                    return (
+                      <Grid item>
+                        <div className={classes.overviewItem}>
+                          <p className={classes.overviewTitle}>{file.name}</p>
+                          <a href={file.path} download>
+                            {" "}
+                            <img src={file.path} alt="W3Schools"></img>
+                          </a>
+                        </div>
+                      </Grid>
+                    );
+                  })}
               </Grid>
             </Grid>
           </div>
