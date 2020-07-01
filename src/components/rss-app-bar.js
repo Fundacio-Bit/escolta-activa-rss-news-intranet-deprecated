@@ -4,7 +4,7 @@ import { withStyles } from "@material-ui/core/styles";
 import { AppBar, Tabs, Tab, Popover, MenuItem } from "@material-ui/core";
 import News from "./news";
 import DiscardedNews from "./discarded-news";
-import { Topics } from "./topics";
+import { CovidTourism } from "./covid-tourism";
 import Graphs from "./graphs";
 import FilterableSourcesTable from "./filterable-sources-table";
 import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
@@ -108,6 +108,11 @@ class RSSAppBar extends Component {
               label="TEMES"
               value="3"
               onClick={() => this.setState({ content: <Topics /> })}
+            />
+            <Tab
+              label="COVID-TOURISM"
+              value="4"
+              onClick={() => this.setState({ content: <CovidTourism /> })}
             />
           </Tabs>
         </AppBar>
