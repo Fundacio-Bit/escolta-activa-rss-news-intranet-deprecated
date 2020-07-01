@@ -1,6 +1,4 @@
-RSS intranet
-============
-
+# RSS intranet
 
 ### Objective
 
@@ -12,40 +10,40 @@ Intranet to manage news extraction from RSS feeds.
 - React (frontend with client-side rendering)
 - MongoDB (data layer)
 
-
 ### Usage
+
 **Clone this repository**
+
 ```
 git clone https://eaguado_fbit@bitbucket.org/eaguado_fbit/rss_intranet.git
 ```
 
 **Install dependencies**
+
 ```
 npm install
 ```
 
-**Build for production**
+**Build**
 
-The following line should be uncommented in "webpack.config.js" to generate the bundle.js file for production:
+Write the building command in the console for **development mode**:
 
-#### **`webpack.config.js`**
-```javascript
-new webpack.optimize.UglifyJsPlugin()
-```
-
-Then write the building command in the console for **development mode**:
 ```
 npm run build:dev
 ```
+
 This will generate a minimized bundle.js file on the `build` folder and start node server application.
 
 Or write the building command in the console for **production mode**:
+
 ```
 npm run build:prod
 ```
+
 This will generate a minimized bundle.js file on the `build` folder. Production mode does an uglify (minification) and uses the ExtractText Plugin that separates the bundle into multiple files.
 
-Then  start the node server:
+Then start the node server:
+
 ```
 npm run start
 ```
@@ -54,7 +52,7 @@ Open http://localhost:8000 in your browser.
 
 Static files are served from the `build` folder, project JavaScript files are bundled from the `src` folder.
 
-A basic GET router call example is 
+A basic GET router call example is
 http://localhost:8000/rss-news/entries
 
 POST and DELETE operations can be tested using [POSTMAN](https://www.getpostman.com/)
