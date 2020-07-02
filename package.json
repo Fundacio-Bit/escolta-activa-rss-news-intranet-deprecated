@@ -11,6 +11,7 @@
   "author": "omoya@fundaciobit.org",
   "license": "undefined",
   "devDependencies": {
+    "@fortawesome/fontawesome-free": "^5.13.1",
     "babel-core": "^6.26.3",
     "babel-loader": "~6.2.*",
     "babel-plugin-react-transform": "^2.0.2",

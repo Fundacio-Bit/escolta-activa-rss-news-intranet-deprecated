@@ -13,9 +13,6 @@ import Typography from "@material-ui/core/Typography";
 const useStyles = makeStyles((theme) => ({
   root: {
     fontFamily: "Roboto",
-    // flexGrow: 1,
-    // width: '100%',
-    // height: '100%',
   },
   title: {
     textAlign: "left",
@@ -44,18 +41,14 @@ const useStyles = makeStyles((theme) => ({
     paddingBottom: "10px!important",
     width: "100%",
     margin: "unset",
-    // height: 150,
-    // width: 150,
   },
   overviewItem: {
+    textAlign: "center",
     background: "linear-gradient(60deg, #26c6da, #00acc1)",
     boxShadow:
       "0 4px 20px 0 rgba(0, 0, 0,.14), 0 7px 10px -5px rgba(0, 172, 193,.4)",
     width: "150px",
     height: "150px",
-    // overflow: "unset",
-    // fontSize: "1.5em",
-    // textAlign: "center",
     marginBottom: "3px",
   },
   overviewTitle: {
@@ -65,7 +58,6 @@ const useStyles = makeStyles((theme) => ({
     color: "white",
     padding: "10px",
     margin: "unset",
-    // fontFamily: "Roboto",
   },
   overviewFigure: {
     textAlign: "center",
@@ -257,24 +249,6 @@ export const CovidTourism = (props) => {
     return () => (unmounted = true);
   }, []);
 
-  // get figures for the overview panel
-  // const overviewFigures = {
-  //   totalNews: data.length,
-  //   spanishNews: data.filter(
-  //     (entry) =>
-  //       entry.source_id.includes("ES") | entry.source_id.includes("AIR")
-  //   ).length,
-  //   britishNews: data.filter((entry) => entry.source_id.includes("UK")).length,
-  //   germanNews: data.filter((entry) => entry.source_id.includes("DE")).length,
-  //   italianNews: data.filter((entry) => entry.source_id.includes("IT")).length,
-  //   frenchNews: data.filter((entry) => entry.source_id.includes("FR")).length,
-  //   austrianNews: data.filter((entry) => entry.source_id.includes("AT")).length,
-  //   dutchNews: data.filter((entry) => entry.source_id.includes("NL")).length,
-  //   swedishNews: data.filter((entry) => entry.source_id.includes("SE")).length,
-  //   swissNews: data.filter((entry) => entry.source_id.includes("SZ")).length,
-  // };
-
-  console.log(data);
   return (
     <div className={classes.root}>
       <Grid container className={classes.test2} spacing={10}>
@@ -303,13 +277,23 @@ export const CovidTourism = (props) => {
                 {data.length > 0 &&
                   data.map((file) => {
                     return (
-                      <Grid item>
+                      <Grid item key={file.name}>
                         <div className={classes.overviewItem}>
                           <p className={classes.overviewTitle}>{file.name}</p>
-                          <a href={file.path} download>
-                            {" "}
-                            <img src={file.path} alt="W3Schools"></img>
+                          <a
+                            href={`/rss-covid-tourism/download-zip/week/${file.name}`}
+                          >
+                            <i
+                              className="fas fa-file-download"
+                              style={{
+                                paddingTop: "5px",
+                                fontSize: "3em",
+                                lineHeight: "3em",
+                                color: "white",
+                              }}
+                            ></i>
                           </a>
+                          <p className={classes.overviewTitle}>ZIP</p>
                         </div>
                       </Grid>
                     );
