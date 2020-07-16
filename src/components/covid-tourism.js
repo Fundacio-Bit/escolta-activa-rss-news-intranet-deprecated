@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import PropTypes from "prop-types";
-import { TopicsRanking } from "./topics-ranking";
 import TopicsSearchAppBar from "./topics-search-app-bar";
-import TopicsBarChart from "./topics-bar-chart";
 import Grid from "@material-ui/core/Grid";
 import Paper from "@material-ui/core/Paper";
 import { baseErrorMessage, getErrorMessage } from "./utils/getErrorMessage.js";
@@ -252,14 +250,6 @@ export const CovidTourism = (props) => {
   return (
     <div className={classes.root}>
       <Grid container className={classes.test2} spacing={10}>
-        <Grid item className={classes.test2} xs={12}>
-          <Paper className={classes.paper}>
-            <TopicsSearchAppBar
-              selectedMonth={selectedMonth}
-              onSelectMonth={setSelectedMonth}
-            />
-          </Paper>
-        </Grid>
         <Grid item className={classes.overviewPanel} xs={12}>
           <div className={classes.test4}>
             <div className={classes.title}>
