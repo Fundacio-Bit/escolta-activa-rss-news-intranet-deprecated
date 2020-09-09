@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import TableRow from '@material-ui/core/TableRow';
 import TableCell from '@material-ui/core/TableCell';
-// import Checkbox from '@material-ui/core/Checkbox';
+import Checkbox from '@material-ui/core/Checkbox';
 import IconButton from '@material-ui/core/IconButton';
 import Chip from '@material-ui/core/Chip';
 import DeleteIcon from '@material-ui/icons/Delete';
@@ -264,7 +264,8 @@ const styles = theme => ({
         }),
       };
 
-      var handleDeleteClick  =   this.props.handleDeleteClick;
+      var handleRevisedSelectedChange = this.props.handleRevisedSelectedChange;
+      var handleDeleteClick = this.props.handleDeleteClick;
       var possibleTopics = this.props.allPossibleTopics ? this.props.allPossibleTopics: [];
 
       var selectableOptions = possibleTopics.map(suggestion => ({value: suggestion, label: suggestion}));
@@ -272,7 +273,16 @@ const styles = theme => ({
         selectableOptions.push({value: this.state.textFieldValue, label: this.state.textFieldValue}): null;
 
       return(
-        <TableRow>
+        <TableRow role="checkbox">
+          < TableCell className = {classes.dateTableCell} padding = "checkbox" > 
+            <Checkbox
+              checked={this.props.selected}
+              value={String(this.props.selected)}
+              color="primary"
+              // onClick={event => this.handleSelectedChange(event, this.props.docId)}
+              onClick = { event => handleRevisedSelectedChange(event, this.props.docId) }
+            />
+          </TableCell>
           <TableCell><div><h3>{new Date(this.props.published).toLocaleString()}</h3></div></TableCell>
           <TableCell>
             <div classes={{ tooltipContainer: classes.tooltipContainer }}>

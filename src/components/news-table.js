@@ -85,6 +85,18 @@ export const NewsTable = (props) => {
   }
 
   function filterByChecked(pressNew) {
+    // var value = 0;
+
+    // if (this.props.isChecked === 1) {
+    //   value = true
+    // } else if (this.props.isChecked === -1) {
+    //   value = false
+    // }
+
+    // if (value === 0 || pressNew.selected === value) {
+    //   return true
+    // } else return false
+
     if (props.isChecked === 1 && pressNew.hasOwnProperty("topics")) return true;
     else if (props.isChecked === -1 && !pressNew.hasOwnProperty("topics"))
       return true;
@@ -167,6 +179,8 @@ export const NewsTable = (props) => {
   // Once the data have been updated in mongo a setLastUpdateTimestamp with the timestamp at that moment will
   // relaunch the useEfect as determined by its dependencies, thereby the whole updated data list will be retrieved
   // again.
+  var handleRevisedSelectedChange = this.handleRevisedSelectedChange;
+
   useEffect(() => {
     let unmounted = false;
 
@@ -272,7 +286,22 @@ export const NewsTable = (props) => {
       });
   }
 
-  function handleRequestSort(orderByReq, order) {
+function handleRevisedSelectedChange(event, id) {
+  const value = event.target.checked;
+  const retrievedNews = this.state.data;
+  const index = retrievedNews.findIndex(x => x._id == id);
+
+  axios.put('/rss-news/identifier/' + id + '/selected/' + value)
+    .then((res) => {
+      retrievedNews[index].selected = value;
+      // we can update the state after response...
+      this.setState({
+        data: retrievedNews
+      });
+    })
+}
+
+function handleRequestSort(orderByReq, order) {
     let newOrder = "desc";
 
     if (orderBy === orderByReq && order === "desc") {
@@ -347,6 +376,7 @@ export const NewsTable = (props) => {
                 <NewsTableRow
                   key={ u._id }
                   published={ u.published }
+                  selected = { u.selected }
                   docId={ u._id }
                   title={ u.title }
                   topics={ u.hasOwnProperty("topics") && u.topics != ""? u.topics.split(",") : [] }
@@ -357,6 +387,7 @@ export const NewsTable = (props) => {
                   brand={ u.brand }
                   link={ u.link }
                   summary={ u.summary }
+                  handleRevisedSelectedChange = { handleRevisedSelectedChange.bind(this) }
                   handleDeleteClick = { handleDeleteClick }
                   handleUpdateTopics = { handleUpdateTopics }
                   isUpdating = { false }
