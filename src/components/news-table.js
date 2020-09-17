@@ -8,6 +8,7 @@ import TableRow from "@material-ui/core/TableRow";
 import TableCell from "@material-ui/core/TableCell";
 import NewsTableRow from "./news-table-row";
 import NewsTableHead from "./news-table-head";
+import NewsTableToolbar from "./news-table-toolbar";
 import Paper from "@material-ui/core/Paper";
 import TablePagination from "@material-ui/core/TablePagination";
 import RSSSnackbarContent from "./rss-snackbar-content";
@@ -70,6 +71,8 @@ export const NewsTable = (props) => {
   const [loading, setLoading] = useState(true);
   const [errorStatus, setErrorStatus] = useState({ error: false, message: "" });
   const [lastUpdateTimestamp, setLastUpdateTimestamp] = useState(Date.now());
+
+  const [selected, setSelected] = React.useState([]);
 
   const all = [5, 10, 25, 50];
   const emptyRows =
@@ -179,7 +182,7 @@ export const NewsTable = (props) => {
   // Once the data have been updated in mongo a setLastUpdateTimestamp with the timestamp at that moment will
   // relaunch the useEfect as determined by its dependencies, thereby the whole updated data list will be retrieved
   // again.
-  var handleRevisedSelectedChange = this.handleRevisedSelectedChange;
+  // var handleRevisedSelectedChange = this.handleRevisedSelectedChange;
 
   useEffect(() => {
     let unmounted = false;
@@ -286,20 +289,20 @@ export const NewsTable = (props) => {
       });
   }
 
-function handleRevisedSelectedChange(event, id) {
-  const value = event.target.checked;
-  const retrievedNews = this.state.data;
-  const index = retrievedNews.findIndex(x => x._id == id);
+// function handleRevisedSelectedChange(event, id) {
+//   const value = event.target.checked;
+//   const retrievedNews = this.state.data;
+//   const index = retrievedNews.findIndex(x => x._id == id);
 
-  axios.put('/rss-news/identifier/' + id + '/selected/' + value)
-    .then((res) => {
-      retrievedNews[index].selected = value;
-      // we can update the state after response...
-      this.setState({
-        data: retrievedNews
-      });
-    })
-}
+//   axios.put('/rss-news/identifier/' + id + '/selected/' + value)
+//     .then((res) => {
+//       retrievedNews[index].selected = value;
+//       // we can update the state after response...
+//       this.setState({
+//         data: retrievedNews
+//       });
+//     })
+// }
 
 function handleRequestSort(orderByReq, order) {
     let newOrder = "desc";
@@ -370,13 +373,13 @@ function handleRequestSort(orderByReq, order) {
                 onRequestSort = { handleRequestSort }
               />
             )}
+            <NewsTableToolbar numSelected={selected.length} />
             <TableBody>
             {filteredData.length > 0 && filteredData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(u => {
               return (                    
                 <NewsTableRow
                   key={ u._id }
                   published={ u.published }
-                  selected = { u.selected }
                   docId={ u._id }
                   title={ u.title }
                   topics={ u.hasOwnProperty("topics") && u.topics != ""? u.topics.split(",") : [] }
@@ -387,7 +390,6 @@ function handleRequestSort(orderByReq, order) {
                   brand={ u.brand }
                   link={ u.link }
                   summary={ u.summary }
-                  handleRevisedSelectedChange = { handleRevisedSelectedChange.bind(this) }
                   handleDeleteClick = { handleDeleteClick }
                   handleUpdateTopics = { handleUpdateTopics }
                   isUpdating = { false }

@@ -200,7 +200,7 @@ const styles = theme => ({
         open: false,
         assignedTopics: this.props.topics,
         textFieldValue: "",
-        isLoading: this.props.isUpdating
+        isLoading: this.props.isUpdating,
       };
 
       this.handleDialogClickOpen  =  this.handleDialogClickOpen.bind(this);
@@ -264,7 +264,7 @@ const styles = theme => ({
         }),
       };
 
-      var handleRevisedSelectedChange = this.props.handleRevisedSelectedChange;
+      // var handleRevisedSelectedChange = this.props.handleRevisedSelectedChange;
       var handleDeleteClick = this.props.handleDeleteClick;
       var possibleTopics = this.props.allPossibleTopics ? this.props.allPossibleTopics: [];
 
