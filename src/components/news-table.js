@@ -1,5 +1,4 @@
 /* eslint-disable no-prototype-builtins */
-// import React, { Component } from 'react';
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Table from "@material-ui/core/Table";
@@ -8,7 +7,7 @@ import TableRow from "@material-ui/core/TableRow";
 import TableCell from "@material-ui/core/TableCell";
 import NewsTableRow from "./news-table-row";
 import NewsTableHead from "./news-table-head";
-import NewsTableToolbar from "./news-table-toolbar";
+import {NewsTableToolbar} from "./news-table-toolbar";
 import Paper from "@material-ui/core/Paper";
 import TablePagination from "@material-ui/core/TablePagination";
 import RSSSnackbarContent from "./rss-snackbar-content";
@@ -78,6 +77,15 @@ export const NewsTable = (props) => {
   const emptyRows =
     rowsPerPage - Math.min(rowsPerPage, data.length - page * rowsPerPage);
 
+  const handleSelectAllClick = (event) => {
+    if (event.target.checked) {
+      const newSelecteds = data.map((n) => n._id);
+      setSelected(newSelecteds);
+      return;
+    }
+    setSelected([]);
+  };
+  
   function filterByCountry(pressNew) {
     if (
       pressNew.hasOwnProperty("source_id") &&
@@ -304,7 +312,7 @@ export const NewsTable = (props) => {
 //     })
 // }
 
-function handleRequestSort(orderByReq, order) {
+  function handleRequestSort(orderByReq, order) {
     let newOrder = "desc";
 
     if (orderBy === orderByReq && order === "desc") {
@@ -323,13 +331,14 @@ function handleRequestSort(orderByReq, order) {
     setRowsPerPage(event.target.value);
   }
 
-  function handleDeleteClick(id) {
-    const retrievedNews = data;
-    const index = retrievedNews.findIndex((x) => x._id == id);
-    const removed_new = retrievedNews[index];
+  function handleDeleteClick() {
+    console.log(selected)
+    // const retrievedNews = data;
+    // const index = retrievedNews.findIndex((x) => x._id == id);
+    // const removed_new = retrievedNews[index];
 
     axios
-      .post("/rss-discarded-news/news-discarded/", removed_new, {
+      .post("/rss-discarded-news/news-discarded/", selected, {
         headers: { "Content-Type": "application/json" },
       })
       .then((res) => {
@@ -341,8 +350,30 @@ function handleRequestSort(orderByReq, order) {
       });
   }
 
+
+  function handleClick(event, id) {
+    const selectedIndex = selected.indexOf(id);
+    let newSelected = [];
+
+    if (selectedIndex === -1) {
+      newSelected = newSelected.concat(selected, id);
+    } else if (selectedIndex === 0) {
+      newSelected = newSelected.concat(selected.slice(1));
+    } else if (selectedIndex === selected.length - 1) {
+      newSelected = newSelected.concat(selected.slice(0, -1));
+    } else if (selectedIndex > 0) {
+      newSelected = newSelected.concat(
+        selected.slice(0, selectedIndex),
+        selected.slice(selectedIndex + 1),
+      );
+    }
+
+    setSelected(newSelected);
+  }
+
   // Sorting data
   // filteredData.sort(getSorting(orderBy, order));
+  const isSelected = (id) => selected.indexOf(id) !== -1;
 
   return (
     <div>
@@ -369,13 +400,20 @@ function handleRequestSort(orderByReq, order) {
                 data = {filteredData}
                 selectedMonth = {props.selectedMonth}
                 order = { order }
+                numSelected={selected.length}
                 orderBy = { orderBy }
                 onRequestSort = { handleRequestSort }
+                onSelectAllClick={handleSelectAllClick}
+                rowCount={data.length}
               />
             )}
-            <NewsTableToolbar numSelected={selected.length} />
+            <NewsTableToolbar
+              numSelected={selected.length}
+              handleDeleteClick = { handleDeleteClick }
+            />
             <TableBody>
             {filteredData.length > 0 && filteredData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(u => {
+              const isItemSelected = isSelected(u._id);
               return (                    
                 <NewsTableRow
                   key={ u._id }
@@ -390,9 +428,10 @@ function handleRequestSort(orderByReq, order) {
                   brand={ u.brand }
                   link={ u.link }
                   summary={ u.summary }
-                  handleDeleteClick = { handleDeleteClick }
+                  handleClick = { handleClick }
                   handleUpdateTopics = { handleUpdateTopics }
                   isUpdating = { false }
+                  selected = {isItemSelected}
                 />
               );
               })}

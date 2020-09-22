@@ -30,12 +30,11 @@ const useToolbarStyles = makeStyles((theme) => ({
 }));
 
 export const NewsTableToolbar = (props) => {
-  console.log("aqui")
   const classes = useToolbarStyles();
-  const { numSelected } = props;
+  const { numSelected, handleDeleteClick } = props;
 
   return (
-    <Toolbar
+    <Toolbar 
       className={clsx(classes.root, {
         [classes.highlight]: numSelected > 0,
       })}
@@ -44,29 +43,22 @@ export const NewsTableToolbar = (props) => {
         <Typography className={classes.title} color="inherit" variant="subtitle1" component="div">
           {numSelected} selected
         </Typography>
-      ) : (
-        <Typography className={classes.title} variant="h6" id="tableTitle" component="div">
-          Nutrition
-        </Typography>
-      )}
+      ) : <br/>}
 
       {numSelected > 0 ? (
         <Tooltip title="Delete">
-          <IconButton aria-label="delete">
+          <IconButton aria-label="delete" 
+            onClick= 
+            {() => {handleDeleteClick()}
+            }>
             <DeleteIcon />
           </IconButton>
         </Tooltip>
-      ) : (
-        <Tooltip title="Filter list">
-          <IconButton aria-label="filter list">
-            <FilterListIcon />
-          </IconButton>
-        </Tooltip>
-      )}
+      ) : <br/>}
     </Toolbar>
   );
 };
 
-// NewsTableToolbar.propTypes = {
-//   numSelected: PropTypes.number.isRequired,
-// };
+NewsTableToolbar.propTypes = {
+  numSelected: PropTypes.number.isRequired,
+};
