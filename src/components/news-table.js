@@ -214,6 +214,7 @@ export const NewsTable = (props) => {
                   setErrorStatus({ error: false, message: "" });
                   setLoading(false);
                   setData(results.data.results);
+                  setSelected([]);
                 }
               }, 850);
             } else {
@@ -297,21 +298,6 @@ export const NewsTable = (props) => {
       });
   }
 
-// function handleRevisedSelectedChange(event, id) {
-//   const value = event.target.checked;
-//   const retrievedNews = this.state.data;
-//   const index = retrievedNews.findIndex(x => x._id == id);
-
-//   axios.put('/rss-news/identifier/' + id + '/selected/' + value)
-//     .then((res) => {
-//       retrievedNews[index].selected = value;
-//       // we can update the state after response...
-//       this.setState({
-//         data: retrievedNews
-//       });
-//     })
-// }
-
   function handleRequestSort(orderByReq, order) {
     let newOrder = "desc";
 
@@ -342,7 +328,7 @@ export const NewsTable = (props) => {
         headers: { "Content-Type": "application/json" },
       })
       .then((res) => {
-        axios.delete("/rss-news/identifier/" + id).then((res) => {
+        axios.delete("/rss-news/identifiers/" + selected).then((res) => {
           // Update the state after response
           // We have used an "update timestamp" to trigger rerenders
           setLastUpdateTimestamp(Date.now());
@@ -407,10 +393,12 @@ export const NewsTable = (props) => {
                 rowCount={data.length}
               />
             )}
-            <NewsTableToolbar
+            {selected.length > 0 && (
+              <NewsTableToolbar
               numSelected={selected.length}
               handleDeleteClick = { handleDeleteClick }
-            />
+              />
+            )}
             <TableBody>
             {filteredData.length > 0 && filteredData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(u => {
               const isItemSelected = isSelected(u._id);

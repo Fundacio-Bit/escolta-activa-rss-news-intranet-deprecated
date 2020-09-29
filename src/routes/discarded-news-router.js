@@ -64,13 +64,13 @@ router.route("/news-discarded").post((req, res) => {
   var news_discarded_collection = db.collection("news_discarded");
   req.body.forEach(id => {
     var o_id = new mongo.ObjectID(id);
-    news_collection.find({ _id: o_id },{}).toArray((err, news_docs) => {
+    news_collection.find({ _id: o_id },{}).toArray((err, news_doc) => {
       if (err) {
         console.log("error: " + err);
         res.status(500).send(err);
       } else {
-        news_discarded_collection.insertOne(news_docs, function (err, results) {
-          console.log("Inserting " + JSON.stringify(news_docs))
+        news_discarded_collection.insertOne(news_doc[0], function (err, results) {
+          console.log("Inserting in news discarded" + JSON.stringify(news_doc[0]))
           if (err) {
             console.log(err);
             res.status(500).send(err);
@@ -78,10 +78,10 @@ router.route("/news-discarded").post((req, res) => {
             console.log("Result: " + results)
           }
         });
-        res.json({ success: id});
       }
     });
   });
+  res.json({ success: req.body});
 });
 
 // Add route with parameters and different CRUD operations (GET, DELETE and PUT)
