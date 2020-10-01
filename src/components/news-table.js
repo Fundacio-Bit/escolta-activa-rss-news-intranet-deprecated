@@ -1,5 +1,4 @@
 /* eslint-disable no-prototype-builtins */
-// import React, { Component } from 'react';
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Table from "@material-ui/core/Table";
@@ -8,6 +7,7 @@ import TableRow from "@material-ui/core/TableRow";
 import TableCell from "@material-ui/core/TableCell";
 import NewsTableRow from "./news-table-row";
 import NewsTableHead from "./news-table-head";
+import {NewsTableToolbar} from "./news-table-toolbar";
 import Paper from "@material-ui/core/Paper";
 import TablePagination from "@material-ui/core/TablePagination";
 import RSSSnackbarContent from "./rss-snackbar-content";
@@ -71,10 +71,21 @@ export const NewsTable = (props) => {
   const [errorStatus, setErrorStatus] = useState({ error: false, message: "" });
   const [lastUpdateTimestamp, setLastUpdateTimestamp] = useState(Date.now());
 
+  const [selected, setSelected] = React.useState([]);
+
   const all = [5, 10, 25, 50];
   const emptyRows =
     rowsPerPage - Math.min(rowsPerPage, data.length - page * rowsPerPage);
 
+  const handleSelectAllClick = (event) => {
+    if (event.target.checked) {
+      const newSelecteds = filteredData.map((n) => n._id);
+      setSelected(newSelecteds);
+      return;
+    }
+    setSelected([]);
+  };
+  
   function filterByCountry(pressNew) {
     if (
       pressNew.hasOwnProperty("source_id") &&
@@ -85,6 +96,18 @@ export const NewsTable = (props) => {
   }
 
   function filterByChecked(pressNew) {
+    // var value = 0;
+
+    // if (this.props.isChecked === 1) {
+    //   value = true
+    // } else if (this.props.isChecked === -1) {
+    //   value = false
+    // }
+
+    // if (value === 0 || pressNew.selected === value) {
+    //   return true
+    // } else return false
+
     if (props.isChecked === 1 && pressNew.hasOwnProperty("topics")) return true;
     else if (props.isChecked === -1 && !pressNew.hasOwnProperty("topics"))
       return true;
@@ -167,6 +190,8 @@ export const NewsTable = (props) => {
   // Once the data have been updated in mongo a setLastUpdateTimestamp with the timestamp at that moment will
   // relaunch the useEfect as determined by its dependencies, thereby the whole updated data list will be retrieved
   // again.
+  // var handleRevisedSelectedChange = this.handleRevisedSelectedChange;
+
   useEffect(() => {
     let unmounted = false;
 
@@ -189,6 +214,7 @@ export const NewsTable = (props) => {
                   setErrorStatus({ error: false, message: "" });
                   setLoading(false);
                   setData(results.data.results);
+                  setSelected([]);
                 }
               }, 850);
             } else {
@@ -215,7 +241,7 @@ export const NewsTable = (props) => {
 
     fetchData();
 
-    // Cleanup function. useEffect uses the cleanup function to execute operations useful on component unmount.
+    // Cleanup function. useEffect uses the cleanup function to execute operations useful on set unmount.
     // It is equivalent to the componentWillUnmount function of class components.
     // Here it is used to avoid the execution of setData on unmounted components.
     // Further info at:
@@ -291,17 +317,13 @@ export const NewsTable = (props) => {
     setRowsPerPage(event.target.value);
   }
 
-  function handleDeleteClick(id) {
-    const retrievedNews = data;
-    const index = retrievedNews.findIndex((x) => x._id == id);
-    const removed_new = retrievedNews[index];
-
+  function handleDeleteClick() {
     axios
-      .post("/rss-discarded-news/news-discarded/", removed_new, {
+      .post("/rss-discarded-news/news-discarded/", selected, {
         headers: { "Content-Type": "application/json" },
       })
       .then((res) => {
-        axios.delete("/rss-news/identifier/" + id).then((res) => {
+        axios.delete("/rss-news/identifiers/" + selected).then((res) => {
           // Update the state after response
           // We have used an "update timestamp" to trigger rerenders
           setLastUpdateTimestamp(Date.now());
@@ -309,8 +331,30 @@ export const NewsTable = (props) => {
       });
   }
 
+
+  function handleClick(event, id) {
+    const selectedIndex = selected.indexOf(id);
+    let newSelected = [];
+
+    if (selectedIndex === -1) {
+      newSelected = newSelected.concat(selected, id);
+    } else if (selectedIndex === 0) {
+      newSelected = newSelected.concat(selected.slice(1));
+    } else if (selectedIndex === selected.length - 1) {
+      newSelected = newSelected.concat(selected.slice(0, -1));
+    } else if (selectedIndex > 0) {
+      newSelected = newSelected.concat(
+        selected.slice(0, selectedIndex),
+        selected.slice(selectedIndex + 1),
+      );
+    }
+
+    setSelected(newSelected);
+  }
+
   // Sorting data
   // filteredData.sort(getSorting(orderBy, order));
+  const isSelected = (id) => selected.indexOf(id) !== -1;
 
   return (
     <div>
@@ -337,12 +381,22 @@ export const NewsTable = (props) => {
                 data = {filteredData}
                 selectedMonth = {props.selectedMonth}
                 order = { order }
+                numSelected={selected.length}
                 orderBy = { orderBy }
                 onRequestSort = { handleRequestSort }
+                onSelectAllClick={handleSelectAllClick}
+                rowCount={filteredData.length}
+              />
+            )}
+            {selected.length > 0 && (
+              <NewsTableToolbar
+              numSelected={selected.length}
+              handleDeleteClick = { handleDeleteClick }
               />
             )}
             <TableBody>
             {filteredData.length > 0 && filteredData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(u => {
+              const isItemSelected = isSelected(u._id);
               return (                    
                 <NewsTableRow
                   key={ u._id }
@@ -357,9 +411,10 @@ export const NewsTable = (props) => {
                   brand={ u.brand }
                   link={ u.link }
                   summary={ u.summary }
-                  handleDeleteClick = { handleDeleteClick }
+                  handleClick = { handleClick }
                   handleUpdateTopics = { handleUpdateTopics }
                   isUpdating = { false }
+                  selected = {isItemSelected}
                 />
               );
               })}

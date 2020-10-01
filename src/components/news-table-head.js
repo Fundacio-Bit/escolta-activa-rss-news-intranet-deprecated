@@ -2,6 +2,7 @@ import React from 'react';
 import TableCell from '@material-ui/core/TableCell';
 import TableRow from '@material-ui/core/TableRow';
 import TableSortLabel from '@material-ui/core/TableSortLabel';
+import Checkbox from '@material-ui/core/Checkbox';
 import Tooltip from '@material-ui/core/Tooltip';
 import { withStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
@@ -32,7 +33,7 @@ class NewsTableHead extends React.Component {
 
 
   render() {
-    const { classes } = this.props;
+    const { classes, onSelectAllClick, numSelected, rowCount} = this.props;
     var onRequestSort = this.props.onRequestSort;
     var data = this.props.data
     let formattedFilteredNews = data.map((item) => {
@@ -43,6 +44,14 @@ class NewsTableHead extends React.Component {
     return (
       <TableHead>
         < TableRow >
+          <TableCell padding="checkbox">
+            <Checkbox
+              indeterminate={numSelected > 0 && numSelected < rowCount}
+              checked={rowCount > 0 && numSelected === rowCount}
+              onChange={onSelectAllClick}
+              inputProps={{ 'aria-label': 'select all news' }}
+            />
+          </TableCell>
           <TableCell 
             className = {classes.dateTableCell}
             key = "published"
@@ -73,6 +82,9 @@ class NewsTableHead extends React.Component {
 
 NewsTableHead.propTypes = {
   classes: PropTypes.object.isRequired,
+  numSelected: PropTypes.number.isRequired,
+  onSelectAllClick: PropTypes.func.isRequired,
+  rowCount: PropTypes.number.isRequired,
 };
 
 export default  withStyles(styles)(NewsTableHead);

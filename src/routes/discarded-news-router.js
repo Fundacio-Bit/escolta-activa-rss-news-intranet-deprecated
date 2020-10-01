@@ -60,16 +60,28 @@ router.get("/entries/yearmonth/:yearmonth", (req, res) => {
 
 // Add route without parameters
 router.route("/news-discarded").post((req, res) => {
-  var collection = db.collection("news_discarded");
-  delete req.body._id;
-  req.body.published = new Date(req.body.published);
-  collection.insertOne(req.body, function (err, results) {
-    if (err) {
-      console.log(err);
-      res.status(500).send(err);
-    }
+  var news_collection = db.collection("news");
+  var news_discarded_collection = db.collection("news_discarded");
+  req.body.forEach(id => {
+    var o_id = new mongo.ObjectID(id);
+    news_collection.find({ _id: o_id },{}).toArray((err, news_doc) => {
+      if (err) {
+        console.log("error: " + err);
+        res.status(500).send(err);
+      } else {
+        news_discarded_collection.insertOne(news_doc[0], function (err, results) {
+          // console.log("Inserting in news discarded" + JSON.stringify(news_doc[0]))
+          if (err) {
+            console.log(err);
+            res.status(500).send(err);
+          } else {
+            console.log("Result: " + results)
+          }
+        });
+      }
+    });
   });
-  res.json({ success: req.body._id });
+  res.json({ success: req.body});
 });
 
 // Add route with parameters and different CRUD operations (GET, DELETE and PUT)

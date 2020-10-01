@@ -60,47 +60,95 @@ router.get("/entries/yearmonth/:yearmonth", (req, res) => {
 });
 
 // Add route without parameters
-router.route("/news").post((req, res) => {
-  var collection = db.collection("news");
-  delete req.body._id;
-  req.body.published = new Date(req.body.published);
-  collection.insertOne(req.body, function (err, results) {
-    if (err) {
-      console.log(err);
-      res.status(500).send(err);
-    }
-  });
-  res.json({ success: req.body._id });
-});
-
-// Add route with parameters and different CRUD operations (GET, DELETE and PUT)
-router
-  .route("/identifier/:documentId")
-  .get((req, res) => {
-    var o_id = new mongo.ObjectID(req.params.documentId);
-
+router.
+  route("/news").post((req, res) => {
     var collection = db.collection("news");
-    collection.find({ _id: o_id }).toArray((err, docs) => {
-      if (err) {
-        console.log("error: " + err);
-        res.status(500).send(err);
-      } else {
-        res.json({ results: docs });
-      }
-    });
-  })
-  .delete((req, res) => {
-    var collection = db.collection("news");
-    var query = { _id: new mongo.ObjectID(req.params.documentId) };
-    collection.deleteOne(query, function (err, results) {
+    delete req.body._id;
+    req.body.published = new Date(req.body.published);
+    collection.insertOne(req.body, function (err, results) {
       if (err) {
         console.log(err);
         res.status(500).send(err);
-      } else {
-        res.json({ success: req.params.documentId });
       }
     });
+    res.json({ success: req.body._id });
   });
+
+// Add route with parameters and different CRUD operations (GET, DELETE and PUT)
+router
+  .route("/identifiers/:documentIds").delete((req, res) => {
+    var ids = req.params.documentIds.split(',')
+    var collection = db.collection("news");
+    ids.forEach(id => {
+      var query = { _id: new mongo.ObjectID(id) };
+      collection.deleteOne(query, function (err, results) {
+        // console.log("Deleting " + new mongo.ObjectID(id))
+        if (err) {
+          console.log(err);
+          res.status(500).send(err);
+        }
+      });
+    });
+    res.json({ success: ids });
+  });
+
+
+  // // Add route with parameters and different CRUD operations (GET, DELETE and PUT)
+// router
+//   .route("/identifier/:documentId")
+//   .get((req, res) => {
+//     var o_id = new mongo.ObjectID(req.params.documentId);
+
+//     var collection = db.collection("news");
+//     collection.find({ _id: o_id }).toArray((err, docs) => {
+//       if (err) {
+//         console.log("error: " + err);
+//         res.status(500).send(err);
+//       } else {
+//         res.json({ results: docs });
+//       }
+//     });
+//   })
+//   .delete((req, res) => {
+//     var collection = db.collection("news");
+//     var query = { _id: new mongo.ObjectID(req.params.documentId) };
+//     collection.deleteOne(query, function (err, results) {
+//       if (err) {
+//         console.log(err);
+//         res.status(500).send(err);
+//       } else {
+//         res.json({ success: req.params.documentId });
+//       }
+//     });
+//   });
+
+  // ######## UPDATE SELECTED ##############    
+
+  router.route('/identifier/:documentId/selected/:selected')
+  .put((req, res) => {
+
+      var collection = db.collection("news");
+      var query = {
+        '_id': new mongo.ObjectID(req.params.documentId)
+      };
+      var newvalues = {
+        $set: {
+          selected: (req.params.selected === 'true')
+        }
+      };
+      collection.updateOne(query, newvalues, function (err, results) {
+          if (err)
+            {
+              console.log(err)
+              res.status(500).send(err)
+            }
+            else {
+              res.json({
+                  success: req.params.documentId
+                })
+            }
+        })
+  })
 
 // ######## UPDATE TOPICS ##############
 // Add route with parameters and different CRUD operations (GET, DELETE and PUT)
