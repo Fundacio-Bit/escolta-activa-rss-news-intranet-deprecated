@@ -82,7 +82,7 @@ router
     ids.forEach(id => {
       var query = { _id: new mongo.ObjectID(id) };
       collection.deleteOne(query, function (err, results) {
-        console.log("Deleting " + new mongo.ObjectID(id))
+        // console.log("Deleting " + new mongo.ObjectID(id))
         if (err) {
           console.log(err);
           res.status(500).send(err);

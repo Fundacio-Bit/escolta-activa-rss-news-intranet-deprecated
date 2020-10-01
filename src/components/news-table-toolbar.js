@@ -18,12 +18,10 @@ const useToolbarStyles = makeStyles((theme) => ({
     theme.palette.type === 'light'
       ? {
           color: theme.palette.secondary.main,
-          width: '100%',
           // backgroundColor: lighten(theme.palette.secondary.light, 0.85),
         }
       : {
           color: theme.palette.text.primary,
-          width: '100%',
           // backgroundColor: theme.palette.secondary.dark,
         },
   title: {
@@ -40,6 +38,7 @@ export const NewsTableToolbar = (props) => {
       className={clsx(classes.root, {
         [classes.highlight]: numSelected > 0,
       })}
+      style={{width: 'max-content'}}
     >
       {numSelected > 0 ? (
         <Typography className={classes.title} color="inherit" variant="subtitle1" component="div">

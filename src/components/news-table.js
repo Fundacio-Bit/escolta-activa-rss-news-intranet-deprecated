@@ -79,7 +79,7 @@ export const NewsTable = (props) => {
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
-      const newSelecteds = data.map((n) => n._id);
+      const newSelecteds = filteredData.map((n) => n._id);
       setSelected(newSelecteds);
       return;
     }
@@ -241,7 +241,7 @@ export const NewsTable = (props) => {
 
     fetchData();
 
-    // Cleanup function. useEffect uses the cleanup function to execute operations useful on component unmount.
+    // Cleanup function. useEffect uses the cleanup function to execute operations useful on set unmount.
     // It is equivalent to the componentWillUnmount function of class components.
     // Here it is used to avoid the execution of setData on unmounted components.
     // Further info at:
@@ -318,11 +318,6 @@ export const NewsTable = (props) => {
   }
 
   function handleDeleteClick() {
-    console.log(selected)
-    // const retrievedNews = data;
-    // const index = retrievedNews.findIndex((x) => x._id == id);
-    // const removed_new = retrievedNews[index];
-
     axios
       .post("/rss-discarded-news/news-discarded/", selected, {
         headers: { "Content-Type": "application/json" },
@@ -390,7 +385,7 @@ export const NewsTable = (props) => {
                 orderBy = { orderBy }
                 onRequestSort = { handleRequestSort }
                 onSelectAllClick={handleSelectAllClick}
-                rowCount={data.length}
+                rowCount={filteredData.length}
               />
             )}
             {selected.length > 0 && (

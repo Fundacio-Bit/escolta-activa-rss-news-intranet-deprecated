@@ -70,7 +70,7 @@ router.route("/news-discarded").post((req, res) => {
         res.status(500).send(err);
       } else {
         news_discarded_collection.insertOne(news_doc[0], function (err, results) {
-          console.log("Inserting in news discarded" + JSON.stringify(news_doc[0]))
+          // console.log("Inserting in news discarded" + JSON.stringify(news_doc[0]))
           if (err) {
             console.log(err);
             res.status(500).send(err);
