@@ -4,9 +4,22 @@ import PropTypes from "prop-types";
 import TopicsSearchAppBar from "./topics-search-app-bar";
 import Grid from "@material-ui/core/Grid";
 import Paper from "@material-ui/core/Paper";
+// import Button from '@material-ui/core/Button';
 import { baseErrorMessage, getErrorMessage } from "./utils/getErrorMessage.js";
 import { makeStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
+import Button from '@material-ui/core/Button';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import Slide from '@material-ui/core/Slide';
+
+const Transition = React.forwardRef(function Transition(props, ref) {
+  return <Slide direction="up" ref={ref} {...props} />;
+});
+
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -142,7 +155,64 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+const getPreviousMonday = (date) =>
+{
+    // var date = new Date();
+    var day = date.getDay();
+    var prevMonday = new Date();
+    if(date.getDay() == 0){
+        prevMonday.setDate(date.getDate() - 7);
+    }
+    else{
+        prevMonday.setDate(date.getDate() - (day-1));
+    }
+
+    return prevMonday;
+}
+
 export const CovidTourism = (props) => {
+  const [open, setOpen] = React.useState(false);
+  const [currentId, setCurrentId] = React.useState('');
+
+  const handleClickOpen = (event) => {
+    // console.log('Open Dialog: ', event.currentTarget.id)
+    setCurrentId(event.currentTarget.id)
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  const handleGenerate = () => {
+    console.log('Generate ZIP: ', new Date(currentId));
+    getPreviousMonday(new Date(currentId));
+    // exec("ls -la", (error, stdout, stderr) => {
+    //   if (error) {
+    //       console.log(`error: ${error.message}`);
+    //       return;
+    //   }
+    //   if (stderr) {
+    //       console.log(`stderr: ${stderr}`);
+    //       return;
+    //   }
+    //   console.log(`stdout: ${stdout}`);
+    // });
+    // exec("node /home/ubuntu/fbit_projects/escolta_activa/covid-tourism-rss-news-reporting/main.js --date lastWeek --mode prod")
+    setCurrentId('');
+    setOpen(false);
+  };
+
+  const handleDownload = (event) => {
+    event.preventDefault();
+    console.log('Download ZIP: ', currentId)
+    const link = document.getElementById(currentId);
+    link.href = `/rss-covid-tourism/download-zip/week/${currentId}`;
+    link.click();
+    setCurrentId('');
+    setOpen(false);
+  };
+
   var today = new Date();
   var mm = String(today.getMonth() + 1).padStart(2, "0"); //January is 0!
   var yyyy = today.getFullYear();
@@ -180,6 +250,7 @@ export const CovidTourism = (props) => {
     style: PropTypes.object.isRequired,
   };
 
+  // node /home/ubuntu/fbit_projects/escolta_activa/covid-tourism-rss-news-reporting/main.js --date lastWeek --mode prod
   const filterByTopic = (pressNew) => {
     if (
       pressNew.hasOwnProperty("topics") &&
@@ -261,6 +332,9 @@ export const CovidTourism = (props) => {
                 </span>
                 Indicadors globals{" "}
               </Typography>
+              {/* <Button variant="contained" color="primary" style={{"float": "right"}} onClick="handleCl">
+                Genera ZIP
+              </Button> */}
             </div>
             <Grid item className={classes.overviewPanel} xs={12}>
               <Grid container spacing={6}>
@@ -271,7 +345,10 @@ export const CovidTourism = (props) => {
                         <div className={classes.overviewItem}>
                           <p className={classes.overviewTitle}>{file.name}</p>
                           <a
-                            href={`/rss-covid-tourism/download-zip/week/${file.name}`}
+                            // href={`/rss-covid-tourism/download-zip/week/${file.name}`}
+                            id={file.name}
+                            href='#'
+                            onClick={handleClickOpen}
                           >
                             <i
                               className="fas fa-file-download"
@@ -289,6 +366,29 @@ export const CovidTourism = (props) => {
                     );
                   })}
               </Grid>
+              <Dialog
+                open={open}
+                TransitionComponent={Transition}
+                keepMounted
+                onClose={handleClose}
+                aria-labelledby="alert-dialog-slide-title"
+                aria-describedby="alert-dialog-slide-description"
+              >
+                <DialogTitle id="alert-dialog-slide-title">{"Use Google's location service?"}</DialogTitle>
+                <DialogContent>
+                  <DialogContentText id="alert-dialog-slide-description">
+                    Deseas generar de nuevo el fichero ZIP?
+                  </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                  <Button onClick={handleDownload} color="primary">
+                    Descargar
+                  </Button>
+                  <Button onClick={handleGenerate} color="primary">
+                    Generar
+                  </Button>
+                </DialogActions>
+              </Dialog>
             </Grid>
           </div>
         </Grid>
