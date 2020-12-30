@@ -15,6 +15,7 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Slide from '@material-ui/core/Slide';
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -24,6 +25,10 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 const useStyles = makeStyles((theme) => ({
   root: {
     fontFamily: "Roboto",
+    display: 'flex',
+    '& > * + *': {
+      marginLeft: theme.spacing(2),
+    },
   },
   title: {
     textAlign: "left",
@@ -173,7 +178,8 @@ const getPreviousMonday = (date) =>
 export const CovidTourism = (props) => {
   const [open, setOpen] = React.useState(false);
   const [currentId, setCurrentId] = React.useState('');
-
+  const [disableSpinner, setDisableSpinner] = React.useState(false);
+  
   const handleClickOpen = (event) => {
     // console.log('Open Dialog: ', event.currentTarget.id)
     setCurrentId(event.currentTarget.id)
@@ -184,23 +190,30 @@ export const CovidTourism = (props) => {
     setOpen(false);
   };
 
-  const handleGenerate = () => {
-    console.log('Generate ZIP: ', new Date(currentId));
-    getPreviousMonday(new Date(currentId));
-    // exec("ls -la", (error, stdout, stderr) => {
-    //   if (error) {
-    //       console.log(`error: ${error.message}`);
-    //       return;
-    //   }
-    //   if (stderr) {
-    //       console.log(`stderr: ${stderr}`);
-    //       return;
-    //   }
-    //   console.log(`stdout: ${stdout}`);
-    // });
-    // exec("node /home/ubuntu/fbit_projects/escolta_activa/covid-tourism-rss-news-reporting/main.js --date lastWeek --mode prod")
-    setCurrentId('');
-    setOpen(false);
+  const handleGenerate = (event) => {
+    event.preventDefault();
+    setDisableSpinner=false;
+    console.log('Generate ZIP (axios): ', new Date(currentId));
+    // const link = document.getElementById(currentId);
+    // link.href = `/rss-covid-tourism/generate-zip/week/${currentId}`;
+    // link.click();
+
+    axios.get(`rss-covid-tourism/generate-zip/week/${currentId}`).then((results) => {
+      if (results) {
+        console.log("Resultado: ", results);
+        // OK
+        setCurrentId('');
+        setOpen(false);
+      }
+    }).catch(error => {
+      console.log(getErrorMessage(error));
+      setDisableSpinner=true;
+      setCurrentId('');
+      setOpen(false);
+  });
+
+    // setCurrentId('');
+    // setOpen(false);
   };
 
   const handleDownload = (event) => {
@@ -374,15 +387,16 @@ export const CovidTourism = (props) => {
                 aria-labelledby="alert-dialog-slide-title"
                 aria-describedby="alert-dialog-slide-description"
               >
-                <DialogTitle id="alert-dialog-slide-title">{"Use Google's location service?"}</DialogTitle>
+                <DialogTitle id="alert-dialog-slide-title">{"Descàrrega / Generació ZIP"}</DialogTitle>
                 <DialogContent>
                   <DialogContentText id="alert-dialog-slide-description">
-                    Deseas generar de nuevo el fichero ZIP?
+                    Voleu descarregar o generar el fitxer ZIP?
                   </DialogContentText>
+                  <CircularProgress disableShrink={disableSpinner}/>
                 </DialogContent>
                 <DialogActions>
                   <Button onClick={handleDownload} color="primary">
-                    Descargar
+                    Descarregar
                   </Button>
                   <Button onClick={handleGenerate} color="primary">
                     Generar

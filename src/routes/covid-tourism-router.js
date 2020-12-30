@@ -3,6 +3,7 @@ var router = express();
 var bodyParser = require("body-parser");
 const path = require("path");
 const fs = require("fs");
+const { exec } = require("child_process");
 
 router.use(bodyParser.json()); // to support JSON-encoded bodies
 
@@ -64,6 +65,26 @@ router.get("/download-zip/week/:week", (req, res) => {
     `attachment; filename=escolta_activa_rss_news_covid_tourism_${week}.zip`
   );
   file.pipe(res);
+});
+
+router.get("/generate-zip/week/:week", (req, res) => {
+  let week = req.params.week;
+  console.log("Generate ZIP for week ", week);
+  exec("node E:/eaguado/Proyectos/EscuchaActiva/covid-tourism-rss-news-reporting/main.js --date " + week + " --mode dev", (error, stdout, stderr) => {
+    if (error) {
+        console.log(`error: ${error.message}`);
+        return;
+    }
+    if (stderr) {
+        console.log(`stderr: ${stderr}`);
+        return;
+    }
+    else {
+      console.log(`stdout: ${stdout}`);
+      return 'OK'
+    }
+});
+
 });
 
 module.exports = router;
