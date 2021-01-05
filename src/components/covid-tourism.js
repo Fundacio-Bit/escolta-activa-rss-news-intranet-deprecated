@@ -178,7 +178,7 @@ const getPreviousMonday = (date) =>
 export const CovidTourism = (props) => {
   const [open, setOpen] = React.useState(false);
   const [currentId, setCurrentId] = React.useState('');
-  const [disableSpinner, setDisableSpinner] = React.useState(false);
+  const [disableSpinner, setDisableSpinner] = React.useState(true);
   
   const handleClickOpen = (event) => {
     // console.log('Open Dialog: ', event.currentTarget.id)
@@ -192,7 +192,7 @@ export const CovidTourism = (props) => {
 
   const handleGenerate = (event) => {
     event.preventDefault();
-    setDisableSpinner=false;
+    // setDisableSpinner(false);
     console.log('Generate ZIP (axios): ', new Date(currentId));
     // const link = document.getElementById(currentId);
     // link.href = `/rss-covid-tourism/generate-zip/week/${currentId}`;
@@ -207,7 +207,7 @@ export const CovidTourism = (props) => {
       }
     }).catch(error => {
       console.log(getErrorMessage(error));
-      setDisableSpinner=true;
+      // setDisableSpinner(true);
       setCurrentId('');
       setOpen(false);
   });
