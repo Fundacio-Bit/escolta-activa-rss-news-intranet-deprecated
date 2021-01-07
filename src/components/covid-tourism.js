@@ -13,9 +13,12 @@ import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogTitle from '@material-ui/core/DialogTitle';
+import MuiDialogTitle from '@material-ui/core/DialogTitle';
+import IconButton from '@material-ui/core/IconButton';
+import CloseIcon from '@material-ui/icons/Close';
 import Slide from '@material-ui/core/Slide';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import { blue, pink } from "@material-ui/core/colors";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -29,6 +32,12 @@ const useStyles = makeStyles((theme) => ({
     '& > * + *': {
       marginLeft: theme.spacing(2),
     },
+  },
+  closeButton: {
+    position: 'absolute',
+    right: theme.spacing(1),
+    top: theme.spacing(1),
+    color: theme.palette.grey[500],
   },
   title: {
     textAlign: "left",
@@ -160,25 +169,40 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const getPreviousMonday = (date) =>
-{
-    // var date = new Date();
-    var day = date.getDay();
-    var prevMonday = new Date();
-    if(date.getDay() == 0){
-        prevMonday.setDate(date.getDate() - 7);
-    }
-    else{
-        prevMonday.setDate(date.getDate() - (day-1));
-    }
-
-    return prevMonday;
-}
+const DialogTitle = ((props) => {
+  const { children, classes, onClose, ...other } = props;
+  return (
+    <MuiDialogTitle disableTypography className={classes.root} {...other}>
+      <Typography variant="h6">{children}</Typography>
+      {onClose ? (
+        <IconButton aria-label="close" className={classes.closeButton} onClick={onClose}>
+          <CloseIcon />
+        </IconButton>
+      ) : null}
+    </MuiDialogTitle>
+  );
+});
 
 export const CovidTourism = (props) => {
   const [open, setOpen] = React.useState(false);
   const [currentId, setCurrentId] = React.useState('');
-  const [disableSpinner, setDisableSpinner] = React.useState(true);
+  const [loading, setLoading] = React.useState(false);
+  const [data, setData] = useState([]);
+  const [errorStatus, setErrorStatus] = useState({ error: false, message: "" });
+  const [selectedMonth, setSelectedMonth] = useState(year_month_str);
+  const [selectedTopic, setSelectedTopic] = useState("all");
+  const [loadingSpinner, setLoadingSpinner] = useState(false);
+
+  const classes = useStyles();
+  
+  var today = new Date();
+  var mm = String(today.getMonth() + 1).padStart(2, "0"); //January is 0!
+  var yyyy = today.getFullYear();
+  var year_month_str = yyyy + "-" + mm;
+
+  const handleClose = () => {
+    setOpen(false);
+  };
   
   const handleClickOpen = (event) => {
     // console.log('Open Dialog: ', event.currentTarget.id)
@@ -186,17 +210,10 @@ export const CovidTourism = (props) => {
     setOpen(true);
   };
 
-  const handleClose = () => {
-    setOpen(false);
-  };
-
   const handleGenerate = (event) => {
     event.preventDefault();
-    // setDisableSpinner(false);
-    console.log('Generate ZIP (axios): ', new Date(currentId));
-    // const link = document.getElementById(currentId);
-    // link.href = `/rss-covid-tourism/generate-zip/week/${currentId}`;
-    // link.click();
+    // console.log('Generate ZIP (axios): ', new Date(currentId));
+    setLoadingSpinner(true);
 
     axios.get(`rss-covid-tourism/generate-zip/week/${currentId}`).then((results) => {
       if (results) {
@@ -207,7 +224,8 @@ export const CovidTourism = (props) => {
       }
     }).catch(error => {
       console.log(getErrorMessage(error));
-      // setDisableSpinner(true);
+      // setSuccess(false);
+      setLoadingSpinner(false);
       setCurrentId('');
       setOpen(false);
   });
@@ -218,7 +236,7 @@ export const CovidTourism = (props) => {
 
   const handleDownload = (event) => {
     event.preventDefault();
-    console.log('Download ZIP: ', currentId)
+    // console.log('Download ZIP: ', currentId)
     const link = document.getElementById(currentId);
     link.href = `/rss-covid-tourism/download-zip/week/${currentId}`;
     link.click();
@@ -226,111 +244,94 @@ export const CovidTourism = (props) => {
     setOpen(false);
   };
 
-  var today = new Date();
-  var mm = String(today.getMonth() + 1).padStart(2, "0"); //January is 0!
-  var yyyy = today.getFullYear();
-  var year_month_str = yyyy + "-" + mm;
+  // function renderTopic(props) {
+  //   const { index, style } = props;
 
-  const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [errorStatus, setErrorStatus] = useState({ error: false, message: "" });
-  const [selectedMonth, setSelectedMonth] = useState(year_month_str);
-  const [selectedTopic, setSelectedTopic] = useState("all");
+  //   return (
+  //     <ListItem button style={style} key={index}>
+  //       <ListItemAvatar>
+  //         <Avatar className={index > 3 ? classes.orange : classes.purple}>
+  //           {index + 1}
+  //         </Avatar>
+  //       </ListItemAvatar>
+  //       <ListItemText primary={`${data[index].name} ${data[index].count}`} />
+  //     </ListItem>
+  //   );
+  // }
 
-  const classes = useStyles();
+  // renderTopic.propTypes = {
+  //   index: PropTypes.number.isRequired,
+  //   style: PropTypes.object.isRequired,
+  // };
 
-  const handleTopicClick = (topicName) => {
-    setSelectedTopic(topicName);
-  };
+  // // node /home/ubuntu/fbit_projects/escolta_activa/covid-tourism-rss-news-reporting/main.js --date lastWeek --mode prod
+  // const filterByTopic = (pressNew) => {
+  //   if (
+  //     pressNew.hasOwnProperty("topics") &&
+  //     pressNew.topics
+  //       .toLowerCase()
+  //       .split(",")
+  //       .includes(selectedTopic.toLowerCase())
+  //   ) {
+  //     return true;
+  //   } else return false;
+  // };
 
-  function renderTopic(props) {
-    const { index, style } = props;
+  // let filteredData = selectedTopic == "all" ? data : data.filter(filterByTopic);
 
-    return (
-      <ListItem button style={style} key={index}>
-        <ListItemAvatar>
-          <Avatar className={index > 3 ? classes.orange : classes.purple}>
-            {index + 1}
-          </Avatar>
-        </ListItemAvatar>
-        <ListItemText primary={`${data[index].name} ${data[index].count}`} />
-      </ListItem>
-    );
-  }
+  // // Get the news related to a topic.
+  // useEffect(() => {
+  //   let unmounted = false;
 
-  renderTopic.propTypes = {
-    index: PropTypes.number.isRequired,
-    style: PropTypes.object.isRequired,
-  };
+  //   const fetchData = () => {
+  //     if (!unmounted) {
+  //       setErrorStatus({ error: false, message: "" });
+  //       setLoading(true);
+  //     }
 
-  // node /home/ubuntu/fbit_projects/escolta_activa/covid-tourism-rss-news-reporting/main.js --date lastWeek --mode prod
-  const filterByTopic = (pressNew) => {
-    if (
-      pressNew.hasOwnProperty("topics") &&
-      pressNew.topics
-        .toLowerCase()
-        .split(",")
-        .includes(selectedTopic.toLowerCase())
-    ) {
-      return true;
-    } else return false;
-  };
+  //     try {
+  //       axios
+  //         .get("/rss-covid-tourism/folders")
+  //         .then((results) => {
+  //           if (results.data.results.length > 0) {
+  //             // OK
+  //             // Beware with this:
+  //             // https://overreacted.io/a-complete-guide-to-useeffect/#each-render-has-its-own-event-handlers
+  //             setTimeout(() => {
+  //               if (!unmounted) {
+  //                 setErrorStatus({ error: false, message: "" });
+  //                 setLoading(false);
+  //                 setData(results.data.results);
+  //               }
+  //             }, 850);
+  //           } else {
+  //             // No data returned
+  //             if (!unmounted) {
+  //               setData([]);
+  //               setLoading(false);
+  //             }
+  //           }
+  //         })
+  //         .catch((error) => {
+  //           console.log(getErrorMessage(error));
+  //           setErrorStatus({ error: true, message: baseErrorMessage });
+  //           setLoading(false);
+  //         });
+  //     } catch (error) {
+  //       if (!unmounted) {
+  //         console.log(getErrorMessage(error));
+  //         setErrorStatus({ error: true, message: baseErrorMessage });
+  //         setLoading(false);
+  //       }
+  //     }
+  //   };
 
-  let filteredData = selectedTopic == "all" ? data : data.filter(filterByTopic);
+  //   fetchData();
 
-  // Get the news related to a topic.
-  useEffect(() => {
-    let unmounted = false;
-
-    const fetchData = () => {
-      if (!unmounted) {
-        setErrorStatus({ error: false, message: "" });
-        setLoading(true);
-      }
-
-      try {
-        axios
-          .get("/rss-covid-tourism/folders")
-          .then((results) => {
-            if (results.data.results.length > 0) {
-              // OK
-              // Beware with this:
-              // https://overreacted.io/a-complete-guide-to-useeffect/#each-render-has-its-own-event-handlers
-              setTimeout(() => {
-                if (!unmounted) {
-                  setErrorStatus({ error: false, message: "" });
-                  setLoading(false);
-                  setData(results.data.results);
-                }
-              }, 850);
-            } else {
-              // No data returned
-              if (!unmounted) {
-                setData([]);
-                setLoading(false);
-              }
-            }
-          })
-          .catch((error) => {
-            console.log(getErrorMessage(error));
-            setErrorStatus({ error: true, message: baseErrorMessage });
-            setLoading(false);
-          });
-      } catch (error) {
-        if (!unmounted) {
-          console.log(getErrorMessage(error));
-          setErrorStatus({ error: true, message: baseErrorMessage });
-          setLoading(false);
-        }
-      }
-    };
-
-    fetchData();
-
-    // Cleanup function. useEffect uses the cleanup function to execute operations useful on component unmount.
-    return () => (unmounted = true);
-  }, []);
-
+  //   // Cleanup function. useEffect uses the cleanup function to execute operations useful on component unmount.
+  //   return () => (unmounted = true);
+  // }, []);
+  
   return (
     <div className={classes.root}>
       <Grid container className={classes.test2} spacing={10}>
@@ -345,9 +346,6 @@ export const CovidTourism = (props) => {
                 </span>
                 Indicadors globals{" "}
               </Typography>
-              {/* <Button variant="contained" color="primary" style={{"float": "right"}} onClick="handleCl">
-                Genera ZIP
-              </Button> */}
             </div>
             <Grid item className={classes.overviewPanel} xs={12}>
               <Grid container spacing={6}>
@@ -387,12 +385,18 @@ export const CovidTourism = (props) => {
                 aria-labelledby="alert-dialog-slide-title"
                 aria-describedby="alert-dialog-slide-description"
               >
-                <DialogTitle id="alert-dialog-slide-title">{"Descàrrega / Generació ZIP"}</DialogTitle>
+
+                <DialogTitle id="customized-dialog-title" onClose={handleClose}>
+                  "Descàrrega / Generació ZIP"
+                </DialogTitle>
+                {/* <DialogTitle id="alert-dialog-slide-title">{"Descàrrega / Generació ZIP"}</DialogTitle> */}
                 <DialogContent>
                   <DialogContentText id="alert-dialog-slide-description">
                     Voleu descarregar o generar el fitxer ZIP?
                   </DialogContentText>
-                  <CircularProgress disableShrink={disableSpinner}/>
+                  {loadingSpinner && (
+                    <CircularProgress disableShrink={loadingSpinner}/>
+                  )}
                 </DialogContent>
                 <DialogActions>
                   <Button onClick={handleDownload} color="primary">
