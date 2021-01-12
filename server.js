@@ -67,9 +67,9 @@ app.get("/", (req, res) => res.render("build/index"));
 // *************** SERVER **************************
 // *************************************************
 // Server start
-"ESCOLTA_ACTIVA_LOCAL_ENV" in process.env
-  ? console.log("*****Running in local PC*****")
-  : console.log("*****Running in production*****");
+// "ESCOLTA_ACTIVA_LOCAL_ENV" in process.env
+//   ? console.log("*****Running in local PC*****")
+//   : console.log("*****Running in production*****");
 const port = process.env.PORT || 8000;
 app.listen(port, () => {
   console.log(`http://localhost:${port}`);
