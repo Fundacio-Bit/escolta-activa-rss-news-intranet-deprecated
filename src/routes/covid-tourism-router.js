@@ -5,18 +5,15 @@ const path = require("path");
 const fs = require("fs");
 
 router.use(bodyParser.json()); // to support JSON-encoded bodies
-console.log("process.env: ", process.env);
-
 var basePath =
   "ESCOLTA_ACTIVA_LOCAL_PATH" in process.env
     ? process.env["ESCOLTA_ACTIVA_LOCAL_PATH"]
     : '.';
-
 var foldersBasePath =
   "ESCOLTA_ACTIVA_LOCAL_PATH" in process.env
     ? process.env["ESCOLTA_ACTIVA_LOCAL_PATH"] + "/files/output/rss_news/covid_tourism"
     : null;
-
+console.log('foldersBasePath: ' + foldersBasePath);
 // get all available folders
 router.get("/folders", (req, res) => {
   //joining path of directory
@@ -70,6 +67,21 @@ router.get("/download-zip/week/:week", (req, res) => {
     `attachment; filename=escolta_activa_rss_news_covid_tourism_${week}.zip`
   );
   file.pipe(res);
+});
+
+router.get("/generate-zip/week/:week", (req, res) => {
+  let week = req.params.week;
+  console.log("Generate ZIP for week ", week);
+  try {
+    var result = require('child_process').execSync('node ' + basePath + '/covid-tourism-rss-news-reporting/main.js --date ' + week + ' --mode dev').toString();
+    res.json({results: result})
+  } 
+  catch (error) {
+    console.log(error.status + ': ' + error.message);
+    console.log(error.stderr.toString());
+    console.log(error.stdout.toString());
+    res.json({error: error.stdout.toString()})
+  }
 });
 
 module.exports = router;
