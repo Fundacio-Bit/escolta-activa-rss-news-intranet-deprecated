@@ -3,10 +3,12 @@ var router = express();
 var bodyParser = require("body-parser");
 const path = require("path");
 const fs = require("fs");
-const { exec } = require("child_process");
 
 router.use(bodyParser.json()); // to support JSON-encoded bodies
-
+var basePath =
+  "ESCOLTA_ACTIVA_LOCAL_PATH" in process.env
+    ? process.env["ESCOLTA_ACTIVA_LOCAL_PATH"]
+    : '.';
 var foldersBasePath =
   "ESCOLTA_ACTIVA_LOCAL_PATH" in process.env
     ? process.env["ESCOLTA_ACTIVA_LOCAL_PATH"] + "/files/output/rss_news/covid_tourism"
@@ -70,21 +72,16 @@ router.get("/download-zip/week/:week", (req, res) => {
 router.get("/generate-zip/week/:week", (req, res) => {
   let week = req.params.week;
   console.log("Generate ZIP for week ", week);
-  exec("node E:/eaguado/Proyectos/EscuchaActiva/covid-tourism-rss-news-reporting/main.js --date " + week + " --mode dev", (error, stdout, stderr) => {
-    if (error) {
-        console.log(`error: ${error.message}`);
-        return;
-    }
-    if (stderr) {
-        console.log(`stderr: ${stderr}`);
-        return;
-    }
-    else {
-      console.log(`stdout: ${stdout}`);
-      return 'OK'
-    }
-});
-
+  try {
+    var result = require('child_process').execSync('node ' + basePath + '/covid-tourism-rss-news-reporting/main.js --date ' + week + ' --mode dev').toString();
+    res.json({results: result})
+  } 
+  catch (error) {
+    console.log(error.status + ': ' + error.message);
+    console.log(error.stderr.toString());
+    console.log(error.stdout.toString());
+    res.json({error: error.stdout.toString()})
+  }
 });
 
 module.exports = router;
