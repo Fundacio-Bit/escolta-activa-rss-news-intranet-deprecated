@@ -5,6 +5,7 @@ const path = require("path");
 const fs = require("fs");
 
 router.use(bodyParser.json()); // to support JSON-encoded bodies
+console.log("process.env: ", process.env);
 
 var foldersBasePath =
   "ESCOLTA_ACTIVA_LOCAL_ENV" in process.env
