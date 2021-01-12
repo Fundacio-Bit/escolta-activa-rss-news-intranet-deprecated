@@ -3,19 +3,18 @@ var router = express();
 var bodyParser = require("body-parser");
 const path = require("path");
 const fs = require("fs");
-const basePath = require('path').resolve(__dirname, '../../..');
-
-console.log("basePath: ", basePath)
 router.use(bodyParser.json()); // to support JSON-encoded bodies
 
-// var basePath =
-//   "ESCOLTA_ACTIVA_LOCAL_PATH" in process.env
-//     ? process.env["ESCOLTA_ACTIVA_LOCAL_PATH"]
-//     : '.';
+var basePath =
+  "ESCOLTA_ACTIVA_LOCAL_PATH" in process.env
+    ? process.env["ESCOLTA_ACTIVA_LOCAL_PATH"]
+    : '/home/ubuntu/fbit_projects/escolta_activa';
+
 var foldersBasePath =
   "ESCOLTA_ACTIVA_LOCAL_PATH" in process.env
     ? process.env["ESCOLTA_ACTIVA_LOCAL_PATH"] + "/files/output/rss_news/covid_tourism"
-    : null;
+    : "/data-mongo/files/output/rss_news/covid_tourism";
+    
 console.log('foldersBasePath: ' + foldersBasePath);
 // get all available folders
 router.get("/folders", (req, res) => {
