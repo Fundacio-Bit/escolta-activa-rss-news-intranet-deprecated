@@ -4,45 +4,13 @@ import PropTypes from "prop-types";
 import TopicsSearchAppBar from "./topics-search-app-bar";
 import Grid from "@material-ui/core/Grid";
 import Paper from "@material-ui/core/Paper";
-// import Button from '@material-ui/core/Button';
 import { baseErrorMessage, getErrorMessage } from "./utils/getErrorMessage.js";
 import { makeStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
-import Button from '@material-ui/core/Button';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import MuiDialogTitle from '@material-ui/core/DialogTitle';
-import IconButton from '@material-ui/core/IconButton';
-import CloseIcon from '@material-ui/icons/Close';
-import Slide from '@material-ui/core/Slide';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import { blue, pink } from "@material-ui/core/colors";
-
-// const Transition = React.forwardRef(function Transition(props, ref) {
-//   return <Slide direction="up" ref={ref} {...props} />;
-// });
-
 
 const useStyles = makeStyles((theme) => ({
   root: {
     fontFamily: "Roboto",
-    display: 'flex',
-    '& > * + *': {
-      marginLeft: theme.spacing(2),
-    },
-  },
-  closeButton: {
-    position: 'absolute',
-    right: theme.spacing(1),
-    top: theme.spacing(1),
-    color: theme.palette.grey[500],
-  },
-  loading: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center' 
   },
   title: {
     textAlign: "left",
@@ -175,61 +143,21 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export const CovidTourism = (props) => {
-  const [open, setOpen] = React.useState(false);
-  const [currentId, setCurrentId] = React.useState('');
-  const [loading, setLoading] = React.useState(false);
-  const [data, setData] = useState([]);
-  const [errorStatus, setErrorStatus] = useState({ error: false, message: "" });
-  const [selectedMonth, setSelectedMonth] = useState(year_month_str);
-  const [selectedTopic, setSelectedTopic] = useState("all");
-  const [loadingSpinner, setLoadingSpinner] = useState(false);
-
-  const classes = useStyles();
-  
   var today = new Date();
   var mm = String(today.getMonth() + 1).padStart(2, "0"); //January is 0!
   var yyyy = today.getFullYear();
   var year_month_str = yyyy + "-" + mm;
 
-  const handleClose = () => {
-    setOpen(false);
-  };
-  
-  const handleClickOpen = (event) => {
-    // console.log('Open Dialog: ', event.currentTarget.id)
-    setCurrentId(event.currentTarget.id)
-    setOpen(true);
-  };
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [errorStatus, setErrorStatus] = useState({ error: false, message: "" });
+  const [selectedMonth, setSelectedMonth] = useState(year_month_str);
+  const [selectedTopic, setSelectedTopic] = useState("all");
 
-  const handleGenerate = (event) => {
-    event.preventDefault();
-    setLoadingSpinner(true);
+  const classes = useStyles();
 
-    axios.get(`rss-covid-tourism/generate-zip/week/${currentId}`).then((results) => {
-      if (results) {
-        console.log("Resultado: ", results);
-        // OK
-        setLoadingSpinner(false);
-        setCurrentId('');
-        setOpen(false);
-      }
-    }).catch(error => {
-      console.log("Error: ", error);
-      setLoadingSpinner(false);
-      setCurrentId('');
-      setOpen(false);
-    });
-
-  };
-
-  const handleDownload = (event) => {
-    event.preventDefault();
-    // console.log('Download ZIP: ', currentId)
-    const link = document.getElementById(currentId);
-    link.href = `/rss-covid-tourism/download-zip/week/${currentId}`;
-    link.click();
-    setCurrentId('');
-    setOpen(false);
+  const handleTopicClick = (topicName) => {
+    setSelectedTopic(topicName);
   };
 
   function renderTopic(props) {
@@ -252,7 +180,6 @@ export const CovidTourism = (props) => {
     style: PropTypes.object.isRequired,
   };
 
-  // node /home/ubuntu/fbit_projects/escolta_activa/covid-tourism-rss-news-reporting/main.js --date lastWeek --mode prod
   const filterByTopic = (pressNew) => {
     if (
       pressNew.hasOwnProperty("topics") &&
@@ -319,7 +246,7 @@ export const CovidTourism = (props) => {
     // Cleanup function. useEffect uses the cleanup function to execute operations useful on component unmount.
     return () => (unmounted = true);
   }, []);
-  
+
   return (
     <div className={classes.root}>
       <Grid container className={classes.test2} spacing={10}>
@@ -344,10 +271,7 @@ export const CovidTourism = (props) => {
                         <div className={classes.overviewItem}>
                           <p className={classes.overviewTitle}>{file.name}</p>
                           <a
-                            // href={`/rss-covid-tourism/download-zip/week/${file.name}`}
-                            id={file.name}
-                            href='#'
-                            onClick={handleClickOpen}
+                            href={`/rss-covid-tourism/download-zip/week/${file.name}`}
                           >
                             <i
                               className="fas fa-file-download"
@@ -365,42 +289,6 @@ export const CovidTourism = (props) => {
                     );
                   })}
               </Grid>
-              <Dialog
-                open={open}
-                // TransitionComponent={Transition}
-                keepMounted
-                onClose={handleClose}
-                aria-labelledby="alert-dialog-slide-title"
-                aria-describedby="alert-dialog-slide-description"
-              >
-                <MuiDialogTitle disableTypography className={classes.root}>
-                  <Typography variant="h6">"Descàrrega / Generació ZIP"</Typography>
-                    <IconButton aria-label="close" className={classes.closeButton} onClick={handleClose}>
-                      <CloseIcon />
-                    </IconButton>
-                </MuiDialogTitle>
-                {/* <DialogTitle id="customized-dialog-title" onClose={handleClose}>
-                  "Descàrrega / Generació ZIP"
-                </DialogTitle> */}
-                <DialogContent>
-                  <DialogContentText id="alert-dialog-slide-description">
-                    Voleu descarregar o generar el fitxer ZIP?
-                  </DialogContentText>
-                  {loadingSpinner && (
-                    <div className={classes.loading}>
-                      <CircularProgress size={24} thickness={4} />
-                    </div>
-                  )}
-                </DialogContent>
-                <DialogActions>
-                  <Button onClick={handleDownload} color="primary">
-                    Descarregar
-                  </Button>
-                  <Button onClick={handleGenerate} color="primary">
-                    Generar
-                  </Button>
-                </DialogActions>
-              </Dialog>
             </Grid>
           </div>
         </Grid>
