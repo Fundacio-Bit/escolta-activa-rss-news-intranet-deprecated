@@ -5,6 +5,10 @@ const path = require("path");
 const fs = require("fs");
 
 router.use(bodyParser.json()); // to support JSON-encoded bodies
+"ESCOLTA_ACTIVA_LOCAL_PATH" in process.env
+  ? console.log(process.env["ESCOLTA_ACTIVA_LOCAL_PATH"])
+  : console.log("No VARIABLE")
+
 var basePath =
   "ESCOLTA_ACTIVA_LOCAL_PATH" in process.env
     ? process.env["ESCOLTA_ACTIVA_LOCAL_PATH"]
