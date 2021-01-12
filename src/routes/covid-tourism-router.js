@@ -5,7 +5,6 @@ const path = require("path");
 const fs = require("fs");
 
 router.use(bodyParser.json()); // to support JSON-encoded bodies
-console.log("process.env: ", process.env);
 
 var basePath =
   "ESCOLTA_ACTIVA_LOCAL_PATH" in process.env
@@ -15,6 +14,7 @@ var foldersBasePath =
   "ESCOLTA_ACTIVA_LOCAL_PATH" in process.env
     ? process.env["ESCOLTA_ACTIVA_LOCAL_PATH"] + "/files/output/rss_news/covid_tourism"
     : null;
+console.log("process.env: ", process.env);
 console.log('foldersBasePath: ' + foldersBasePath);
 // get all available folders
 router.get("/folders", (req, res) => {
