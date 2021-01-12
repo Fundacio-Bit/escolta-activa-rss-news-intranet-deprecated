@@ -75,7 +75,8 @@ router.get("/generate-zip/week/:week", (req, res) => {
   let week = req.params.week;
   console.log("Generate ZIP for week ", week);
   try {
-    var result = require('child_process').execSync('node ' + basePath + '/covid-tourism-rss-news-reporting/main.js --date ' + week + ' --mode dev').toString();
+    // var result = require('child_process').execSync('node ' + basePath + '/covid-tourism-rss-news-reporting/main.js --date ' + week + ' --mode dev').toString();
+    var result = require('child_process').execSync('node ' + basePath + '/covid-tourism-rss-news-reporting/main.js --date ' + week + ' --mode prod').toString();
     res.json({results: result})
   } 
   catch (error) {
