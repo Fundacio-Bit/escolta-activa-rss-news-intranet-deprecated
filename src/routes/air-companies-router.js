@@ -14,8 +14,8 @@ var basePath =
 var foldersBasePath =
   "ESCOLTA_ACTIVA_LOCAL_PATH" in process.env
     ? process.env["ESCOLTA_ACTIVA_LOCAL_PATH"] +
-      "/files/output/rss_news/covid_tourism"
-    : "/data-mongo/files/output/rss_news/covid_tourism";
+      "/files/output/rss_news/air_companies"
+    : "/data-mongo/files/output/rss_news/sector_aeri";
 
 // get all available folders
 router.get("/folders", (req, res) => {
@@ -29,53 +29,45 @@ router.get("/folders", (req, res) => {
       console.log(err);
       res.status(500).send(err);
     } else {
-      const isZipFile = (name) => {
-        return name.indexOf(".zip") > 0;
+      const isCsvFile = (name) => {
+        return name.indexOf(".csv") > 0;
       };
-      let zipFiles = contents.filter(isZipFile);
-      let zipFilesObjects = zipFiles.map((zipFile) => {
+      let csvFiles = contents.filter(isCsvFile);
+      let csvFilesObjects = csvFiles.map((csvFile) => {
         // TODO: check if the file exists
         return {
-          name: zipFile
-            .replace("escolta_activa_rss_news_covid_tourism_", "")
-            .replace(".zip", ""),
-          path: path.join(foldersBasePath, zipFile),
+          name: csvFile.replace("air_company_news_", "").replace(".csv", ""),
+          path: path.join(foldersBasePath, csvFile),
         };
       });
-      res.json({ results: zipFilesObjects });
+      res.json({ results: csvFilesObjects });
     }
   });
 });
 
-// download ZIP
-router.get("/download-zip/week/:week", (req, res) => {
+// download CSV
+router.get("/download-csv/week/:week", (req, res) => {
   // TODO check if file exists
   let week = req.params.week;
 
   file = fs.createReadStream(
-    path.join(
-      foldersBasePath,
-      `escolta_activa_rss_news_covid_tourism_${week}.zip`
-    )
+    path.join(foldersBasePath, `air_company_news_${week}.csv`)
   );
   stat = fs.statSync(
-    path.join(
-      foldersBasePath,
-      `escolta_activa_rss_news_covid_tourism_${week}.zip`
-    )
+    path.join(foldersBasePath, `air_company_news_${week}.csv`)
   );
   res.setHeader("Content-Length", stat.size);
-  res.setHeader("Content-Type", "application/zip");
+  res.setHeader("Content-Type", "text/csv");
   res.setHeader(
     "Content-Disposition",
-    `attachment; filename=escolta_activa_rss_news_covid_tourism_${week}.zip`
+    `attachment; filename=air_company_news_${week}.csv`
   );
   file.pipe(res);
 });
 
-router.get("/generate-zip/week/:week", (req, res) => {
+router.get("/generate-csv/week/:week", (req, res) => {
   let week = req.params.week;
-  console.log("Generate ZIP for week ", week);
+  console.log("Generate CSV for week ", week);
   try {
     // var result = require('child_process').execSync('node ' + basePath + '/covid-tourism-rss-news-reporting/main.js --date ' + week + ' --mode dev').toString();
     var result = require("child_process")

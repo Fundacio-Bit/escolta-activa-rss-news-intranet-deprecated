@@ -6,6 +6,7 @@ import News from "./news";
 import DiscardedNews from "./discarded-news";
 import { Topics } from "./topics";
 import { CovidTourism } from "./covid-tourism";
+import { AirCompanies } from "./air-companies";
 import FilterableSourcesTable from "./filterable-sources-table";
 import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
 
@@ -108,9 +109,14 @@ class RSSAppBar extends Component {
               onClick={() => this.setState({ content: <Topics /> })}
             />
             <Tab
-              label="COVID-TOURISM"
+              label="COVID-TURISME"
               value="4"
               onClick={() => this.setState({ content: <CovidTourism /> })}
+            />
+            <Tab
+              label="COMPANYIES AÈRIES"
+              value="5"
+              onClick={() => this.setState({ content: <AirCompanies /> })}
             />
           </Tabs>
         </AppBar>

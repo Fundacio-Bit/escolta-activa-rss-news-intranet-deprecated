@@ -12,7 +12,14 @@ Intranet to manage news extraction from RSS feeds.
 
 ### Usage
 
-Create environment variable ESCOLTA_ACTIVA_LOCAL_PATH=<path_to_escolta_activa_dir>
+Create .env file in project root
+
+Add to .env
+
+```
+ESCOLTA_ACTIVA_LOCAL_PATH=<path_to_projects_parent_folder>
+
+```
 
 **Clone this repository**
 
