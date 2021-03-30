@@ -173,7 +173,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export const CovidTourism = (props) => {
+export const AirCompanies = (props) => {
   const [open, setOpen] = React.useState(false);
   const [currentId, setCurrentId] = React.useState("");
   const [loading, setLoading] = React.useState(false);
@@ -200,34 +200,11 @@ export const CovidTourism = (props) => {
     setOpen(true);
   };
 
-  const handleGenerate = (event) => {
-    event.preventDefault();
-    setLoadingSpinner(true);
-
-    axios
-      .get(`rss-covid-tourism/generate-zip/week/${currentId}`)
-      .then((results) => {
-        if (results) {
-          console.log("Resultado: ", results);
-          // OK
-          setLoadingSpinner(false);
-          setCurrentId("");
-          setOpen(false);
-        }
-      })
-      .catch((error) => {
-        console.log("Error: ", error);
-        setLoadingSpinner(false);
-        setCurrentId("");
-        setOpen(false);
-      });
-  };
-
   const handleDownload = (event) => {
     event.preventDefault();
     // console.log('Download ZIP: ', currentId)
     const link = document.getElementById(currentId);
-    link.href = `/rss-covid-tourism/download-zip/week/${currentId}`;
+    link.href = `/rss-air-companies/download-csv/week/${currentId}`;
     link.click();
     setCurrentId("");
     setOpen(false);
@@ -280,7 +257,7 @@ export const CovidTourism = (props) => {
 
       try {
         axios
-          .get("/rss-covid-tourism/folders")
+          .get("/rss-air-companies/folders")
           .then((results) => {
             if (results.data.results.length > 0) {
               // OK
@@ -350,7 +327,7 @@ export const CovidTourism = (props) => {
                               }}
                             ></i>
                           </a>
-                          <p className={classes.overviewTitle}>ZIP</p>
+                          <p className={classes.overviewTitle}>CSV</p>
                         </div>
                       </Grid>
                     );
@@ -366,7 +343,7 @@ export const CovidTourism = (props) => {
               >
                 <MuiDialogTitle disableTypography className={classes.root}>
                   <Typography variant="h6">
-                    "Descàrrega / Generació ZIP"
+                    "Descàrrega / Generació CSV"
                   </Typography>
                   <IconButton
                     aria-label="close"
@@ -381,7 +358,7 @@ export const CovidTourism = (props) => {
                 </DialogTitle> */}
                 <DialogContent>
                   <DialogContentText id="alert-dialog-slide-description">
-                    Voleu descarregar o generar el fitxer ZIP?
+                    Voleu descarregar el fitxer CSV?
                   </DialogContentText>
                   {loadingSpinner && (
                     <div className={classes.loading}>
@@ -392,9 +369,6 @@ export const CovidTourism = (props) => {
                 <DialogActions>
                   <Button onClick={handleDownload} color="primary">
                     Descarregar
-                  </Button>
-                  <Button onClick={handleGenerate} color="primary">
-                    Generar
                   </Button>
                 </DialogActions>
               </Dialog>
