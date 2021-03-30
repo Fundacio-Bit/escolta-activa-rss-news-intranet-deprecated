@@ -46,6 +46,10 @@ var covidTourismRouter = require("./src/routes/covid-tourism-router");
 
 app.use("/rss-covid-tourism", covidTourismRouter);
 
+var airCompaniesRouter = require("./src/routes/air-companies-router");
+
+app.use("/rss-air-companies", airCompaniesRouter);
+
 // *************************************************
 // *************** TEMPLATE ENGINE *****************
 // *************************************************
