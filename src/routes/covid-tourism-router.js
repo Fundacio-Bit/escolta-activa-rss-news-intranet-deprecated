@@ -4,20 +4,22 @@ var bodyParser = require("body-parser");
 const path = require("path");
 const fs = require("fs");
 router.use(bodyParser.json()); // to support JSON-encoded bodies
+console.log(process.env["ESCOLTA_ACTIVA_LOCAL_PATH"]);
 
 var basePath =
   "ESCOLTA_ACTIVA_LOCAL_PATH" in process.env
     ? process.env["ESCOLTA_ACTIVA_LOCAL_PATH"]
-    : '/home/ubuntu/fbit_projects/escolta_activa';
+    : "/home/ubuntu/fbit_projects/escolta_activa";
 
 var foldersBasePath =
   "ESCOLTA_ACTIVA_LOCAL_PATH" in process.env
-    ? process.env["ESCOLTA_ACTIVA_LOCAL_PATH"] + "/files/output/rss_news/covid_tourism"
+    ? process.env["ESCOLTA_ACTIVA_LOCAL_PATH"] +
+      "/files/output/rss_news/covid_tourism"
     : "/data-mongo/files/output/rss_news/covid_tourism";
-    
-console.log('foldersBasePath: ' + foldersBasePath);
+
 // get all available folders
 router.get("/folders", (req, res) => {
+  console.log("foldersBasePath: " + foldersBasePath);
   //joining path of directory
   // const directoryPath = path.join(__dirname, "Documents");
   //passsing directoryPath and callback function
@@ -76,14 +78,21 @@ router.get("/generate-zip/week/:week", (req, res) => {
   console.log("Generate ZIP for week ", week);
   try {
     // var result = require('child_process').execSync('node ' + basePath + '/covid-tourism-rss-news-reporting/main.js --date ' + week + ' --mode dev').toString();
-    var result = require('child_process').execSync('node ' + basePath + '/covid-tourism-rss-news-reporting/main.js --date ' + week + ' --mode prod').toString();
-    res.json({results: result})
-  } 
-  catch (error) {
-    console.log(error.status + ': ' + error.message);
+    var result = require("child_process")
+      .execSync(
+        "node " +
+          basePath +
+          "/covid-tourism-rss-news-reporting/main.js --date " +
+          week +
+          " --mode prod"
+      )
+      .toString();
+    res.json({ results: result });
+  } catch (error) {
+    console.log(error.status + ": " + error.message);
     console.log(error.stderr.toString());
     console.log(error.stdout.toString());
-    res.json({error: error.stdout.toString()})
+    res.json({ error: error.stdout.toString() });
   }
 });
 
