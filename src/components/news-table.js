@@ -5,17 +5,18 @@ import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
 import TableRow from "@material-ui/core/TableRow";
 import TableCell from "@material-ui/core/TableCell";
+import Paper from "@material-ui/core/Paper";
+import TablePagination from "@material-ui/core/TablePagination";
+import CircularProgress from "@material-ui/core/CircularProgress";
+import ErrorIcon from "@material-ui/icons/Error";
+import { makeStyles } from "@material-ui/core/styles";
+
 import NewsTableRow from "./news-table-row";
 import NewsTableHead from "./news-table-head";
 import {NewsTableToolbar} from "./news-table-toolbar";
-import Paper from "@material-ui/core/Paper";
-import TablePagination from "@material-ui/core/TablePagination";
 import RSSSnackbarContent from "./rss-snackbar-content";
-import CircularProgress from "@material-ui/core/CircularProgress";
-
-import ErrorIcon from "@material-ui/icons/Error";
 import { baseErrorMessage, getErrorMessage } from "./utils/getErrorMessage.js";
-import { makeStyles } from "@material-ui/core/styles";
+import  { getNewsWithCategory } from "./utils/getNewsWithCategory.js";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -95,19 +96,18 @@ export const NewsTable = (props) => {
     } else return false;
   }
 
+  function filterByProject(pressNew) {
+    if (
+      pressNew.hasOwnProperty("category") &&
+      pressNew.category.find(o => o.name === props.selectedProject)
+      // pressNew.category.includes(props.selectedProject)
+    ) {
+      return true;
+    } else return false;
+  }
+
+
   function filterByChecked(pressNew) {
-    // var value = 0;
-
-    // if (this.props.isChecked === 1) {
-    //   value = true
-    // } else if (this.props.isChecked === -1) {
-    //   value = false
-    // }
-
-    // if (value === 0 || pressNew.selected === value) {
-    //   return true
-    // } else return false
-
     if (props.isChecked === 1 && pressNew.hasOwnProperty("topics")) return true;
     else if (props.isChecked === -1 && !pressNew.hasOwnProperty("topics"))
       return true;
@@ -141,7 +141,8 @@ export const NewsTable = (props) => {
   }
 
   // Filtering data
-  let filteredData = data.slice();
+  let filteredData = getNewsWithCategory(data.slice());
+  // console.log("filtered data: ", filteredData);
 
   if (props.isChecked) {
     filteredData = filteredData.filter(filterByChecked);
@@ -149,6 +150,11 @@ export const NewsTable = (props) => {
   if (props.selectedCountry) {
     if (props.selectedCountry != "Tots") {
       filteredData = filteredData.filter(filterByCountry);
+    }
+  }
+  if (props.selectedProject) {
+    if (props.selectedProject != "Tots") {
+      filteredData = filteredData.filter(filterByProject);
     }
   }
   if (props.searchType === 0) {
@@ -357,7 +363,7 @@ export const NewsTable = (props) => {
   const isSelected = (id) => selected.indexOf(id) !== -1;
 
   return (
-    <div>
+    <div style={{ marginTop: "0.1em" }}>
       {errorStatus.error && (
         <div className={classes.error}>
           &nbsp;
@@ -404,6 +410,7 @@ export const NewsTable = (props) => {
                   docId={ u._id }
                   title={ u.title }
                   topics={ u.hasOwnProperty("topics") && u.topics != ""? u.topics.split(",") : [] }
+                  category={ u.category }
                   allPossibleTopics= { allTopics }
                   source_id={ u.source_id }
                   source_name={ u.source_name }
