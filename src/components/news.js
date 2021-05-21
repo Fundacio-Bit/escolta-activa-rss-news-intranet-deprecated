@@ -29,6 +29,7 @@ class News extends Component {
     this.state = {
       selectedMonth: year_month_str, 
       selectedCountry: 'Tots', 
+      selectedProject: 'Tots', 
       isChecked: 0,
       searchType: 0,
       searchTerm: '',
@@ -40,6 +41,7 @@ class News extends Component {
     this.handleChangeMonth = this.handleChangeMonth.bind(this);
     this.handleRevisedSelectChange = this.handleRevisedSelectChange.bind(this);
     this.handleCountrySelectChange = this.handleCountrySelectChange.bind(this);
+    this.handleProjectSelectChange = this.handleProjectSelectChange.bind(this);
     this.handleSearchTermChange = this.handleSearchTermChange.bind(this);
     this.handleSearchTypeChange = this.handleSearchTypeChange.bind(this);
   }
@@ -53,8 +55,11 @@ class News extends Component {
   }
 
   handleCountrySelectChange(enteredCountry){
-    // this.newsTableElement.current.handleChangeFormField();
     this.setState({ selectedCountry: enteredCountry });
+  }
+
+  handleProjectSelectChange(project){
+    this.setState({ selectedProject: project });
   }
 
   handleSearchTermChange(enteredSearchTerm){
@@ -78,7 +83,9 @@ class News extends Component {
                   isChecked={this.state.isChecked}
                   onRevisedSelectChange={this.handleRevisedSelectChange}
                   selectedCountry={this.state.selectedCountry}
+                  selectedProject={this.state.selectedProject}
                   onCountrySelectChange={this.handleCountrySelectChange}
+                  onProjectSelectChange={this.handleProjectSelectChange}
                   searchTerm={this.state.searchTerm}
                   searchType={this.state.searchType}
                   onSearchTermChange={this.handleSearchTermChange}
@@ -87,6 +94,7 @@ class News extends Component {
                 <NewsTable 
                   selectedMonth = {this.state.selectedMonth}
                   selectedCountry = {this.state.selectedCountry}
+                  selectedProject = {this.state.selectedProject}
                   isChecked={this.state.isChecked}
                   searchType = {this.state.searchType}
                   searchTerm = {this.state.searchTerm}
