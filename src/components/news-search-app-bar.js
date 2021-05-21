@@ -72,6 +72,7 @@ class NewsSearchAppBar extends Component {
     this.handleMonthChange = this.handleMonthChange.bind(this);
     this.handleRevisedSelectChange = this.handleRevisedSelectChange.bind(this);
     this.handleCountrySelectChange = this.handleCountrySelectChange.bind(this);
+    this.handleProjectSelectChange = this.handleProjectSelectChange.bind(this);
     this.handleSearchTermChange = this.handleSearchTermChange.bind(this);
     this.handleSearchTypeChange = this.handleSearchTypeChange.bind(this);
   }
@@ -86,6 +87,10 @@ class NewsSearchAppBar extends Component {
 
   handleCountrySelectChange(event){
     this.props.onCountrySelectChange(event.target.value);
+  }
+
+  handleProjectSelectChange(event){
+    this.props.onProjectSelectChange(event.target.value);
   }
 
   handleSearchTermChange(event){
@@ -114,7 +119,7 @@ class NewsSearchAppBar extends Component {
                   <div className={classes.form}>
                     <form className={classes.container} noValidate>
                     <Grid container spacing={3}>
-                      <Grid item xs={3}>
+                      <Grid item xs={2}>
                           <TextField
                             id="dateFrom"
                             label="Mes"
@@ -160,7 +165,7 @@ class NewsSearchAppBar extends Component {
                             <MenuItem value={"SZ"}>Suïssa</MenuItem>
                           </TextField>
                         </Grid>
-                        <Grid item xs={5}>
+                        <Grid item xs={4}>
                           <Paper className={classes.search} elevation={1}>
                             <TextField
                               select
@@ -179,6 +184,7 @@ class NewsSearchAppBar extends Component {
                               <MenuItem value={1}>Tema</MenuItem>
                             </TextField>
                             <InputBase
+                              style={{width:"100%"}}
                               value={this.props.searchTerm}
                               onChange={this.handleSearchTermChange}
                               // Prevent form submission a data reload when the Enter Key is pressed
@@ -194,6 +200,19 @@ class NewsSearchAppBar extends Component {
                               <SearchIcon />
                             </IconButton>
                           </Paper>
+                        </Grid>
+                        <Grid item xs={2}>
+                          <TextField
+                            select
+                            className={classes.textField}
+                            label="Projecte"
+                            value={this.props.selectedProject}
+                            onChange={this.handleProjectSelectChange}
+                          >        
+                            <MenuItem value={"Tots"}><em>Tots</em></MenuItem>
+                            <MenuItem value={"covid-turisme"}>Covid-Turisme</MenuItem>
+                            <MenuItem value={"airline"}>Companyies Aèries</MenuItem>
+                          </TextField>
                         </Grid>
                       </Grid>
                     </form>
