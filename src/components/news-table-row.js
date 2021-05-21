@@ -270,7 +270,17 @@ class NewsTableRow extends Component {
     var selectableOptions = possibleTopics.map(suggestion => ({value: suggestion, label: suggestion}));
     this.state.textFieldValue != "" ?
       selectableOptions.push({value: this.state.textFieldValue, label: this.state.textFieldValue}): null;
-    // const isItemSelected = isSelected(this.props.docId);
+    // console.log("this.props.category: ", this.props.category);
+    let chip_covid_title = "";
+    let result = this.props.category.find( cat => cat.name === 'covid-turisme' )
+    if (result) {
+      chip_covid_title = result["terms"].toString()
+    }
+    let chip_airline_title = "";
+    result = this.props.category.find( cat => cat.name === 'airline' )
+    if (result) {
+      chip_airline_title = result["terms"].toString()
+    }
     return(
       <TableRow
         role="checkbox"
@@ -286,7 +296,7 @@ class NewsTableRow extends Component {
         </TableCell>
         <TableCell><div><h3>{new Date(this.props.published).toLocaleString()}</h3></div></TableCell>
         <TableCell>
-          <div classes={{ tooltipContainer: classes.tooltipContainer }}>
+          <div classes={{ tooltipContainer: classes.tooltipContainer }} style={{ display: "flex", flexDirection: "row" }}>
             <Tooltip
               classes={{ tooltip: classes.customizedTooltip }}
               title={
@@ -302,6 +312,12 @@ class NewsTableRow extends Component {
               leaveDelay={200}>
               <a href={this.props.link}  style={{ textDecoration: 'none' }} target="_blank"><h3>{this.props.title}</h3></a>
             </Tooltip>
+            { this.props.category.find(o => o.name === 'covid-turisme') &&
+              <Chip title={chip_covid_title} label="Covid-Turisme" color="secondary" size="small" style={{ margin: "1.2em" }}/>           
+            }
+            { this.props.category.find(o => o.name === 'airline') &&
+              <Chip title={chip_airline_title} label="Companyia Aèria" color="primary" size="small" style={{ margin: "1.2em" }}/>           
+            }
           </div>
           <div>
             {this.props.topics.map(u=>{if (u!=="") {
