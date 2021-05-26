@@ -274,12 +274,16 @@ class NewsTableRow extends Component {
     let chip_covid_title = "";
     let result = this.props.category.find( cat => cat.name === 'covid-turisme' )
     if (result) {
-      chip_covid_title = result["terms"].toString()
+      var set_terms = new Set(result["terms"]);
+      chip_covid_title = Array.from(set_terms).join(', ');
+      // chip_covid_title = result["terms"].toString()
     }
     let chip_airline_title = "";
     result = this.props.category.find( cat => cat.name === 'airline' )
     if (result) {
-      chip_airline_title = result["terms"].toString()
+      var set_terms = new Set(result["terms"]);
+      chip_airline_title = Array.from(set_terms).join(', ');
+      // chip_airline_title = result["terms"].toString()
     }
     return(
       <TableRow
