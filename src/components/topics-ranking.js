@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import CircularProgress from "@material-ui/core/CircularProgress";
+import RSSSnackbarContent from './rss-snackbar-content'
 
 import ErrorIcon from "@material-ui/icons/Error";
 import { baseErrorMessage, getErrorMessage } from "./utils/getErrorMessage.js";
@@ -42,8 +43,9 @@ const useStyles = makeStyles((theme) => ({
     color: "#e91e63",
   },
   loading: {
-    flexGrow: 1,
-    marginTop: theme.spacing(4),
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
   },
   orange: {
     color: theme.palette.getContrastText(deepOrange[500]),
@@ -114,9 +116,7 @@ export const TopicsRanking = (props) => {
                   const topicsStringsArray = newsWithTopicsArray.map(
                     (item) => item.topics
                   );
-                  const allMonthTopicsArray = topicsStringsArray
-                    .join(",")
-                    .split(",");
+                  const allMonthTopicsArray = topicsStringsArray.length> 0 ? topicsStringsArray.join(",").split(","): [];
                   let topicsObject = {};
                   allMonthTopicsArray.forEach((topic) => {
                     if (topicsObject.hasOwnProperty(topic)) {
@@ -168,22 +168,35 @@ export const TopicsRanking = (props) => {
     return () => (unmounted = true);
   }, [props.selectedMonth]);
 
+  console.log("Data: ", data)
   return (
     <div className={classes.tagsContainer}>
-      {data.length > 0 && (
-        // https://github.com/bvaughn/react-virtualized/blob/master/docs/usingAutoSizer.md#why-is-my-autosizer-setting-a-height-of-0
-        <AutoSizer disableHeight>
-          {({ width }) => (
-            <List
-              height={data.length * 46}
-              width={width}
-              rowHeight={46}
-              rowCount={data.length}
-              rowRenderer={renderTopic}
-              overscanRowCount={3}
-            />
-          )}
-        </AutoSizer>
+      {loading ? (
+        <div className={classes.loading}>
+          <CircularProgress size={24} thickness={4} />
+        </div>
+      ): (
+        data.length > 0 ? (
+          // https://github.com/bvaughn/react-virtualized/blob/master/docs/usingAutoSizer.md#why-is-my-autosizer-setting-a-height-of-0
+          <AutoSizer disableHeight>
+            {({ width }) => (
+              <List
+                height={data.length * 46}
+                width={width}
+                rowHeight={46}
+                rowCount={data.length}
+                rowRenderer={renderTopic}
+                overscanRowCount={3}
+              />
+            )}
+          </AutoSizer>
+        ):
+        (
+          <RSSSnackbarContent
+            variant="info"
+            message="Ha de seleccionar notícies per a obtenir el rànquing!"
+          />
+        )
       )}
     </div>
   );

@@ -303,7 +303,7 @@ export const Topics = (props) => {
                 <Grid item>
                   <div className={classes.overviewItem}>
                     <p className={classes.overviewTitle}>
-                      Notícies seleccionades
+                      Notícies
                     </p>
                     <p className={classes.overviewFigure}>
                       {overviewFigures.totalNews}
