@@ -3,7 +3,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import CircularProgress from "@material-ui/core/CircularProgress";
-import SnackbarContent from '@material-ui/core/SnackbarContent';
 import RSSSnackbarContent from './rss-snackbar-content'
 
 import ErrorIcon from "@material-ui/icons/Error";
@@ -44,8 +43,9 @@ const useStyles = makeStyles((theme) => ({
     color: "#e91e63",
   },
   loading: {
-    flexGrow: 1,
-    marginTop: theme.spacing(4),
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
   },
   orange: {
     color: theme.palette.getContrastText(deepOrange[500]),
@@ -171,26 +171,32 @@ export const TopicsRanking = (props) => {
   console.log("Data: ", data)
   return (
     <div className={classes.tagsContainer}>
-      {data.length > 0 ? (
-        // https://github.com/bvaughn/react-virtualized/blob/master/docs/usingAutoSizer.md#why-is-my-autosizer-setting-a-height-of-0
-        <AutoSizer disableHeight>
-          {({ width }) => (
-            <List
-              height={data.length * 46}
-              width={width}
-              rowHeight={46}
-              rowCount={data.length}
-              rowRenderer={renderTopic}
-              overscanRowCount={3}
-            />
-          )}
-        </AutoSizer>
-      ):
-      (
-        <RSSSnackbarContent
-          variant="info"
-          message="Ha de seleccionar notícies per a obtenir el rànquing!"
-        />
+      {loading ? (
+        <div className={classes.loading}>
+          <CircularProgress size={24} thickness={4} />
+        </div>
+      ): (
+        data.length > 0 ? (
+          // https://github.com/bvaughn/react-virtualized/blob/master/docs/usingAutoSizer.md#why-is-my-autosizer-setting-a-height-of-0
+          <AutoSizer disableHeight>
+            {({ width }) => (
+              <List
+                height={data.length * 46}
+                width={width}
+                rowHeight={46}
+                rowCount={data.length}
+                rowRenderer={renderTopic}
+                overscanRowCount={3}
+              />
+            )}
+          </AutoSizer>
+        ):
+        (
+          <RSSSnackbarContent
+            variant="info"
+            message="Ha de seleccionar notícies per a obtenir el rànquing!"
+          />
+        )
       )}
     </div>
   );
