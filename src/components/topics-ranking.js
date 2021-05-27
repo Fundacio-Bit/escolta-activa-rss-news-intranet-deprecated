@@ -3,6 +3,8 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import CircularProgress from "@material-ui/core/CircularProgress";
+import SnackbarContent from '@material-ui/core/SnackbarContent';
+import RSSSnackbarContent from './rss-snackbar-content'
 
 import ErrorIcon from "@material-ui/icons/Error";
 import { baseErrorMessage, getErrorMessage } from "./utils/getErrorMessage.js";
@@ -114,9 +116,7 @@ export const TopicsRanking = (props) => {
                   const topicsStringsArray = newsWithTopicsArray.map(
                     (item) => item.topics
                   );
-                  const allMonthTopicsArray = topicsStringsArray
-                    .join(",")
-                    .split(",");
+                  const allMonthTopicsArray = topicsStringsArray.length> 0 ? topicsStringsArray.join(",").split(","): [];
                   let topicsObject = {};
                   allMonthTopicsArray.forEach((topic) => {
                     if (topicsObject.hasOwnProperty(topic)) {
@@ -168,9 +168,10 @@ export const TopicsRanking = (props) => {
     return () => (unmounted = true);
   }, [props.selectedMonth]);
 
+  console.log("Data: ", data)
   return (
     <div className={classes.tagsContainer}>
-      {data.length > 0 && (
+      {data.length > 0 ? (
         // https://github.com/bvaughn/react-virtualized/blob/master/docs/usingAutoSizer.md#why-is-my-autosizer-setting-a-height-of-0
         <AutoSizer disableHeight>
           {({ width }) => (
@@ -184,6 +185,12 @@ export const TopicsRanking = (props) => {
             />
           )}
         </AutoSizer>
+      ):
+      (
+        <RSSSnackbarContent
+          variant="info"
+          message="Ha de seleccionar notícies per a obtenir el rànquing!"
+        />
       )}
     </div>
   );
