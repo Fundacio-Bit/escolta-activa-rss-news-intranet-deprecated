@@ -271,19 +271,23 @@ class NewsTableRow extends Component {
     this.state.textFieldValue != "" ?
       selectableOptions.push({value: this.state.textFieldValue, label: this.state.textFieldValue}): null;
     // console.log("this.props.category: ", this.props.category);
+    let chip_tourism_title = "";
+    let result = this.props.category.find( cat => cat.name === 'tourism' )
+    if (result) {
+      var set_terms = new Set(result["terms"]);
+      chip_tourism_title = Array.from(set_terms).join(', ');
+    }
     let chip_covid_title = "";
-    let result = this.props.category.find( cat => cat.name === 'covid-turisme' )
+    result = this.props.category.find( cat => cat.name === 'covid-turisme' )
     if (result) {
       var set_terms = new Set(result["terms"]);
       chip_covid_title = Array.from(set_terms).join(', ');
-      // chip_covid_title = result["terms"].toString()
     }
     let chip_airline_title = "";
     result = this.props.category.find( cat => cat.name === 'airline' )
     if (result) {
       var set_terms = new Set(result["terms"]);
       chip_airline_title = Array.from(set_terms).join(', ');
-      // chip_airline_title = result["terms"].toString()
     }
     return(
       <TableRow
@@ -316,6 +320,9 @@ class NewsTableRow extends Component {
               leaveDelay={200}>
               <a href={this.props.link}  style={{ textDecoration: 'none' }} target="_blank"><h3>{this.props.title}</h3></a>
             </Tooltip>
+            { this.props.category.find(o => o.name === 'tourism') &&
+              <Chip title={chip_tourism_title} label="Turisme" size="small" style={{ margin: "1.2em", backgroundColor: "#00F700", color: "white" }}/>           
+            }
             { this.props.category.find(o => o.name === 'covid-turisme') &&
               <Chip title={chip_covid_title} label="Covid-Turisme" color="secondary" size="small" style={{ margin: "1.2em" }}/>           
             }

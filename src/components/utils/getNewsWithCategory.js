@@ -388,19 +388,19 @@ export const getNewsWithCategory = (newsArray) => {
       };
 
       let categories = [];
+      if ( getCategoryTerms(concatenatedTexts, categoriesDict["tourism"]).length > 0 ) {
+        const terms = getCategoryTerms(concatenatedTexts, categoriesDict["tourism"]);
+        categories.push({"name": "tourism", "terms": terms});
+      }
       if (
         getCategoryTerms(concatenatedTexts, categoriesDict["covid"]).length > 0 &&
         getCategoryTerms(concatenatedTexts, categoriesDict["tourism"]).length > 0
       ) {
         const terms = getCategoryTerms(concatenatedTexts, categoriesDict["covid"]).concat(getCategoryTerms(concatenatedTexts, categoriesDict["tourism"]));
-        // console.log("COVID: ", terms)
-        // doc.category = {"name": "covid-turisme", "terms": terms};
         categories.push({"name": "covid-turisme", "terms": terms});
       }
       if (getCategoryTerms(concatenatedTexts, companiesDict).length > 0) {
         const terms = getCategoryTerms(concatenatedTexts, companiesDict);
-        // console.log("AIRLINE:", terms)
-        // doc.category = {"name": "airline", "terms": terms};
         categories.push({"name": "airline", "terms": terms});
       }
       // console.log("categories: ", categories)
