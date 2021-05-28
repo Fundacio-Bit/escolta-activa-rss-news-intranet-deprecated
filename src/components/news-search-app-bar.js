@@ -210,6 +210,7 @@ class NewsSearchAppBar extends Component {
                             onChange={this.handleProjectSelectChange}
                           >        
                             <MenuItem value={"Tots"}><em>Tots</em></MenuItem>
+                            <MenuItem value={"tourism"}>Turisme</MenuItem>
                             <MenuItem value={"covid-turisme"}>Covid-Turisme</MenuItem>
                             <MenuItem value={"airline"}>Companyies Aèries</MenuItem>
                           </TextField>

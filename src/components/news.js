@@ -29,7 +29,7 @@ class News extends Component {
     this.state = {
       selectedMonth: year_month_str, 
       selectedCountry: 'Tots', 
-      selectedProject: 'Tots', 
+      selectedProject: 'tourism', 
       isChecked: 0,
       searchType: 0,
       searchTerm: '',
