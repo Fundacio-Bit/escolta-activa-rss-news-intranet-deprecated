@@ -1,14 +1,19 @@
 /* eslint-disable no-prototype-builtins */
 import React, { useState, useEffect } from "react";
-import { Column, Table, SortDirection, AutoSizer } from "react-virtualized";
-import "react-virtualized/styles.css";
-import _ from "lodash";
 import axios from "axios";
+import Table from "@material-ui/core/Table";
+import TableBody from "@material-ui/core/TableBody";
+import TableRow from "@material-ui/core/TableRow";
+import TableCell from "@material-ui/core/TableCell";
 import Paper from "@material-ui/core/Paper";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import ErrorIcon from "@material-ui/icons/Error";
 import { makeStyles } from "@material-ui/core/styles";
+
+import RSSSnackbarContent from "./rss-snackbar-content";
+import { baseErrorMessage, getErrorMessage } from "./utils/getErrorMessage.js";
 import  { getNewsWithCategory } from "./utils/getNewsWithCategory.js";
+import AutoSizer from "react-virtualized-auto-sizer";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -158,25 +163,37 @@ export const NewsTable = (props) => {
   // Sorting data
   filteredData.sort(getSorting(orderBy, order));
 
-  // _sortList = ({ sortBy, sortDirection }) => {
-  //   let newList = _.sortBy(filteredData, [sortBy]);
-  //   if (sortDirection === SortDirection.DESC) {
-  //     newList.reverse();
-  //   }
-  //   return newList;
-  // };
+  // The unmounted flag is used to avoid that setData, set Loading and setErrorStatus are executed after
+  // the component has been unmounted.
+  // The use effect returns the unmounted flag set to true, this return is the so called cleanup function of
+  // useEffect which is used equivalently to the componentWillUnmount function of React Class Components.
+  // This cleanup is necessary to keep consistency, it is not possible to set a state of an unmounted component.
+  // Although the application could not crash in that case it would launch some warnings because the app performance
+  // could be compromised
+  // A more detailed explanation can be found at (section ABORT DATA FETCHING IN EFFECT HOOK):
+  // https://www.robinwieruch.de/react-hooks-fetch-data
 
-  // _sort = ({ sortBy, sortDirection }) => {
-  //   const sortedList = _sortList({ sortBy, sortDirection });
-  //   setSortBy(sortBy);
-  //   setSortDirection(sortDirection);
-  //   console.log("Sorted list: ", sortedList)
-  //   setSortedList(sortedList);
-  // };
+  // The empty array provided at the end of the use effect function determines that this useEffect will be only
+  // execute once, when the component is mounted. Subsequent updates (due to rerenders) will no trigger the execution
+  // again.
+  // This empty array can contain variables. If one of the variables in the array changes it values between updates
+  // the useEffect hook will be executed again.
+  // Further info at (section Tip: Optimizing Performance by Skipping Effects):
+  // https://en.reactjs.org/docs/hooks-effect.html#tip-optimizing-performance-by-skipping-effects
 
-  // const [sortBy, setSortBy] = React.useState("id");
-  // const [sortDirection, setSortDirection] = React.useState(SortDirection.ASC);
-  // const [sortedList, setSortedList] = React.useState(_sortList({ sortBy, sortDirection }));
+  // useEffect has been defined twice for separate API calls, one to retrieve data, another to retrieve Topics.
+  // such repetition of useEffect definition is allowed by REACT and useful to separate concersn, for code clarity.
+  // Further info at:
+  // https://en.reactjs.org/docs/hooks-effect.html#tip-use-multiple-effects-to-separate-concerns
+
+  // First useEffect. Retrieves the entries array.
+  // Executes on mounting and each time that "lastUpdateTimestamp" changes.
+  // The lastUpdateTimestamp state is used to trigger rerenders each time the list of data changes because of
+  // user mediated row edits, insertions or deletes.
+  // Once the data have been updated in mongo a setLastUpdateTimestamp with the timestamp at that moment will
+  // relaunch the useEfect as determined by its dependencies, thereby the whole updated data list will be retrieved
+  // again.
+  // var handleRevisedSelectedChange = this.handleRevisedSelectedChange;
 
   useEffect(() => {
     let unmounted = false;
@@ -404,27 +421,114 @@ export const NewsTable = (props) => {
       )}
 
       {!loading && !errorStatus.error && (
-      <Paper className={classes.root}>
-        <div className={classes.tableWrapper}>
-        {filteredData.length > 0 &&
-          <AutoSizer>
-            {({ height, width }) => (
-              <Table
-                width={width}
-                height={height}
-                headerHeight={20}
-                rowHeight={30}
-                rowCount={filteredData.length}
-                rowGetter={({ index }) => filteredData[index]}
-              >
-                <Column label="Data" dataKey="published" width={200} />
-                <Column width={300} label="Notícia" dataKey="id" />
+        <Paper className={classes.root}>
+          <div className={classes.tableWrapper}>
+          {filteredData.length > 0 &&
+            <WindowScroller>
+            {({ height, scrollTop }) => (
+              <AutoSizer disableHeight>
+              {({ width }) => (
+                <Table className={classes.table} aria-labelledby="tableTitle">
+                {filteredData.length > 0 && (
+                  <NewsTableHead
+                    data = {filteredData}
+                    selectedMonth = {props.selectedMonth}
+                    order = { order }
+                    numSelected={selected.length}
+                    orderBy = { orderBy }
+                    onRequestSort = { handleRequestSort }
+                    onSelectAllClick={handleSelectAllClick}
+                    rowCount={filteredData.length}
+                  />
+                )}
+                {selected.length > 0 && (
+                  <NewsTableToolbar
+                    numSelected={selected.length}
+                    handleDeleteClick = { handleDeleteClick }
+                  />
+                )}
+                <TableBody>
+                {filteredData.length === 0 && (
+                  <TableRow>
+                    <TableCell colSpan={4}>
+                      <RSSSnackbarContent
+                        variant="info"
+                        className={classes.margin}
+                        message="No hi ha dades per a aquesta cerca!"
+                      />
+                    </TableCell>
+                  </TableRow>
+                )}
+                {emptyRows > 0 && (
+                  <TableRow style={{ height: 49 * emptyRows }}>
+                    <TableCell colSpan={4} />
+                  </TableRow>
+                )}
+                </TableBody>
               </Table>
-            )}
-          </AutoSizer>
-        }
-        </div>
-      </Paper>
+            {/* {filteredData.length > 0 && filteredData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(u => {
+              const isItemSelected = isSelected(u._id);
+              return (                    
+                <NewsTableRow
+                  key={ u._id }
+                  published={ u.published }
+                  docId={ u._id }
+                  title={ u.title }
+                  topics={ u.hasOwnProperty("topics") && u.topics != ""? u.topics.split(",") : [] }
+                  category={ u.category }
+                  allPossibleTopics= { allTopics }
+                  source_id={ u.source_id }
+                  source_name={ u.source_name }
+                  section={ u.section }
+                  brand={ u.brand }
+                  link={ u.link }
+                  summary={ u.summary }
+                  handleClick = { handleClick }
+                  handleUpdateTopics = { handleUpdateTopics }
+                  isUpdating = { false }
+                  selected = {isItemSelected}
+                />
+              );
+              })} */}
+              {filteredData.length > 0 &&
+                <AutoSizer>
+                  {({height, width}) => (
+                  <List
+                    height={height}
+                    itemCount={filteredData.length}
+                    itemSize={20}
+                    width={width}
+                    itemData={{
+                      filteredData,
+                      allTopics,
+                      handleClick,
+                      handleUpdateTopics
+                    }}
+                  >
+                    {Row}
+                  </List>
+                  )}
+                </AutoSizer>
+              }
+          </div>
+          {/* {filteredData.length > 0 && (
+            <TablePagination
+              component="div"
+              count={filteredData.length}
+              rowsPerPage={rowsPerPage}
+              page={page}
+              backIconButtonProps={{
+                "aria-label": "Previous Page",
+              }}
+              nextIconButtonProps={{
+                "aria-label": "Next Page",
+              }}
+              onChangePage={handleChangePage}
+              onChangeRowsPerPage={handleChangeRowsPerPage}
+              rowsPerPageOptions={all}
+            />
+          )} */}
+        </Paper>
       )}
     </div>
   );
