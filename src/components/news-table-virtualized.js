@@ -1,21 +1,13 @@
 /* eslint-disable no-prototype-builtins */
 import React, { useState, useEffect } from "react";
+import { Column, Table, SortDirection, AutoSizer } from "react-virtualized";
+import "react-virtualized/styles.css";
+import _ from "lodash";
 import axios from "axios";
-import Table from "@material-ui/core/Table";
-import TableBody from "@material-ui/core/TableBody";
-import TableRow from "@material-ui/core/TableRow";
-import TableCell from "@material-ui/core/TableCell";
 import Paper from "@material-ui/core/Paper";
-import TablePagination from "@material-ui/core/TablePagination";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import ErrorIcon from "@material-ui/icons/Error";
 import { makeStyles } from "@material-ui/core/styles";
-
-import NewsTableRow from "./news-table-row";
-import NewsTableHead from "./news-table-head";
-import {NewsTableToolbar} from "./news-table-toolbar";
-import RSSSnackbarContent from "./rss-snackbar-content";
-import { baseErrorMessage, getErrorMessage } from "./utils/getErrorMessage.js";
 import  { getNewsWithCategory } from "./utils/getNewsWithCategory.js";
 
 const useStyles = makeStyles((theme) => ({
@@ -66,67 +58,34 @@ export const NewsTable = (props) => {
   const [data, setData] = useState([]);
   const [allTopics, setAllTopics] = useState([]);
 
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
   const [loading, setLoading] = useState(true);
   const [errorStatus, setErrorStatus] = useState({ error: false, message: "" });
   const [lastUpdateTimestamp, setLastUpdateTimestamp] = useState(Date.now());
 
-  const [selected, setSelected] = React.useState([]);
-
-  const all = [5, 10, 25, 50];
-  const emptyRows =
-    rowsPerPage - Math.min(rowsPerPage, data.length - page * rowsPerPage);
-
-  // The unmounted flag is used to avoid that setData, set Loading and setErrorStatus are executed after
-  // the component has been unmounted.
-  // The use effect returns the unmounted flag set to true, this return is the so called cleanup function of
-  // useEffect which is used equivalently to the componentWillUnmount function of React Class Components.
-  // This cleanup is necessary to keep consistency, it is not possible to set a state of an unmounted component.
-  // Although the application could not crash in that case it would launch some warnings because the app performance
-  // could be compromised
-  // A more detailed explanation can be found at (section ABORT DATA FETCHING IN EFFECT HOOK):
-  // https://www.robinwieruch.de/react-hooks-fetch-data
-
-  // The empty array provided at the end of the use effect function determines that this useEffect will be only
-  // execute once, when the component is mounted. Subsequent updates (due to rerenders) will no trigger the execution
-  // again.
-  // This empty array can contain variables. If one of the variables in the array changes it values between updates
-  // the useEffect hook will be executed again.
-  // Further info at (section Tip: Optimizing Performance by Skipping Effects):
-  // https://en.reactjs.org/docs/hooks-effect.html#tip-optimizing-performance-by-skipping-effects
-
-  // useEffect has been defined twice for separate API calls, one to retrieve data, another to retrieve Topics.
-  // such repetition of useEffect definition is allowed by REACT and useful to separate concersn, for code clarity.
-  // Further info at:
-  // https://en.reactjs.org/docs/hooks-effect.html#tip-use-multiple-effects-to-separate-concerns
-
-  // First useEffect. Retrieves the entries array.
-  // Executes on mounting and each time that "lastUpdateTimestamp" changes.
-  // The lastUpdateTimestamp state is used to trigger rerenders each time the list of data changes because of
-  // user mediated row edits, insertions or deletes.
-  // Once the data have been updated in mongo a setLastUpdateTimestamp with the timestamp at that moment will
-  // relaunch the useEfect as determined by its dependencies, thereby the whole updated data list will be retrieved
-  // again.
-  // var handleRevisedSelectedChange = this.handleRevisedSelectedChange;
+  const [selected, setSelected] = useState([]);
+  
+  const [sortBy, setSortBy] = useState("id");
+  const [sortDirection, setSortDirection] = useState(SortDirection.ASC);
+  const [sortedList, setSortedList] = useState([]);
+  // sortList( sortBy, sortDirection )
 
   useEffect(() => {
     let unmounted = false;
-
+  
     const fetchData = () => {
       if (!unmounted) {
         setErrorStatus({ error: false, message: "" });
         setLoading(true);
       }
-
+  
       try {
         axios
           .get(`/rss-news/entries/yearmonth/${props.selectedMonth}`)
           .then((results) => {
             if (results.data.results.length > 0) {
-              // OK
-              // Beware with this:
-              // https://overreacted.io/a-complete-guide-to-useeffect/#each-render-has-its-own-event-handlers
+            // OK
+            // Beware with this:
+            // https://overreacted.io/a-complete-guide-to-useeffect/#each-render-has-its-own-event-handlers
               setTimeout(() => {
                 if (!unmounted) {
                   setErrorStatus({ error: false, message: "" });
@@ -136,29 +95,29 @@ export const NewsTable = (props) => {
                 }
               }, 850);
             } else {
-              // No data returned
+            // No data returned
               if (!unmounted) {
-                setData([]);
-                setLoading(false);
+                  setData([]);
+                  setLoading(false);
+                }
               }
-            }
-          })
+            })
           .catch((error) => {
             console.log(getErrorMessage(error));
             setErrorStatus({ error: true, message: baseErrorMessage });
             setLoading(false);
           });
-      } catch (error) {
-        if (!unmounted) {
-          console.log(getErrorMessage(error));
-          setErrorStatus({ error: true, message: baseErrorMessage });
-          setLoading(false);
+        } catch (error) {
+          if (!unmounted) {
+            console.log(getErrorMessage(error));
+            setErrorStatus({ error: true, message: baseErrorMessage });
+            setLoading(false);
         }
       }
     };
-
+  
     fetchData();
-
+  
     // Cleanup function. useEffect uses the cleanup function to execute operations useful on set unmount.
     // It is equivalent to the componentWillUnmount function of class components.
     // Here it is used to avoid the execution of setData on unmounted components.
@@ -205,7 +164,6 @@ export const NewsTable = (props) => {
     }
     setSelected([]);
   };
-  
   // TODO: handle the addition of topics with special chars or commas. Also avoid duplicates.
   const handleUpdateTopics = (id, topicsString) => {
     let retrievedNews = data;
@@ -236,13 +194,13 @@ export const NewsTable = (props) => {
     setOrderBy(orderByReq);
   }
 
-  const handleChangePage = (event, page) => {
-    setPage(page);
-  }
+  // const handleChangePage = (event, page) => {
+  //   setPage(page);
+  // }
 
-  const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(event.target.value);
-  }
+  // const handleChangeRowsPerPage = (event) => {
+  //   setRowsPerPage(event.target.value);
+  // }
 
   const handleDeleteClick = () => {
     axios
@@ -334,7 +292,12 @@ export const NewsTable = (props) => {
 
   // Filtering data
   let filteredData = getNewsWithCategory(data.slice());
-  // console.log("filtered data: ", filteredData);
+  let tableData = filteredData.map((doc) => {
+    const date = new Date(doc.published).toLocaleString();
+    doc.published = date; 
+    return doc;
+  })
+  console.log("Table data: ", tableData)
 
   if (props.isChecked) {
     filteredData = filteredData.filter(filterByChecked);
@@ -355,12 +318,91 @@ export const NewsTable = (props) => {
     filteredData = filteredData.filter(filterByTopic);
   }
 
-  // Sorting data
-  filteredData.sort(getSorting(orderBy, order));
+  // // Sorting data
+  // filteredData.sort(getSorting(orderBy, order));
+  // const sortList = ( sortBy, sortDirection ) => {
+  //   let newList = _.sortBy(filteredData, [sortBy]);
+  //   if (sortDirection === SortDirection.DESC) {
+  //     newList.reverse();
+  //   }
+  //   return newList;
+  // };
+
+  const sort = ( sortBy, sortDirection ) => {
+    console.log("Hola")
+    // console.log("Sorted list: ", sortedList)
+    const sortedList = sortList( sortBy, sortDirection );
+    setSortBy(sortBy);
+    setSortDirection(sortDirection);
+    setSortedList(sortedList);
+  };
 
   // Sorting data
   // filteredData.sort(getSorting(orderBy, order));
   const isSelected = (id) => selected.indexOf(id) !== -1;
+
+  // const Row = ({ index, style, data }) => {
+  //   const {
+  //     filteredData,
+  //     allTopics,
+  //     handleClick,
+  //     handleUpdateTopics
+  //   } = data;
+  //   console.log("Data: ", filteredData[index].title)
+  //   const item = filteredData[index];
+  //   const isItemSelected = isSelected(item._id);
+  //   return (
+  //       <div style={style}>
+  //         <div>{ item.published }</div>
+  //         <div>{ item.id }</div>
+  //         <div>{ item.title }</div>
+  //         {/* <div>{ item.category }</div>
+  //         <div>{ item.source_id }</div>
+  //         <div>{ item.source_name }</div>
+  //         <div>{ item.section }</div>
+  //         <div>{ item.brand }</div>
+  //         <div>{ item.link }</div>
+  //         <div>{ item.summary }</div> */}
+  //       {/* <NewsTableRow
+  //         key={ item._id }
+  //         published={ item.published }
+  //         docId={ item._id }
+  //         title={ item.title }
+  //         topics={ item.hasOwnProperty("topics") && item.topics != ""? item.topics.split(",") : [] }
+  //         category={ item.category }
+  //         allPossibleTopics= { allTopics }
+  //         source_id={ item.source_id }
+  //         source_name={ item.source_name }
+  //         section={ item.section }
+  //         brand={ item.brand }
+  //         link={ item.link }
+  //         summary={ item.summary }
+  //         handleClick = { handleClick }
+  //         handleUpdateTopics = { handleUpdateTopics }
+  //         isUpdating = { false }
+  //         selected = {isItemSelected}
+  //       /> */}
+  //       </div>
+  //   );
+  // }
+  // console.log("Filtered data: ", filteredData);
+  // console.log("Sorted List: ", sortedList)
+  cellRenderer = ({ cellData, columnIndex }) => {
+    const { columns, classes, rowHeight, onRowClick } = props;
+    return (
+      <TableCell
+        component="div"
+        className={clsx(classes.tableCell, classes.flexContainer, {
+          [classes.noClick]: onRowClick == null,
+        })}
+        variant="body"
+        style={{ height: rowHeight }}
+        align={(columnIndex != null && columns[columnIndex].numeric) || false ? 'right' : 'left'}
+      >
+        {cellData}
+      </TableCell>
+    );
+  };
 
   return (
     <div style={{ marginTop: "0.1em" }}>
@@ -379,89 +421,34 @@ export const NewsTable = (props) => {
       )}
 
       {!loading && !errorStatus.error && (
-        <Paper className={classes.root}>
+      <Paper className={classes.root}>
         <div className={classes.tableWrapper}>
-          <Table className={classes.table} aria-labelledby="tableTitle">
-            {filteredData.length > 0 && (
-              <NewsTableHead
-                data = {filteredData}
-                selectedMonth = {props.selectedMonth}
-                order = { order }
-                numSelected={selected.length}
-                orderBy = { orderBy }
-                onRequestSort = { handleRequestSort }
-                onSelectAllClick={handleSelectAllClick}
-                rowCount={filteredData.length}
-              />
-            )}
-            {selected.length > 0 && (
-              <NewsTableToolbar
-              numSelected={selected.length}
-              handleDeleteClick = { handleDeleteClick }
-              />
-            )}
-            <TableBody>
-            {filteredData.length > 0 && filteredData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(u => {
-              const isItemSelected = isSelected(u._id);
-              return (                    
-                <NewsTableRow
-                  key={ u._id }
-                  published={ u.published }
-                  docId={ u._id }
-                  title={ u.title }
-                  topics={ u.hasOwnProperty("topics") && u.topics != ""? u.topics.split(",") : [] }
-                  category={ u.category }
-                  allPossibleTopics= { allTopics }
-                  source_id={ u.source_id }
-                  source_name={ u.source_name }
-                  section={ u.section }
-                  brand={ u.brand }
-                  link={ u.link }
-                  summary={ u.summary }
-                  handleClick = { handleClick }
-                  handleUpdateTopics = { handleUpdateTopics }
-                  isUpdating = { false }
-                  selected = {isItemSelected}
-                />
-              );
-              })}
-              {filteredData.length === 0 && (
-                <TableRow>
-                  <TableCell colSpan={4}>
-                    <RSSSnackbarContent
-                      variant="info"
-                      className={classes.margin}
-                      message="No hi ha dades per a aquesta cerca!"
-                    />
-                  </TableCell>
-                </TableRow>
-              )}
-              {emptyRows > 0 && (
-                <TableRow style={{ height: 49 * emptyRows }}>
-                  <TableCell colSpan={4} />
-                </TableRow>
-              )}
-              </TableBody>
-            </Table>
+          <div style={{fontFamily: "Arial"}}>
+            { filteredData.length } notícies.
           </div>
-          {filteredData.length > 0 && (
-            <TablePagination
-              component="div"
-              count={filteredData.length}
-              rowsPerPage={rowsPerPage}
-              page={page}
-              backIconButtonProps={{
-                "aria-label": "Previous Page",
-              }}
-              nextIconButtonProps={{
-                "aria-label": "Next Page",
-              }}
-              onChangePage={handleChangePage}
-              onChangeRowsPerPage={handleChangeRowsPerPage}
-              rowsPerPageOptions={all}
-            />
-          )}
-        </Paper>
+          { filteredData && filteredData.length > 0 &&
+          <AutoSizer style={{height: "50em", fontFamily: "Arial"}}>
+            {({ height, width }) => (
+              <Table
+                width={width}
+                height={height}
+                headerHeight={20}
+                rowHeight={30}
+                sort={sort}
+                sortBy={sortBy}
+                sortDirection={sortDirection}
+                rowCount={filteredData.length}
+                cellRenderer={cellRenderer}
+                // rowGetter={({ index }) => filteredData[index]}
+              >
+                <Column label="Data" dataKey="published" width={200} />
+                <Column width={600} label="Notícia" dataKey="summary" />
+              </Table>
+            )}
+          </AutoSizer>
+        }
+        </div>
+      </Paper>
       )}
     </div>
   );

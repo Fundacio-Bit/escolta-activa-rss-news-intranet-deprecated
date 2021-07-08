@@ -6,14 +6,17 @@ import TableBody from "@material-ui/core/TableBody";
 import TableRow from "@material-ui/core/TableRow";
 import TableCell from "@material-ui/core/TableCell";
 import Paper from "@material-ui/core/Paper";
+import TablePagination from "@material-ui/core/TablePagination";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import ErrorIcon from "@material-ui/icons/Error";
 import { makeStyles } from "@material-ui/core/styles";
 
+import NewsTableRow from "./news-table-row";
+import NewsTableHead from "./news-table-head";
+import {NewsTableToolbar} from "./news-table-toolbar";
 import RSSSnackbarContent from "./rss-snackbar-content";
 import { baseErrorMessage, getErrorMessage } from "./utils/getErrorMessage.js";
 import  { getNewsWithCategory } from "./utils/getNewsWithCategory.js";
-import AutoSizer from "react-virtualized-auto-sizer";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -359,51 +362,6 @@ export const NewsTable = (props) => {
   // filteredData.sort(getSorting(orderBy, order));
   const isSelected = (id) => selected.indexOf(id) !== -1;
 
-  const Row = ({ index, style, data }) => {
-    const {
-      filteredData,
-      allTopics,
-      handleClick,
-      handleUpdateTopics
-    } = data;
-    console.log("Data: ", filteredData[index].title)
-    const item = filteredData[index];
-    const isItemSelected = isSelected(item._id);
-    return (
-        <div style={style}>
-          <div>{ item.published }</div>
-          <div>{ item.id }</div>
-          <div>{ item.title }</div>
-          {/* <div>{ item.category }</div>
-          <div>{ item.source_id }</div>
-          <div>{ item.source_name }</div>
-          <div>{ item.section }</div>
-          <div>{ item.brand }</div>
-          <div>{ item.link }</div>
-          <div>{ item.summary }</div> */}
-        {/* <NewsTableRow
-          key={ item._id }
-          published={ item.published }
-          docId={ item._id }
-          title={ item.title }
-          topics={ item.hasOwnProperty("topics") && item.topics != ""? item.topics.split(",") : [] }
-          category={ item.category }
-          allPossibleTopics= { allTopics }
-          source_id={ item.source_id }
-          source_name={ item.source_name }
-          section={ item.section }
-          brand={ item.brand }
-          link={ item.link }
-          summary={ item.summary }
-          handleClick = { handleClick }
-          handleUpdateTopics = { handleUpdateTopics }
-          isUpdating = { false }
-          selected = {isItemSelected}
-        /> */}
-        </div>
-    );
-  }
-
   return (
     <div style={{ marginTop: "0.1em" }}>
       {errorStatus.error && (
@@ -422,51 +380,28 @@ export const NewsTable = (props) => {
 
       {!loading && !errorStatus.error && (
         <Paper className={classes.root}>
-          <div className={classes.tableWrapper}>
-          {filteredData.length > 0 &&
-            <WindowScroller>
-            {({ height, scrollTop }) => (
-              <AutoSizer disableHeight>
-              {({ width }) => (
-                <Table className={classes.table} aria-labelledby="tableTitle">
-                {filteredData.length > 0 && (
-                  <NewsTableHead
-                    data = {filteredData}
-                    selectedMonth = {props.selectedMonth}
-                    order = { order }
-                    numSelected={selected.length}
-                    orderBy = { orderBy }
-                    onRequestSort = { handleRequestSort }
-                    onSelectAllClick={handleSelectAllClick}
-                    rowCount={filteredData.length}
-                  />
-                )}
-                {selected.length > 0 && (
-                  <NewsTableToolbar
-                    numSelected={selected.length}
-                    handleDeleteClick = { handleDeleteClick }
-                  />
-                )}
-                <TableBody>
-                {filteredData.length === 0 && (
-                  <TableRow>
-                    <TableCell colSpan={4}>
-                      <RSSSnackbarContent
-                        variant="info"
-                        className={classes.margin}
-                        message="No hi ha dades per a aquesta cerca!"
-                      />
-                    </TableCell>
-                  </TableRow>
-                )}
-                {emptyRows > 0 && (
-                  <TableRow style={{ height: 49 * emptyRows }}>
-                    <TableCell colSpan={4} />
-                  </TableRow>
-                )}
-                </TableBody>
-              </Table>
-            {/* {filteredData.length > 0 && filteredData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(u => {
+        <div className={classes.tableWrapper}>
+          <Table className={classes.table} aria-labelledby="tableTitle">
+            {filteredData.length > 0 && (
+              <NewsTableHead
+                data = {filteredData}
+                selectedMonth = {props.selectedMonth}
+                order = { order }
+                numSelected={selected.length}
+                orderBy = { orderBy }
+                onRequestSort = { handleRequestSort }
+                onSelectAllClick={handleSelectAllClick}
+                rowCount={filteredData.length}
+              />
+            )}
+            {selected.length > 0 && (
+              <NewsTableToolbar
+              numSelected={selected.length}
+              handleDeleteClick = { handleDeleteClick }
+              />
+            )}
+            <TableBody>
+            {filteredData.length > 0 && filteredData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(u => {
               const isItemSelected = isSelected(u._id);
               return (                    
                 <NewsTableRow
@@ -489,29 +424,27 @@ export const NewsTable = (props) => {
                   selected = {isItemSelected}
                 />
               );
-              })} */}
-              {filteredData.length > 0 &&
-                <AutoSizer>
-                  {({height, width}) => (
-                  <List
-                    height={height}
-                    itemCount={filteredData.length}
-                    itemSize={20}
-                    width={width}
-                    itemData={{
-                      filteredData,
-                      allTopics,
-                      handleClick,
-                      handleUpdateTopics
-                    }}
-                  >
-                    {Row}
-                  </List>
-                  )}
-                </AutoSizer>
-              }
+              })}
+              {filteredData.length === 0 && (
+                <TableRow>
+                  <TableCell colSpan={4}>
+                    <RSSSnackbarContent
+                      variant="info"
+                      className={classes.margin}
+                      message="No hi ha dades per a aquesta cerca!"
+                    />
+                  </TableCell>
+                </TableRow>
+              )}
+              {emptyRows > 0 && (
+                <TableRow style={{ height: 49 * emptyRows }}>
+                  <TableCell colSpan={4} />
+                </TableRow>
+              )}
+              </TableBody>
+            </Table>
           </div>
-          {/* {filteredData.length > 0 && (
+          {filteredData.length > 0 && (
             <TablePagination
               component="div"
               count={filteredData.length}
@@ -527,7 +460,7 @@ export const NewsTable = (props) => {
               onChangeRowsPerPage={handleChangeRowsPerPage}
               rowsPerPageOptions={all}
             />
-          )} */}
+          )}
         </Paper>
       )}
     </div>
