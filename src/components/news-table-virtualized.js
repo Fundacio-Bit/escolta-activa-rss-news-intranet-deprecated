@@ -5,10 +5,12 @@ import "react-virtualized/styles.css";
 import _ from "lodash";
 import axios from "axios";
 import Paper from "@material-ui/core/Paper";
-import CircularProgress from "@material-ui/core/CircularProgress";
 import ErrorIcon from "@material-ui/icons/Error";
 import { makeStyles } from "@material-ui/core/styles";
 import  { getNewsWithCategory } from "./utils/getNewsWithCategory.js";
+import { Checkbox, CircularProgress, TableSortLabel, Tooltip } from '@material-ui/core';
+import NewsTableRow from "./news-table-row";
+import NewsTableHead from "./news-table-head";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -20,6 +22,9 @@ const useStyles = makeStyles((theme) => ({
   },
   tableWrapper: {
     overflowX: "auto",
+  },
+  dateTableCell: {
+    width: 90,
   },
   input: {
     display: "none",
@@ -194,14 +199,6 @@ export const NewsTable = (props) => {
     setOrderBy(orderByReq);
   }
 
-  // const handleChangePage = (event, page) => {
-  //   setPage(page);
-  // }
-
-  // const handleChangeRowsPerPage = (event) => {
-  //   setRowsPerPage(event.target.value);
-  // }
-
   const handleDeleteClick = () => {
     axios
       .post("/rss-discarded-news/news-discarded/", selected, {
@@ -320,89 +317,104 @@ export const NewsTable = (props) => {
 
   // // Sorting data
   // filteredData.sort(getSorting(orderBy, order));
-  // const sortList = ( sortBy, sortDirection ) => {
-  //   let newList = _.sortBy(filteredData, [sortBy]);
-  //   if (sortDirection === SortDirection.DESC) {
-  //     newList.reverse();
-  //   }
-  //   return newList;
-  // };
+  const sortList = ( sortBy, sortDirection ) => {
+    let newList = _.sortBy(filteredData, [sortBy]);
+    if (sortDirection === SortDirection.DESC) {
+      newList.reverse();
+    }
+    return newList;
+  };
 
   const sort = ( sortBy, sortDirection ) => {
-    console.log("Hola")
-    // console.log("Sorted list: ", sortedList)
+    console.log("Sorted list: ", sortedList)
     const sortedList = sortList( sortBy, sortDirection );
     setSortBy(sortBy);
     setSortDirection(sortDirection);
     setSortedList(sortedList);
   };
 
+  const headerCheckboxRenderer = () => {
+    return (
+      <div>
+        <Checkbox
+          indeterminate={selected.length > 0 && selected.length < filteredData.length}
+          checked={filteredData.length > 0 && selected.length === filteredData.length}
+          onChange={handleSelectAllClick}
+          inputProps={{ 'aria-label': 'select all news' }}
+        />
+      </div>
+    );
+  }
+
+  const headerDataRenderer = () => {
+    return (
+      <div>
+        <Tooltip
+          title = "Sort"
+          placement = 'bottom-start'
+          enterDelay = { 300 } >
+          <TableSortLabel
+            active = { true }
+            direction = {order}
+            onClick = { () => onRequestSort(orderBy, order) }
+          >
+            <h2>Data</h2>
+          </TableSortLabel>
+        </Tooltip>
+      </div>
+    );
+  }
+
+  const headerNewRenderer = () => {
+    return (
+      <div>
+            <h2>Notícia</h2>
+      </div>
+    );
+  }
+
   // Sorting data
   // filteredData.sort(getSorting(orderBy, order));
   const isSelected = (id) => selected.indexOf(id) !== -1;
 
-  // const Row = ({ index, style, data }) => {
-  //   const {
-  //     filteredData,
-  //     allTopics,
-  //     handleClick,
-  //     handleUpdateTopics
-  //   } = data;
-  //   console.log("Data: ", filteredData[index].title)
-  //   const item = filteredData[index];
-  //   const isItemSelected = isSelected(item._id);
-  //   return (
-  //       <div style={style}>
-  //         <div>{ item.published }</div>
-  //         <div>{ item.id }</div>
-  //         <div>{ item.title }</div>
-  //         {/* <div>{ item.category }</div>
-  //         <div>{ item.source_id }</div>
-  //         <div>{ item.source_name }</div>
-  //         <div>{ item.section }</div>
-  //         <div>{ item.brand }</div>
-  //         <div>{ item.link }</div>
-  //         <div>{ item.summary }</div> */}
-  //       {/* <NewsTableRow
-  //         key={ item._id }
-  //         published={ item.published }
-  //         docId={ item._id }
-  //         title={ item.title }
-  //         topics={ item.hasOwnProperty("topics") && item.topics != ""? item.topics.split(",") : [] }
-  //         category={ item.category }
-  //         allPossibleTopics= { allTopics }
-  //         source_id={ item.source_id }
-  //         source_name={ item.source_name }
-  //         section={ item.section }
-  //         brand={ item.brand }
-  //         link={ item.link }
-  //         summary={ item.summary }
-  //         handleClick = { handleClick }
-  //         handleUpdateTopics = { handleUpdateTopics }
-  //         isUpdating = { false }
-  //         selected = {isItemSelected}
-  //       /> */}
-  //       </div>
-  //   );
-  // }
-  // console.log("Filtered data: ", filteredData);
-  // console.log("Sorted List: ", sortedList)
-  cellRenderer = ({ cellData, columnIndex }) => {
-    const { columns, classes, rowHeight, onRowClick } = props;
+  console.log("Filtered data: ", filteredData);
+
+  const rowRenderer = ({
+    key, // Unique key within array of rows
+    index // Index of row within collection
+  }) => {
     return (
-      <TableCell
-        component="div"
-        className={clsx(classes.tableCell, classes.flexContainer, {
-          [classes.noClick]: onRowClick == null,
-        })}
-        variant="body"
-        style={{ height: rowHeight }}
-        align={(columnIndex != null && columns[columnIndex].numeric) || false ? 'right' : 'left'}
+      <div
+        key={key}
+        className="ReactVirtualized__Table__row"
+        role="row"
+        style={{
+          paddingRight: "12px"
+        }}
       >
-        {cellData}
-      </TableCell>
+        <NewsTableRow
+          key={ filteredData[index]._id }
+          published={ filteredData[index].published }
+          docId={ filteredData[index]._id }
+          title={ filteredData[index].title }
+          topics={ filteredData[index].hasOwnProperty("topics") && filteredData[index].topics != ""? filteredData[index].topics.split(",") : [] }
+          category={ filteredData[index].category }
+          allPossibleTopics= { allTopics }
+          source_id={ filteredData[index].source_id }
+          source_name={ filteredData[index].source_name }
+          section={ filteredData[index].section }
+          brand={ filteredData[index].brand }
+          link={ filteredData[index].link }
+          summary={ filteredData[index].summary }
+          handleClick = { handleClick }
+          handleUpdateTopics = { handleUpdateTopics }
+          isUpdating = { false }
+          selected = {isSelected(filteredData._id)}
+        />
+      </div>
     );
-  };
+}
+
 
   return (
     <div style={{ marginTop: "0.1em" }}>
@@ -429,6 +441,7 @@ export const NewsTable = (props) => {
           { filteredData && filteredData.length > 0 &&
           <AutoSizer style={{height: "50em", fontFamily: "Arial"}}>
             {({ height, width }) => (
+
               <Table
                 width={width}
                 height={height}
@@ -438,11 +451,27 @@ export const NewsTable = (props) => {
                 sortBy={sortBy}
                 sortDirection={sortDirection}
                 rowCount={filteredData.length}
-                cellRenderer={cellRenderer}
-                // rowGetter={({ index }) => filteredData[index]}
+                // cellRenderer={cellRenderer}
+                rowGetter={({ index }) => filteredData[index]}
+                rowRenderer={({ key, index }) => rowRenderer({ key, index })}
               >
-                <Column label="Data" dataKey="published" width={200} />
-                <Column width={600} label="Notícia" dataKey="summary" />
+                <Column
+                  dataKey="checkbox"
+                  headerRenderer={headerCheckboxRenderer}
+                  width={100}
+                />
+                <Column dataKey="published" width={200} headerRenderer={headerDataRenderer}/>
+                <Column width={600} label="Notícia" dataKey="summary" headerRenderer={headerNewRenderer}/>
+                {/* <NewsTableHead
+                  data = {filteredData}
+                  selectedMonth = {props.selectedMonth}
+                  order = { order }
+                  numSelected={selected.length}
+                  orderBy = { orderBy }
+                  onRequestSort = { handleRequestSort }
+                  onSelectAllClick={handleSelectAllClick}
+                  rowCount={filteredData.length}
+                /> */}
               </Table>
             )}
           </AutoSizer>
