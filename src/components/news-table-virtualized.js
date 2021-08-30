@@ -1,27 +1,28 @@
 /* eslint-disable no-prototype-builtins */
 import React, { useState, useEffect } from "react";
-import { Column, Table, SortDirection, AutoSizer } from "react-virtualized";
+import { Column, Table as VTable, SortDirection, AutoSizer } from "react-virtualized";
 import "react-virtualized/styles.css";
 import _ from "lodash";
 import axios from "axios";
-import Paper from "@material-ui/core/Paper";
 import ErrorIcon from "@material-ui/icons/Error";
 import { makeStyles } from "@material-ui/core/styles";
 import  { getNewsWithCategory } from "./utils/getNewsWithCategory.js";
-import { Checkbox, CircularProgress, TableSortLabel, Tooltip } from '@material-ui/core';
+import { Checkbox, CircularProgress, Paper, Table, TableBody, TableRow, TableCell, TableSortLabel, Tooltip } from '@material-ui/core';
+import RSSSnackbarContent from "./rss-snackbar-content";
 import NewsTableRow from "./news-table-row";
 import NewsTableHead from "./news-table-head";
+import {NewsTableToolbar} from "./news-table-toolbar";
 
 const useStyles = makeStyles((theme) => ({
   root: {
     width: "100%",
-    overflowX: "auto",
+    // overflowX: "auto",
   },
   table: {
     minWidth: 700,
   },
   tableWrapper: {
-    overflowX: "auto",
+    overflow: "hidden",
   },
   dateTableCell: {
     width: 90,
@@ -216,6 +217,7 @@ export const NewsTable = (props) => {
 
   const handleClick = (event, id) => {
     const selectedIndex = selected.indexOf(id);
+    console.log("selectedIndex: ", selectedIndex);
     let newSelected = [];
 
     if (selectedIndex === -1) {
@@ -333,46 +335,6 @@ export const NewsTable = (props) => {
     setSortedList(sortedList);
   };
 
-  const headerCheckboxRenderer = () => {
-    return (
-      <div>
-        <Checkbox
-          indeterminate={selected.length > 0 && selected.length < filteredData.length}
-          checked={filteredData.length > 0 && selected.length === filteredData.length}
-          onChange={handleSelectAllClick}
-          inputProps={{ 'aria-label': 'select all news' }}
-        />
-      </div>
-    );
-  }
-
-  const headerDataRenderer = () => {
-    return (
-      <div>
-        <Tooltip
-          title = "Sort"
-          placement = 'bottom-start'
-          enterDelay = { 300 } >
-          <TableSortLabel
-            active = { true }
-            direction = {order}
-            onClick = { () => onRequestSort(orderBy, order) }
-          >
-            <h2>Data</h2>
-          </TableSortLabel>
-        </Tooltip>
-      </div>
-    );
-  }
-
-  const headerNewRenderer = () => {
-    return (
-      <div>
-            <h2>Notícia</h2>
-      </div>
-    );
-  }
-
   // Sorting data
   // filteredData.sort(getSorting(orderBy, order));
   const isSelected = (id) => selected.indexOf(id) !== -1;
@@ -392,29 +354,67 @@ export const NewsTable = (props) => {
           paddingRight: "12px"
         }}
       >
-        <NewsTableRow
-          key={ filteredData[index]._id }
-          published={ filteredData[index].published }
-          docId={ filteredData[index]._id }
-          title={ filteredData[index].title }
-          topics={ filteredData[index].hasOwnProperty("topics") && filteredData[index].topics != ""? filteredData[index].topics.split(",") : [] }
-          category={ filteredData[index].category }
-          allPossibleTopics= { allTopics }
-          source_id={ filteredData[index].source_id }
-          source_name={ filteredData[index].source_name }
-          section={ filteredData[index].section }
-          brand={ filteredData[index].brand }
-          link={ filteredData[index].link }
-          summary={ filteredData[index].summary }
-          handleClick = { handleClick }
-          handleUpdateTopics = { handleUpdateTopics }
-          isUpdating = { false }
-          selected = {isSelected(filteredData._id)}
-        />
-      </div>
+        <Paper className={classes.root}>
+        <div className={classes.tableWrapper}>
+          <Table className={classes.table} aria-labelledby="tableTitle">
+            {filteredData.length > 0 && index == 0 && (
+              <NewsTableHead
+                data = {filteredData}
+                selectedMonth = {props.selectedMonth}
+                order = { order }
+                numSelected={selected.length}
+                orderBy = { orderBy }
+                onRequestSort = { handleRequestSort }
+                onSelectAllClick={handleSelectAllClick}
+                rowCount={filteredData.length}
+              />
+            )}
+            {selected.length > 0 && index == 0 && (
+              <NewsTableToolbar
+              numSelected={selected.length}
+              handleDeleteClick = { handleDeleteClick }
+              />
+            )}
+            <TableBody>
+            {filteredData.length > 0 && (
+                <NewsTableRow
+                  key={ filteredData[index]._id }
+                  published={ filteredData[index].published }
+                  docId={ filteredData[index]._id }
+                  title={ filteredData[index].title }
+                  topics={ filteredData[index].hasOwnProperty("topics") && filteredData[index].topics != ""? filteredData[index].topics.split(",") : [] }
+                  category={ filteredData[index].category }
+                  allPossibleTopics= { allTopics }
+                  source_id={ filteredData[index].source_id }
+                  source_name={ filteredData[index].source_name }
+                  section={ filteredData[index].section }
+                  brand={ filteredData[index].brand }
+                  link={ filteredData[index].link }
+                  summary={ filteredData[index].summary }
+                  handleClick = { handleClick }
+                  handleUpdateTopics = { handleUpdateTopics }
+                  isUpdating = { false }
+                  selected = { isSelected(filteredData[index]._id)}
+                />
+              )}
+              {filteredData.length === 0 && (
+                <TableRow>
+                  <TableCell colSpan={4}>
+                    <RSSSnackbarContent
+                      variant="info"
+                      className={classes.margin}
+                      message="No hi ha dades per a aquesta cerca!"
+                    />
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </div>
+      </Paper>
+    </div>
     );
-}
-
+  }
 
   return (
     <div style={{ marginTop: "0.1em" }}>
@@ -442,7 +442,7 @@ export const NewsTable = (props) => {
           <AutoSizer style={{height: "50em", fontFamily: "Arial"}}>
             {({ height, width }) => (
 
-              <Table
+              <VTable
                 width={width}
                 height={height}
                 headerHeight={20}
@@ -455,24 +455,14 @@ export const NewsTable = (props) => {
                 rowGetter={({ index }) => filteredData[index]}
                 rowRenderer={({ key, index }) => rowRenderer({ key, index })}
               >
-                <Column
+                {/* <Column
                   dataKey="checkbox"
                   headerRenderer={headerCheckboxRenderer}
                   width={100}
                 />
-                <Column dataKey="published" width={200} headerRenderer={headerDataRenderer}/>
-                <Column width={600} label="Notícia" dataKey="summary" headerRenderer={headerNewRenderer}/>
-                {/* <NewsTableHead
-                  data = {filteredData}
-                  selectedMonth = {props.selectedMonth}
-                  order = { order }
-                  numSelected={selected.length}
-                  orderBy = { orderBy }
-                  onRequestSort = { handleRequestSort }
-                  onSelectAllClick={handleSelectAllClick}
-                  rowCount={filteredData.length}
-                /> */}
-              </Table>
+                <Colum  n dataKey="published" width={200} headerRenderer={headerDataRenderer}/>
+                <Column width={600} label="Notícia" dataKey="summary" headerRenderer={headerNewRenderer}/> */}
+              </VTable>
             )}
           </AutoSizer>
         }

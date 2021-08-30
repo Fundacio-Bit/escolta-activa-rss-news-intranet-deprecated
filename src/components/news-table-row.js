@@ -41,7 +41,7 @@ const styles = theme => ({
       width: 90,
     },
     tooltipContainer:{
-      overflow: 'visible'
+      overflow: 'hidden'
     },
     customizedTooltip: {
       fontSize: 14,
