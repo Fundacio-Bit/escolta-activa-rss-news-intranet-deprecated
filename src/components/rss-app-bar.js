@@ -133,16 +133,6 @@ class RSSAppBar extends Component {
               icon={<ArrowDropDownIcon onClick={this.handleReportsClick} />}
               onClick={() => this.setState({ content: <CovidTourism /> })}
             />
-            {/* <Tab
-              label="COVID-TURISME"
-              value="4"
-              onClick={() => this.setState({ content: <CovidTourism /> })}
-            />
-            <Tab
-              label="COMPANYIES AÈRIES"
-              value="5"
-              onClick={() => this.setState({ content: <AirCompanies /> })}
-            /> */}
           </Tabs>
         </AppBar>
         {this.state.content}

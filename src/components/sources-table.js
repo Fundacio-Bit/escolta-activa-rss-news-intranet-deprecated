@@ -9,14 +9,10 @@ import TableCell from "@material-ui/core/TableCell";
 import TableBody from "@material-ui/core/TableBody";
 import TablePagination from "@material-ui/core/TablePagination";
 import SourceRow from "./source-row";
-import ExpansionPanel from "@material-ui/core/ExpansionPanel";
-import ExpansionPanelDetails from "@material-ui/core/ExpansionPanelDetails";
-import ExpansionPanelSummary from "@material-ui/core/ExpansionPanelSummary";
+import { Typography, Paper, Accordion, AccordionDetails, AccordionSummary} from "@material-ui/core";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import ScheduleIcon from "@material-ui/icons/Schedule";
 import Tooltip from "@material-ui/core/Tooltip";
-import Typography from "@material-ui/core/Typography";
-import Paper from "@material-ui/core/Paper";
 
 const styles = (theme) => ({
   root: {
@@ -97,6 +93,7 @@ class SourcesList extends Component {
     this.handleChangePage = this.handleChangePage.bind(this);
     this.handleChangeRowsPerPage = this.handleChangeRowsPerPage.bind(this);
     this.filterResourcesList = this.filterResourcesList.bind(this);
+    this.filterBySearchText = this.filterBySearchText.bind(this);
     this.handleToggleClick = this.handleToggleClick.bind(this);
     this.groupBySource = this.groupBySource.bind(this);
   }
@@ -123,6 +120,7 @@ class SourcesList extends Component {
   }
 
   filterResourcesList(resource) {
+
     if (
       resource.source_id.indexOf(this.props.countrySelectorValue) !== -1 &&
       (this.props.activeSelectorValue === "" ||
@@ -132,6 +130,15 @@ class SourcesList extends Component {
     } else return false;
   }
 
+  filterBySearchText(pressNew) {
+    if (
+      pressNew.hasOwnProperty("source_normalized_name") &&
+      pressNew.source_normalized_name.toLowerCase().indexOf(this.props.searchText.toLowerCase()) !== -1
+    ) {
+      console.log(pressNew.source_normalized_name.toLowerCase() + " == " + this.props.searchText.toLowerCase())
+      return true;
+    } else return false;
+  }
   // TODO: group efficiently using map, filter and reduce functions (remove foreach loops)
   // TODO: Filter by Source_id instead of source_name
   // TODO: check if using a Mongo aggregation in the router we increase the loading speed
@@ -178,7 +185,11 @@ class SourcesList extends Component {
     const { rssSources, rowsPerPage, page } = this.state;
     const paginationOptions = [5, 10];
     // const filteredSources = this.filterResourcesList(rssSources)
-    const filteredSources = rssSources.filter(this.filterResourcesList);
+    let filteredSources = rssSources.filter(this.filterResourcesList);
+    if (this.props.searchText) {
+      filteredSources = filteredSources.filter(this.filterBySearchText);
+    }
+
     const groupedSources = this.groupBySource(
       filteredSources,
       page * rowsPerPage,
@@ -212,15 +223,15 @@ class SourcesList extends Component {
             nextIconButtonProps={{
               "aria-label": "Next Page",
             }}
-            onChangePage={this.handleChangePage}
-            onChangeRowsPerPage={this.handleChangeRowsPerPage}
+            onPageChange={this.handleChangePage}
+            onRowsPerPageChange={this.handleChangeRowsPerPage}
           />
 
           {groupedSources.feedsBySource.map((source) => {
             if (source.feeds) {
               return (
-                <ExpansionPanel key={source.key}>
-                  <ExpansionPanelSummary
+                <Accordion key={source.key}>
+                  <AccordionSummary
                     className={classes.summary}
                     expandIcon={<ExpandMoreIcon />}
                   >
@@ -234,8 +245,8 @@ class SourcesList extends Component {
                         {source.feeds.length} categories
                       </Typography>
                     </div>
-                  </ExpansionPanelSummary>
-                  <ExpansionPanelDetails className={classes.details}>
+                  </AccordionSummary>
+                  <AccordionDetails className={classes.details}>
                     <div className={classes.tableWrapper}>
                       <div className={classes.title}>
                         <Table
@@ -282,8 +293,8 @@ class SourcesList extends Component {
                         </Table>
                       </div>
                     </div>
-                  </ExpansionPanelDetails>
-                </ExpansionPanel>
+                  </AccordionDetails>
+                </Accordion>
               );
             } else {
               return <div></div>;

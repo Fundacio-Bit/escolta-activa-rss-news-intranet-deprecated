@@ -63,9 +63,7 @@ const styles = theme => ({
 class SearchBar extends Component {
   constructor(props) {
     super(props);
-    // this.state = {
-    //   countryISOCode: '',
-    // };
+
     // This binding is necessary to make `this` work in the callback
     this.handleCountrySelectorChange = this.handleCountrySelectorChange.bind(this);
     this.handleActiveSelectorChange = this.handleActiveSelectorChange.bind(this);
@@ -83,7 +81,6 @@ class SearchBar extends Component {
   handleSearchTextChange(event){
     this.props.onSearchTextChange(event.target.value);  
   }
-
 
   render() {
     const { classes } = this.props;
@@ -151,7 +148,7 @@ class SearchBar extends Component {
               <Paper className={classes.search} elevation={1}>
                 <InputBase
                   style={{width:"100%"}}
-                  value={this.props.searchSource}
+                  value={this.props.searchText}
                   onChange={this.handleSearchTextChange}
                   // Prevent form submission a data reload when the Enter Key is pressed
                   onKeyPress={(event) => {
