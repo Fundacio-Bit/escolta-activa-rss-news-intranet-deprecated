@@ -304,8 +304,8 @@ export const DiscardedNewsTable = (props) => {
             nextIconButtonProps={{
               'aria-label': 'Next Page',
             }}
-            onChangePage={ handleChangePage }
-            onChangeRowsPerPage={ handleChangeRowsPerPage }
+            onPageChange={ handleChangePage }
+            onRowsPerPageChange={ handleChangeRowsPerPage }
             rowsPerPageOptions={ all }
           />
         )}

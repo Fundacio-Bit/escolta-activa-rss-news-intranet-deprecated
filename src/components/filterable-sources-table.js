@@ -23,12 +23,14 @@ class FilterableSourcesTable extends Component {
     super(props);
     this.state = {
       countryISOCode: '',
-      activeFilter: '' 
+      activeFilter: '',
+      searchText: ''
     };
     
     // This binding is necessary to make `this` work in the callback
     this.handleCountrySelectorChange = this.handleCountrySelectorChange.bind(this);
-    this.handleActiveSelectorChange = this.handleActiveSelectorChange.bind(this);     
+    this.handleActiveSelectorChange = this.handleActiveSelectorChange.bind(this);   
+    this.handleSearchTextChange = this.handleSearchTextChange.bind(this);  
   }
 
   handleCountrySelectorChange(countrySelectorChoice){
@@ -38,6 +40,10 @@ class FilterableSourcesTable extends Component {
   handleActiveSelectorChange(activeFilterSelectorChoice){
     this.setState({ activeFilter: activeFilterSelectorChoice });
   };
+
+  handleSearchTextChange(enteredSearchText){
+    this.setState({ searchText: enteredSearchText });
+  }
  
   render () {
     const { classes } = this.props;
@@ -50,8 +56,11 @@ class FilterableSourcesTable extends Component {
                 countryISOCode={this.state.countryISOCode}
                 onCountrySelectorChange={this.handleCountrySelectorChange}
                 activeFilter={this.state.activeFilter}
+                searchText={this.state.searchText}
+                onSearchTextChange={this.handleSearchTextChange}
                 onActiveSelectorChange={this.handleActiveSelectorChange}/>
                 <SourcesTable
+                searchText={this.state.searchText}
                 countrySelectorValue = {this.state.countryISOCode}
                 activeSelectorValue = {this.state.activeFilter}/>
             </Paper>

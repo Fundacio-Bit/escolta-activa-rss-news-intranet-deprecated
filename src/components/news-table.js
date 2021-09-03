@@ -456,8 +456,8 @@ export const NewsTable = (props) => {
               nextIconButtonProps={{
                 "aria-label": "Next Page",
               }}
-              onChangePage={handleChangePage}
-              onChangeRowsPerPage={handleChangeRowsPerPage}
+              onPageChange={handleChangePage}
+              onRowsPerPageChange={handleChangeRowsPerPage}
               rowsPerPageOptions={all}
             />
           )}
