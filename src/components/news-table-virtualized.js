@@ -10,19 +10,19 @@ import  { getNewsWithCategory } from "./utils/getNewsWithCategory.js";
 import { Checkbox, CircularProgress, Paper, Table, TableBody, TableRow, TableCell, TableSortLabel, Tooltip } from '@material-ui/core';
 import RSSSnackbarContent from "./rss-snackbar-content";
 import NewsTableRow from "./news-table-row";
-import NewsTableHead from "./news-table-head";
-import {NewsTableToolbar} from "./news-table-toolbar";
+import { CSVLink } from "react-csv";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faFileCsv } from "@fortawesome/free-solid-svg-icons";
 
 const useStyles = makeStyles((theme) => ({
   root: {
     width: "100%",
-    // overflowX: "auto",
   },
   table: {
     minWidth: 700,
   },
   tableWrapper: {
-    overflow: "hidden",
+    overflow: "none",
   },
   dateTableCell: {
     width: 90,
@@ -40,27 +40,12 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-var desc = (a, b, orderBy) => {
-  if (b[orderBy] < a[orderBy]) {
-    return -1;
-  }
-  if (b[orderBy] > a[orderBy]) {
-    return 1;
-  }
-  return 0;
-};
-
-var getSorting = (orderBy, order) => {
-  return order === "desc"
-    ? (a, b) => desc(a, b, orderBy)
-    : (a, b) => -desc(a, b, orderBy);
-};
-
 export const NewsTable = (props) => {
   const classes = useStyles();
 
-  const [order, setOrder] = useState("desc");
-  const [orderBy, setOrderBy] = useState("published");
+  const [sortDirection, setSortDirection] = useState(SortDirection.DESC);
+  // const [sortDirection, setSortDirection] = useState("desc");
+  const [sortBy, setSortBy] = useState("published");
   const [data, setData] = useState([]);
   const [allTopics, setAllTopics] = useState([]);
 
@@ -70,10 +55,7 @@ export const NewsTable = (props) => {
 
   const [selected, setSelected] = useState([]);
   
-  const [sortBy, setSortBy] = useState("id");
-  const [sortDirection, setSortDirection] = useState(SortDirection.ASC);
   const [sortedList, setSortedList] = useState([]);
-  // sortList( sortBy, sortDirection )
 
   useEffect(() => {
     let unmounted = false;
@@ -189,15 +171,22 @@ export const NewsTable = (props) => {
       });
   }
 
-  const handleRequestSort = (orderByReq, order) => {
-    let newOrder = "desc";
+  const handleRequestSort = (sortByReq, sortDirection) => {
+    let newOrder = SortDirection.DESC;
 
-    if (orderBy === orderByReq && order === "desc") {
-      newOrder = "asc";
+    if (sortBy === sortByReq && sortDirection === SortDirection.DESC) {
+      newOrder = SortDirection.ASC;
     }
-
-    setOrder(newOrder);
-    setOrderBy(orderByReq);
+    setSortDirection(newOrder);
+    setSortBy(sortByReq);
+    const sortedList = filteredData
+    .sortBy(item => item[sortByReq])
+    .update(
+      list =>
+        sortDirection === SortDirection.DESC ? list.reverse() : list
+    );
+    setSortedList(sortedList);
+    console.log("Sorted list: ", sortedList)
   }
 
   const handleDeleteClick = () => {
@@ -290,14 +279,9 @@ export const NewsTable = (props) => {
   }
 
   // Filtering data
-  let filteredData = getNewsWithCategory(data.slice());
-  let tableData = filteredData.map((doc) => {
-    const date = new Date(doc.published).toLocaleString();
-    doc.published = date; 
-    return doc;
-  })
-  console.log("Table data: ", tableData)
-
+  // ==============
+  let filteredData = getNewsWithCategory(data);
+  
   if (props.isChecked) {
     filteredData = filteredData.filter(filterByChecked);
   }
@@ -317,29 +301,31 @@ export const NewsTable = (props) => {
     filteredData = filteredData.filter(filterByTopic);
   }
 
-  // // Sorting data
-  // filteredData.sort(getSorting(orderBy, order));
-  const sortList = ( sortBy, sortDirection ) => {
-    let newList = _.sortBy(filteredData, [sortBy]);
-    if (sortDirection === SortDirection.DESC) {
-      newList.reverse();
-    }
-    return newList;
-  };
-
-  const sort = ( sortBy, sortDirection ) => {
-    console.log("Sorted list: ", sortedList)
-    const sortedList = sortList( sortBy, sortDirection );
-    setSortBy(sortBy);
-    setSortDirection(sortDirection);
-    setSortedList(sortedList);
-  };
-
   // Sorting data
-  // filteredData.sort(getSorting(orderBy, order));
+  // ============
+  const sort = ({ sortBy, sortDirection }) => {
+    const sortedList = filteredData
+      .sortBy(item => item[sortBy])
+      .update(
+        list =>
+          sortDirection === SortDirection.DESC ? list.reverse() : list
+      );
+  
+      setSortBy(sortBy);
+      setSortDirection(sortDirection);
+      setSortedList(sortedList);
+      console.log("Sorted list: ", sortedList)
+  }
+  // filteredData.sort(getSorting(sortBy, sortDirection));
+
+
   const isSelected = (id) => selected.indexOf(id) !== -1;
 
-  console.log("Filtered data: ", filteredData);
+  let formattedFilteredNews = filteredData.map((item) => {
+    item.title = item.title.replace('\n', '').replace('"', '')
+    return item
+  })
+
 
   const rowRenderer = ({
     key, // Unique key within array of rows
@@ -348,7 +334,7 @@ export const NewsTable = (props) => {
     return (
       <div
         key={key}
-        className="ReactVirtualized__Table__row"
+        // className="ReactVirtualized__Table__row"
         role="row"
         style={{
           paddingRight: "12px"
@@ -357,24 +343,6 @@ export const NewsTable = (props) => {
         <Paper className={classes.root}>
         <div className={classes.tableWrapper}>
           <Table className={classes.table} aria-labelledby="tableTitle">
-            {filteredData.length > 0 && index == 0 && (
-              <NewsTableHead
-                data = {filteredData}
-                selectedMonth = {props.selectedMonth}
-                order = { order }
-                numSelected={selected.length}
-                orderBy = { orderBy }
-                onRequestSort = { handleRequestSort }
-                onSelectAllClick={handleSelectAllClick}
-                rowCount={filteredData.length}
-              />
-            )}
-            {selected.length > 0 && index == 0 && (
-              <NewsTableToolbar
-              numSelected={selected.length}
-              handleDeleteClick = { handleDeleteClick }
-              />
-            )}
             <TableBody>
             {filteredData.length > 0 && (
                 <NewsTableRow
@@ -416,6 +384,105 @@ export const NewsTable = (props) => {
     );
   }
 
+  const headerCheckboxRenderer = ({
+    key, // Unique key within array of rows
+    index // Index of row within collection
+  }) => {
+    return (
+      <div
+        key={key}
+        className="ReactVirtualized__Table__headerColumnn"
+        role="row"
+        style={{
+          paddingRight: "12px"
+        }}
+      >
+        <Checkbox
+          indeterminate={selected.length > 0 && selected.length < filteredData.length}
+          checked={filteredData.length > 0 && selected.length === filteredData.length}
+          onChange={handleSelectAllClick}
+          inputProps={{ 'aria-label': 'select all news' }}
+        />
+      </div>
+    );
+  }
+
+  const headerDataRenderer = ({
+    dataKey,
+    sortBy,
+    sortDirection
+  }) => {
+    return (
+      <div
+        key={dataKey}
+        className="ReactVirtualized__Table__headerColumnn"
+        role="row"
+      >
+        <Tooltip
+          title = "Sort"
+          placement = 'bottom-start'
+          enterDelay = { 300 } >
+          <TableSortLabel
+            active = { true }
+            direction = {sortDirection.toString().toLowerCase()}
+            onClick = { () => handleRequestSort(sortBy, sortDirection) }
+          >
+            Data
+          </TableSortLabel>
+        </Tooltip>
+      </div>
+    );
+  }
+
+  const headerNewRenderer = ({
+    key, // Unique key within array of rows
+    index // Index of row within collection
+  }) => {
+    return (
+      <div
+        key={key}
+        className="ReactVirtualized__Table__headerColumnn"
+        role="row"
+        style={{
+          paddingRight: "12px"
+        }}
+      >
+        Notícia
+      </div>
+    );
+  }
+
+  const headerCsvButtonRenderer = ({
+    dataKey,
+    columnData
+  }) => {
+    console.log(columnData.data);
+    const csvHeaders = [
+      { label: "Data", key: "published" },
+      { label: "Títol", key: "title" },
+      { label: "Link", key: "link" },
+      { label: "Temas", key: "topics" }
+    ];
+    
+    
+    return (
+      <div
+        key={dataKey}
+        className="ReactVirtualized__Table__headerColumnn"
+        role="row"
+        style={{
+          paddingRight: "12px"
+        }}
+      >
+        <CSVLink data={columnData.data} headers = {csvHeaders} filename={"rss-news-" + props.selectedMonth + ".csv"}>
+          <FontAwesomeIcon icon={faFileCsv} size="3x" />
+        </CSVLink>
+      </div>
+    );
+  }
+
+  console.log("Filtered data: ", filteredData);
+
   return (
     <div style={{ marginTop: "0.1em" }}>
       {errorStatus.error && (
@@ -441,27 +508,29 @@ export const NewsTable = (props) => {
           { filteredData && filteredData.length > 0 &&
           <AutoSizer style={{height: "50em", fontFamily: "Arial"}}>
             {({ height, width }) => (
-
               <VTable
                 width={width}
                 height={height}
-                headerHeight={20}
-                rowHeight={30}
+                headerHeight={40}
+                rowHeight={200}
                 sort={sort}
                 sortBy={sortBy}
                 sortDirection={sortDirection}
                 rowCount={filteredData.length}
-                // cellRenderer={cellRenderer}
                 rowGetter={({ index }) => filteredData[index]}
                 rowRenderer={({ key, index }) => rowRenderer({ key, index })}
               >
-                {/* <Column
-                  dataKey="checkbox"
-                  headerRenderer={headerCheckboxRenderer}
-                  width={100}
-                />
-                <Colum  n dataKey="published" width={200} headerRenderer={headerDataRenderer}/>
-                <Column width={600} label="Notícia" dataKey="summary" headerRenderer={headerNewRenderer}/> */}
+                <Column dataKey="checkbox" headerRenderer={headerCheckboxRenderer} width={100}/>
+                <Column dataKey="published" headerRenderer={headerDataRenderer} sortBy={sortBy} sortDirection={sortDirection} width={200}/>
+                <Column dataKey="summary" headerRenderer={headerNewRenderer} width={500}/>
+                <Column dataKey="csv" headerRenderer={headerCsvButtonRenderer} columnData={Object.create({data: formattedFilteredNews})} width={100}/>
+                {/* {selected.length > 0 && (
+                  <NewsTableToolbar
+                  numSelected={selected.length}
+                  handleDeleteClick = { handleDeleteClick }
+                  />
+                )} */}
+
               </VTable>
             )}
           </AutoSizer>

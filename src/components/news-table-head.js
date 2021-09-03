@@ -56,15 +56,15 @@ class NewsTableHead extends React.Component {
             className = {classes.dateTableCell}
             key = "published"
             align = "right"
-            sortDirection = {this.props.order} >
+            sortDirection = {this.props.sortDirection} >
             <Tooltip
               title = "Sort"
               placement = 'bottom-start'
               enterDelay = { 300 } >
               <TableSortLabel
                 active = { true }
-                direction = {this.props.order}
-                onClick = { () => onRequestSort(this.props.orderBy, this.props.order) }
+                direction = {this.props.sortDirection}
+                onClick = { () => onRequestSort(this.props.sortBy, this.props.sortDirection) }
               >
                 <h2>Data</h2>
               </TableSortLabel>
@@ -72,7 +72,9 @@ class NewsTableHead extends React.Component {
           </TableCell>
           <TableCell><h2>Notícia</h2></TableCell>
           <TableCell>
-            <CSVLink data={formattedFilteredNews} headers = {csvHeaders} filename={"rss-news-" + this.props.selectedMonth + ".csv"}><FontAwesomeIcon icon={faFileCsv} size="3x" /></CSVLink>
+            <CSVLink data={formattedFilteredNews} headers = {csvHeaders} filename={"rss-news-" + this.props.selectedMonth + ".csv"}>
+              <FontAwesomeIcon icon={faFileCsv} size="3x" />
+            </CSVLink>
           </TableCell>
         </TableRow>
       </TableHead>

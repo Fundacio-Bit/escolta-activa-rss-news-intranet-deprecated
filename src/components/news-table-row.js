@@ -81,7 +81,7 @@ const styles = theme => ({
       // marginTop: theme.spacing(y),
       left: 0,
       right: 0,
-    }
+    },
 });  
 
 function inputComponent({ inputRef, ...props }) {
