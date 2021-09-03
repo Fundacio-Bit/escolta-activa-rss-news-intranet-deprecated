@@ -111,7 +111,7 @@ class NewsSearchAppBar extends Component {
               <Grid item xs={2}>
                 <div className={classes.title}>
                   <Typography variant="h6" id="tableTitle">
-                    Noticias
+                    Notícies
                   </Typography>
                 </div>
                 </Grid>
