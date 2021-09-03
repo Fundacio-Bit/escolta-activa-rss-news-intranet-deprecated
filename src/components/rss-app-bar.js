@@ -26,9 +26,6 @@ const styles = {
 };
 
 class RSSAppBar extends Component {
-  // state = {
-  //   value: 0,
-  // };
 
   constructor(props) {
     super(props);
@@ -36,11 +33,14 @@ class RSSAppBar extends Component {
       value: 0,
       content: <News />,
       anchorEl: null,
+      anchorReports: null,
     };
     // This binding is necessary to make `this` work in the callback
     this.handleChange = this.handleChange.bind(this);
     this.handleClick = this.handleClick.bind(this);
     this.handleClose = this.handleClose.bind(this);
+    this.handleReportsClick = this.handleReportsClick.bind(this);
+    this.handleReportsClose = this.handleReportsClose.bind(this);
     this.handleMenuItemClick = this.handleMenuItemClick.bind(this);
   }
 
@@ -61,6 +61,19 @@ class RSSAppBar extends Component {
     });
   }
 
+  handleReportsClick(event) {
+    event.stopPropagation();
+    this.setState({
+      anchorReports: event.currentTarget,
+    });
+  }
+
+  handleReportsClose() {
+    this.setState({
+      anchorReports: null,
+    });
+  }
+
   handleMenuItemClick(menuItem) {
     this.handleClose();
     var content = null;
@@ -68,6 +81,10 @@ class RSSAppBar extends Component {
       content = <News />;
     } else if (menuItem === 3) {
       content = <DiscardedNews />;
+    } else if (menuItem === 4) {
+      content = <CovidTourism />;
+    } else if (menuItem === 5) {
+      content = <AirCompanies />;
     }
     this.setState({
       // label: menuItem,
@@ -80,6 +97,7 @@ class RSSAppBar extends Component {
     const { classes } = this.props;
     const { value } = this.state;
     const open = Boolean(this.state.anchorEl);
+    const openReports = Boolean(this.state.anchorReports);
 
     return (
       <div className={classes.root}>
@@ -109,6 +127,13 @@ class RSSAppBar extends Component {
               onClick={() => this.setState({ content: <Topics /> })}
             />
             <Tab
+              label="INFORMES"
+              classes={{ wrapper: classes.Tab }}
+              value="4"
+              icon={<ArrowDropDownIcon onClick={this.handleReportsClick} />}
+              onClick={() => this.setState({ content: <CovidTourism /> })}
+            />
+            {/* <Tab
               label="COVID-TURISME"
               value="4"
               onClick={() => this.setState({ content: <CovidTourism /> })}
@@ -117,7 +142,7 @@ class RSSAppBar extends Component {
               label="COMPANYIES AÈRIES"
               value="5"
               onClick={() => this.setState({ content: <AirCompanies /> })}
-            />
+            /> */}
           </Tabs>
         </AppBar>
         {this.state.content}
@@ -139,6 +164,26 @@ class RSSAppBar extends Component {
           </MenuItem>
           <MenuItem onClick={() => this.handleMenuItemClick(3)}>
             Descartades
+          </MenuItem>
+        </Popover>
+        <Popover
+          open={openReports}
+          anchorEl={this.state.anchorReports}
+          onClose={this.handleReportsClose}
+          anchorOrigin={{
+            vertical: "bottom",
+            horizontal: "center",
+          }}
+          transformOrigin={{
+            vertical: "top",
+            horizontal: "center",
+          }}
+        >
+          <MenuItem onClick={() => this.handleMenuItemClick(4)}>
+            COVID-TURISME
+          </MenuItem>
+          <MenuItem onClick={() => this.handleMenuItemClick(5)}>
+            COMPANYIES AÈRIES
           </MenuItem>
         </Popover>
       </div>
