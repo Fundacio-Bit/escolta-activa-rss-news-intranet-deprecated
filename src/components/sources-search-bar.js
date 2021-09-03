@@ -1,16 +1,9 @@
 import React, { Component } from 'react';
-import FormControl from '@material-ui/core/FormControl';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
-import Input from '@material-ui/core/Input';
-import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
-import Select from '@material-ui/core/Select';
-import { fade } from '@material-ui/core/styles/colorManipulator';
-import AppBar from '@material-ui/core/AppBar';
-import Toolbar from '@material-ui/core/Toolbar';
-import Typography from '@material-ui/core/Typography';
 import SearchIcon from '@material-ui/icons/Search';
+import { FormControl, AppBar, Toolbar, Select, MenuItem, InputLabel, IconButton, Typography, Paper, InputBase } 
+  from '@material-ui/core';
 
 
 const styles = theme => ({
@@ -37,27 +30,14 @@ const styles = theme => ({
   },
   // Search
   search: {
-    position: 'relative',
-    borderRadius: theme.shape.borderRadius,
-    backgroundColor: fade(theme.palette.common.white, 0.15),
-    '&:hover': {
-      backgroundColor: fade(theme.palette.common.white, 0.25),
-    },
-    marginLeft: 0,
-    width: '100%',
-    [theme.breakpoints.up('sm')]: {
-      // marginLeft: theme.spacing(y),
-      width: 'auto',
-    },
-  },
-  searchIcon: {
-    // width: theme.spacing(y) * 9,
-    height: '100%',
-    position: 'absolute',
-    pointerEvents: 'none',
+    marginLeft: 10,
     display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
+    height: 50,
+    marginTop:7
+  },
+  iconButton: {
+    marginTop: 8,
+    padding: 10,
   },
   inputRoot: {
     color: 'inherit',
@@ -89,6 +69,7 @@ class SearchBar extends Component {
     // This binding is necessary to make `this` work in the callback
     this.handleCountrySelectorChange = this.handleCountrySelectorChange.bind(this);
     this.handleActiveSelectorChange = this.handleActiveSelectorChange.bind(this);
+    this.handleSearchTextChange = this.handleSearchTextChange.bind(this);
   }
 
   handleCountrySelectorChange(event){
@@ -99,6 +80,11 @@ class SearchBar extends Component {
     this.props.onActiveSelectorChange(event.target.value);  
   };
 
+  handleSearchTextChange(event){
+    this.props.onSearchTextChange(event.target.value);  
+  }
+
+
   render() {
     const { classes } = this.props;
 
@@ -107,7 +93,7 @@ class SearchBar extends Component {
         <AppBar position="static" color="inherit">
           <Toolbar>
             <div className={classes.title}>
-              <Typography variant="title" id="tableTitle">
+              <Typography variant="h6" id="tableTitle">
                 Fonts
               </Typography>
             </div>
@@ -151,7 +137,7 @@ class SearchBar extends Component {
               </form>
             </div>
             <div className={classes.search}>
-              <div className={classes.searchIcon}>
+              {/* <div className={classes.searchIcon}>
                 <SearchIcon />
               </div>
               <Input
@@ -160,7 +146,27 @@ class SearchBar extends Component {
                 classes={{
                   root: classes.inputRoot,
                   input: classes.inputInput,
-                }}/>
+                }}/> */}
+
+              <Paper className={classes.search} elevation={1}>
+                <InputBase
+                  style={{width:"100%"}}
+                  value={this.props.searchSource}
+                  onChange={this.handleSearchTextChange}
+                  // Prevent form submission a data reload when the Enter Key is pressed
+                  onKeyPress={(event) => {
+                    if (event.key === 'Enter') {
+                      event.preventDefault();
+                    }
+                  }}
+                  placeholder="Cerca…"
+                  className={classes.input}
+                />
+                <IconButton className={classes.iconButton} aria-label="Search">
+                  <SearchIcon />
+                </IconButton>
+              </Paper>
+
             </div>
           </Toolbar>
         </AppBar>
