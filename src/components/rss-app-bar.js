@@ -168,10 +168,10 @@ class RSSAppBar extends Component {
         </Popover>
         <Popover
           open={openReports}
-          anchorReports={this.state.anchorReports}
+          anchorEl={this.state.anchorReports}
           onClose={this.handleReportsClose}
           anchorOrigin={{
-            vertical: "top",
+            vertical: "bottom",
             horizontal: "center",
           }}
           transformOrigin={{
