@@ -1,14 +1,7 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import AppBar from "@material-ui/core/AppBar";
-import Toolbar from "@material-ui/core/Toolbar";
-import Typography from "@material-ui/core/Typography";
-import InputBase from "@material-ui/core/InputBase";
-import Paper from "@material-ui/core/Paper";
+import { AppBar, Toolbar, Typography, TextField, MenuItem } from "@material-ui/core";
 import { withStyles } from "@material-ui/core/styles";
-import SearchIcon from "@material-ui/icons/Search";
-import IconButton from "@material-ui/core/IconButton";
-import TextField from "@material-ui/core/TextField";
 
 const styles = (theme) => ({
   root: {
@@ -64,10 +57,15 @@ class TopicsSearchAppBar extends Component {
     super(props);
 
     this.handleMonthChange = this.handleMonthChange.bind(this);
+    this.handleBrandChange = this.handleBrandChange.bind(this);
   }
 
   handleMonthChange(event) {
     this.props.onSelectMonth(event.target.value);
+  }
+
+  handleBrandChange(event) {
+    this.props.onBrandSelectChange(event.target.value);
   }
 
   render() {
@@ -94,6 +92,26 @@ class TopicsSearchAppBar extends Component {
                   }}
                   onChange={this.handleMonthChange}
                 />
+
+                <TextField
+                  select
+                  className={classes.searchSelect}
+                  value={this.props.selectedBrand}
+                  onChange={this.handleBrandChange}
+                  variant="filled"
+                  InputProps={{
+                    disableUnderline: true,
+                  }}
+                  InputLabelProps={{
+                    margin: "dense"
+                  }}
+                >        
+                  <MenuItem value={"Tots"}><em>Tots</em></MenuItem>
+                  <MenuItem value={"mallorca"}>Mallorca</MenuItem>
+                  <MenuItem value={"menorca"}>Menorca</MenuItem>
+                  <MenuItem value={"ibiza"}>Eivissa</MenuItem>
+                  <MenuItem value={"formentera"}>Formentera</MenuItem>
+                </TextField>
               </form>
             </div>
           </Toolbar>
