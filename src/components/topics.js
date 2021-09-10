@@ -162,12 +162,17 @@ export const Topics = (props) => {
   const [loading, setLoading] = useState(true);
   const [errorStatus, setErrorStatus] = useState({ error: false, message: "" });
   const [selectedMonth, setSelectedMonth] = useState(year_month_str);
+  const [selectedBrand, setSelectedBrand] = useState("Tots");
   const [selectedTopic, setSelectedTopic] = useState("all");
 
   const classes = useStyles();
 
   const handleTopicClick = (topicName) => {
     setSelectedTopic(topicName);
+  };
+  
+  const handleBrandSelectChange = (brand) => {
+    setSelectedBrand(brand);
   };
 
   function renderTopic(props) {
@@ -202,7 +207,20 @@ export const Topics = (props) => {
     } else return false;
   };
 
+  const filterByBrand = (pressNew) => {
+    if (
+      pressNew.hasOwnProperty("brand") &&
+      pressNew.brand
+        .toLowerCase()
+        .includes(selectedBrand.toLowerCase())
+    ) {
+      return true;
+    } else return false;
+  };
+
   let filteredData = selectedTopic == "all" ? data : data.filter(filterByTopic);
+  filteredData = selectedBrand == "Tots" ? data : data.filter(filterByBrand);
+  console.log("Filtered Data: ", filteredData)
 
   // Get the news related to a topic.
   useEffect(() => {
@@ -255,10 +273,11 @@ export const Topics = (props) => {
 
     // Cleanup function. useEffect uses the cleanup function to execute operations useful on component unmount.
     return () => (unmounted = true);
-  }, [selectedMonth]);
+  }, [selectedMonth, selectedBrand]);
 
   // get figures for the overview panel
-  const overviewFigures = {
+  // currentOption === 'all' ? assets : assets.filter(asset => asset.type === currentOption)
+  const overviewFigures = selectedBrand === 'Tots' ? {
     totalNews: data.length,
     spanishNews: data.filter(
       (entry) =>
@@ -273,6 +292,21 @@ export const Topics = (props) => {
     swedishNews: data.filter((entry) => entry.source_id.includes("SE")).length,
     swissNews: data.filter((entry) => entry.source_id.includes("SZ")).length,
     // topicsCount: data.filter((entry) => entry.source_id.includes("ES")).length,
+  }:
+  {
+      totalNews: data.filter((entry) => entry.brand === selectedBrand ).length,
+      spanishNews: data.filter(
+        (entry) =>
+        entry.brand === selectedBrand && entry.source_id.includes("ES") | entry.source_id.includes("AIR")
+      ).length,
+      britishNews: data.filter((entry) =>  entry.brand === selectedBrand && entry.source_id.includes("UK")).length,
+      germanNews: data.filter((entry) =>  entry.brand === selectedBrand && entry.source_id.includes("DE")).length,
+      italianNews: data.filter((entry) => entry.brand === selectedBrand && entry.source_id.includes("IT")).length,
+      frenchNews: data.filter((entry) => entry.brand === selectedBrand && entry.source_id.includes("FR")).length,
+      austrianNews: data.filter((entry) => entry.brand === selectedBrand && entry.source_id.includes("AT")).length,
+      dutchNews: data.filter((entry) => entry.brand === selectedBrand && entry.source_id.includes("NL")).length,
+      swedishNews: data.filter((entry) => entry.brand === selectedBrand && entry.source_id.includes("SE")).length,
+      swissNews: data.filter((entry) => entry.brand === selectedBrand && entry.source_id.includes("SZ")).length,
   };
 
   return (
@@ -282,7 +316,9 @@ export const Topics = (props) => {
           <Paper className={classes.paper}>
             <TopicsSearchAppBar
               selectedMonth={selectedMonth}
+              selectedBrand={selectedBrand}
               onSelectMonth={setSelectedMonth}
+              onBrandSelectChange={handleBrandSelectChange}
             />
           </Paper>
         </Grid>
