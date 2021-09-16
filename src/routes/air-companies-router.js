@@ -4,7 +4,7 @@ var bodyParser = require("body-parser");
 const path = require("path");
 const fs = require("fs");
 router.use(bodyParser.json()); // to support JSON-encoded bodies
-console.log(process.env["ESCOLTA_ACTIVA_LOCAL_PATH"]);
+console.log("process.env[ESCOLTA_ACTIVA_LOCAL_PATH]", process.env["ESCOLTA_ACTIVA_LOCAL_PATH"]);
 
 var basePath =
   "ESCOLTA_ACTIVA_LOCAL_PATH" in process.env
@@ -13,13 +13,11 @@ var basePath =
 
 var foldersBasePath =
   "ESCOLTA_ACTIVA_LOCAL_PATH" in process.env
-    ? process.env["ESCOLTA_ACTIVA_LOCAL_PATH"] +
-      "/files/output/rss_news/air_companies"
+    ? process.env["ESCOLTA_ACTIVA_LOCAL_PATH"] + "/files/output/rss_news/sector_aeri"
     : "/data-mongo/files/output/rss_news/sector_aeri";
 
 // get all available folders
 router.get("/folders", (req, res) => {
-  console.log("foldersBasePath: " + foldersBasePath);
   //joining path of directory
   // const directoryPath = path.join(__dirname, "Documents");
   //passsing directoryPath and callback function
