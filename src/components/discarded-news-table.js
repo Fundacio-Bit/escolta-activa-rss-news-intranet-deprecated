@@ -118,25 +118,55 @@ export const DiscardedNewsTable = (props) => {
       }
 
       try {
-        axios.get(`/rss-discarded-news/entries/yearmonth/${props.selectedMonth}`).then((results) => { 
-          if (results.data.results.length > 0) { 
-            // OK
-            setTimeout(() => {
-              if (!unmounted) {
-                setErrorStatus({error: false, message: ''});
-                setLoading(false);
-                setData(results.data.results);
-              }
-            }, 850);
-          }
-          else {
-            // No data returned
-            if (!unmounted) {
-              setData([])
-              setLoading(false);
+        axios.get(`/rss-discarded-news/entries/yearmonth/${props.selectedMonth}`).then((response) => { 
+          return axios.get(`/rss-news/exclusion-entries/yearmonth/${props.selectedMonth}`).then((results) => { 
+            if (response.data.results.length > 0) { 
+              // OK
+              setTimeout(() => {
+                if (!unmounted) {
+                  setErrorStatus({error: false, message: ''});
+                  setLoading(false);
+                  console.log("response.data.results: ", response.data.results)
+                }
+              }, 850);
             }
-          }
-        }).catch(error => {
+            else {
+              // No data returned
+              if (!unmounted) {
+                setData([])
+                setLoading(false);
+              }
+            }
+            if (results.data.results.length > 0) { 
+              // OK
+              setTimeout(() => {
+                if (!unmounted) {
+                  setErrorStatus({error: false, message: ''});
+                  setLoading(false);
+                  // console.log("results.data.results: ", results.data.results)
+                  var exclusion_results = results.data.results.map(function(el) {
+                    var o = Object.assign({}, el);
+                    o.hasExclusionTerm = true;
+                    return o;
+                  })
+                  console.log("exclusion_results: ", exclusion_results)
+                  const total_results = response.data.results.concat(exclusion_results);
+
+                  console.log("total.results: ", total_results)
+                  setData(total_results);
+                }
+              }, 850);
+            }
+            else {
+              // No data returned
+              if (!unmounted) {
+                setData(response.data.results)
+                setLoading(false);
+              }
+            }
+          })
+        })
+        .catch(error => {
           console.log(getErrorMessage(error));
           setErrorStatus( { error: true, message: baseErrorMessage } );
           setLoading(false);
@@ -267,6 +297,7 @@ export const DiscardedNewsTable = (props) => {
                   brand={ u.brand }
                   link={ u.link }
                   summary={ u.summary }
+                  hasExclusionTerm={u.hasExclusionTerm}
                   handleRestoreClick = { handleRestoreClick }
                   // handleUpdateTopics = { handleUpdateTopics }
                   isUpdating = { false }
