@@ -102,7 +102,7 @@ export const TopicsRanking = (props) => {
       }
       try {
         axios
-          .get(`/rss-news/entries/yearmonth/${props.selectedMonth}`)
+          .get(`/rss-news/entries/yearmonth/${props.selectedMonth}/brand/${props.selectedBrand}`)
           .then((results) => {
             if (results.data.results.length > 0) {
               // OK
@@ -166,9 +166,8 @@ export const TopicsRanking = (props) => {
 
     // Cleanup function.
     return () => (unmounted = true);
-  }, [props.selectedMonth]);
+  }, [props.selectedMonth, props.selectedBrand]);
 
-  console.log("Data: ", data)
   return (
     <div className={classes.tagsContainer}>
       {loading ? (
