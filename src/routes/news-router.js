@@ -5,6 +5,7 @@ var MongoClient = require("mongodb").MongoClient;
 var bodyParser = require("body-parser");
 var db;
 var news_text = require("../components/utils/get-news-text-fields")
+var deburr = require("lodash")
 
 router.use(bodyParser.json({ limit: "50mb", extended: true })); // to support JSON-encoded bodies
 
@@ -77,8 +78,8 @@ router.get("/entries/yearmonth/:yearmonth", (req, res) => {
             console.log("Exclusion terms: ", exclusion_terms_list)
             var news_filtered = exclusion_terms_list.length > 0 
              ? docs.filter(obj => {
-                const concatenatedTexts = news_text.get_all_text_fields(obj);
-                const has_exclusion_term = exclusion_terms_list.some( exclusion_term => concatenatedTexts.includes(exclusion_term) );
+                const concatenatedTexts = deburr(news_text.get_all_text_fields(obj));
+                const has_exclusion_term = exclusion_terms_list.some( exclusion_term => concatenatedTexts.includes(deburr(exclusion_term.replace(/\s\s+/g, ' '))));
                 return !has_exclusion_term
               })
             : docs
@@ -217,7 +218,7 @@ router.get("/exclusion-entries/yearmonth/:yearmonth", (req, res) => {
               ? docs.filter(obj => {
                 const concatenatedTexts = news_text.get_all_text_fields(obj);
                 // return !exclusion_terms_list.some(concatenatedTexts.includes.bind(concatenatedTexts))
-                return exclusion_terms_list.some( exclusion_term => concatenatedTexts.includes(exclusion_term) )
+                return exclusion_terms_list.some( exclusion_term => concatenatedTexts.includes(deburr(exclusion_term.replace(/\s\s+/g, ' '))) )
               })
             : []
             res.json({ results: news_filtered });
