@@ -4,6 +4,8 @@ var mongo = require("mongodb");
 var MongoClient = require("mongodb").MongoClient;
 var bodyParser = require("body-parser");
 var db;
+var news_text = require("../components/utils/get-news-text-fields")
+var deburr = require("lodash")
 
 router.use(bodyParser.json({ limit: "50mb", extended: true })); // to support JSON-encoded bodies
 
@@ -17,46 +19,218 @@ MongoClient.connect(
   }
 );
 
-// get all entries from news in a daterange
+// get all entries from news in a daterange with no exclusion terms
 router.get("/entries/yearmonth/:yearmonth", (req, res) => {
-  queryMonth = req.params.yearmonth.split("-")[1];
-  queryYear = req.params.yearmonth.split("-")[0];
-  var startDate = new Date(parseInt(queryYear), parseInt(queryMonth) - 1, 1);
-  var endDate = new Date(parseInt(queryYear), parseInt(queryMonth), 1);
-  var collection = db.collection("news");
-  collection
-    .find(
-      {
-        published: {
-          $gte: startDate,
-          $lt: endDate,
+  const getNews = async (yearmonth) => {
+    try {
+
+      const collection_terms = db.collection("dictionary_exclusion_terms");
+      const exclusion_terms = await collection_terms
+      .find(
+        {
         },
-      },
-      {
-        _id: 1,
-        published: 1,
-        extraction_date: 1,
-        brand: 1,
-        title: 1,
-        topics: 1,
-        link: 1,
-        summary: 1,
-        description: 1,
-        section: 1,
-        // "selected": 1,
-        source_id: 1,
-        source_name: 1,
-      }
-    )
-    .sort({ published: -1 })
-    .toArray((err, docs) => {
-      if (err) {
+        {
+          _id: 1,
+          term: 1,
+          alias: 1,
+          modification_date: 1,
+        }
+      ).toArray();
+      
+      queryMonth = yearmonth.split("-")[1];
+      queryYear = yearmonth.split("-")[0];
+      var startDate = new Date(parseInt(queryYear), parseInt(queryMonth) - 1, 1);
+      var endDate = new Date(parseInt(queryYear), parseInt(queryMonth), 1);
+      var collection = db.collection("news");
+      collection
+        .find(
+          {
+            published: {
+              $gte: startDate,
+              $lt: endDate,
+            },
+          },
+          {
+            _id: 1,
+            published: 1,
+            extraction_date: 1,
+            brand: 1,
+            title: 1,
+            topics: 1,
+            link: 1,
+            summary: 1,
+            description: 1,
+            section: 1,
+            // "selected": 1,
+            source_id: 1,
+            source_name: 1,
+          }
+        )
+        .sort({ published: -1 })
+        .toArray((err, docs) => {
+          if (err) {
+            console.log(err);
+            res.status(500).send(err);
+          } else {
+            var exclusion_terms_list = exclusion_terms.map(function(obj) {
+              return obj.term;
+            });
+            console.log("Exclusion terms: ", exclusion_terms_list)
+            var news_filtered = exclusion_terms_list.length > 0 
+             ? docs.filter(obj => {
+                const concatenatedTexts = deburr(news_text.get_all_text_fields(obj));
+                // Regexp to replace multiple spaces, tabs, newlines, etc with a single space.
+                const has_exclusion_term = exclusion_terms_list.some( exclusion_term => concatenatedTexts.includes(deburr(exclusion_term.replace(/\s\s+/g, ' '))));
+                return !has_exclusion_term
+              })
+            : docs
+            res.json({ results: news_filtered });
+          }
+        });
+      } catch (error) {
         console.log(err);
         res.status(500).send(err);
-      } else {
-        res.json({ results: docs });
-      }
-    });
+      } 
+    };
+    getNews(req.params.yearmonth);
+});
+
+// get all entries from news in a daterange for brand
+router.get("/entries/yearmonth/:yearmonth/brand/:brand", (req, res) => {
+  const getNews = async (yearmonth, brand) => {
+    try {
+      queryMonth = yearmonth.split("-")[1];
+      queryYear = yearmonth.split("-")[0];
+      var startDate = new Date(parseInt(queryYear), parseInt(queryMonth) - 1, 1);
+      var endDate = new Date(parseInt(queryYear), parseInt(queryMonth), 1);
+      var regex = new RegExp(".*" + brand + ".*");
+      let mongoQuery = 
+        req.params.brand == "Tots" 
+        ? {
+          published: {
+            $gte: startDate,
+            $lt: endDate,
+          }
+        }
+        : {published: {
+            $gte: startDate,
+            $lt: endDate,
+          },
+          brand : regex};
+      var collection = db.collection("news");
+      collection
+        .find(
+          mongoQuery,
+          {
+            _id: 1,
+            published: 1,
+            extraction_date: 1,
+            brand: 1,
+            title: 1,
+            topics: 1,
+            link: 1,
+            summary: 1,
+            description: 1,
+            section: 1,
+            // "selected": 1,
+            source_id: 1,
+            source_name: 1,
+          }
+        )
+        .sort({ published: -1 })
+        .toArray((err, docs) => {
+          if (err) {
+            console.log(err);
+            res.status(500).send(err);
+          } else {
+            res.json({ results: docs });
+          }
+        });
+    
+
+    } catch (error) {
+      console.log(err);
+      res.status(500).send(err);
+    } 
+  };
+  getNews(req.params.yearmonth, req.params.brand);
+  
+});
+
+// get all entries from news in a daterange with exclusion terms
+router.get("/exclusion-entries/yearmonth/:yearmonth", (req, res) => {
+  const getNews = async (yearmonth) => {
+    try {
+
+      const collection_terms = db.collection("dictionary_exclusion_terms");
+      const exclusion_terms = await collection_terms
+      .find(
+        {
+        },
+        {
+          _id: 1,
+          term: 1,
+          alias: 1,
+          modification_date: 1,
+        }
+      ).toArray();
+
+      queryMonth = req.params.yearmonth.split("-")[1];
+      queryYear = req.params.yearmonth.split("-")[0];
+      var startDate = new Date(parseInt(queryYear), parseInt(queryMonth) - 1, 1);
+      var endDate = new Date(parseInt(queryYear), parseInt(queryMonth), 1);
+      var collection = db.collection("news");
+      collection
+        .find(
+          {
+            published: {
+              $gte: startDate,
+              $lt: endDate,
+            },
+          },
+          {
+            _id: 1,
+            published: 1,
+            extraction_date: 1,
+            brand: 1,
+            title: 1,
+            topics: 1,
+            link: 1,
+            summary: 1,
+            description: 1,
+            section: 1,
+            // "selected": 1,
+            source_id: 1,
+            source_name: 1,
+          }
+        )
+        .sort({ published: -1 })
+        .toArray((err, docs) => {
+          if (err) {
+            console.log(err);
+            res.status(500).send(err);
+          } else {
+
+            var exclusion_terms_list = exclusion_terms.map(function(obj) {
+              return obj.term;
+            });
+            console.log("Exclusion terms: ", exclusion_terms_list)
+            var news_filtered = exclusion_terms_list.length > 0 
+              ? docs.filter(obj => {
+                const concatenatedTexts = news_text.get_all_text_fields(obj);
+                // return !exclusion_terms_list.some(concatenatedTexts.includes.bind(concatenatedTexts))
+                return exclusion_terms_list.some( exclusion_term => concatenatedTexts.includes(deburr(exclusion_term.replace(/\s\s+/g, ' '))) )
+              })
+            : []
+            res.json({ results: news_filtered });
+          }
+        });
+      } catch (error) {
+        console.log(err);
+        res.status(500).send(err);
+      } 
+    };
+    getNews(req.params.yearmonth);
 });
 
 // Add route without parameters
@@ -175,5 +349,29 @@ router.route("/identifier/:documentId/topics/:topics").put((req, res) => {
 // // TODO: add timeout to responses:
 // // https://stackoverflow.com/questions/21708208/express-js-response-timeout
 // // So far we have added a timeout to the whole cron job, but not to the responses of every API call.
+
+// get all entries from exclusion terms
+router.get("/exclusion-entries", (req, res) => {
+  var collection = db.collection("dictionary_exclusion_terms");
+  collection
+    .find(
+      {
+      },
+      {
+        _id: 1,
+        term: 1,
+        alias: 1,
+        modification_date: 1,
+      }
+    )
+    .toArray((err, docs) => {
+      if (err) {
+        console.log(err);
+        res.status(500).send(err);
+      } else {
+        res.json({ results: docs });
+      }
+    });
+});
 
 module.exports = router;

@@ -18,14 +18,18 @@ MongoClient.connect(
 );
 
 // get all entries from news and filter by topic
-router.get("/topics/barchart/month/:month/topic/:topic", (req, res) => {
+router.get("/topics/barchart/month/:month/topic/:topic/brand/:brand", (req, res) => {
   let queryTopic = req.params.topic.toLowerCase();
+  var regex = new RegExp(".*" + req.params.brand + ".*");
   //remove month leading zero
   let queryMonth =
     req.params.month[5] == "0"
       ? req.params.month.replace("-0", "-")
       : req.params.month;
-  let mongoQuery = {};
+  let mongoQuery = 
+    req.params.brand == "Tots" 
+    ? {}
+    : {brand :  regex};
   let mongoProjection = {
     _id: 1,
     published: 1,

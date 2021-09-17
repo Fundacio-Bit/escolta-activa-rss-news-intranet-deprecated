@@ -19,7 +19,6 @@ var foldersBasePath =
 
 // get all available folders
 router.get("/folders", (req, res) => {
-  console.log("foldersBasePath: " + foldersBasePath);
   //joining path of directory
   // const directoryPath = path.join(__dirname, "Documents");
   //passsing directoryPath and callback function

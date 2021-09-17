@@ -100,18 +100,27 @@ const styles = theme => ({
               <CircularProgress size={24} thickness={4} />
               </div>
             </div>}
-            { !isLoading && <IconButton 
-              className={classes.button} 
-              aria-label="Restore" 
-              onClick= 
-                { () => {
-                  this.setState(
-                    { isLoading: true })
-                  handleRestoreClick(this.props.docId)
-                  }  
-                }>
-              <RestoreIcon />
-            </IconButton>}
+            { !isLoading && !this.props.hasExclusionTerm && 
+              <Tooltip title="Restaurar">
+                <IconButton 
+                  className={classes.button} 
+                  aria-label="Restore" 
+                  onClick= 
+                    { () => {
+                      this.setState(
+                        { isLoading: true })
+                      handleRestoreClick(this.props.docId)
+                      }  
+                    }>
+                  <RestoreIcon />
+                </IconButton>
+              </Tooltip>}
+              { !isLoading && this.props.hasExclusionTerm && 
+                <Chip
+                  label={"Exclòs"}
+                  color="primary"
+                />
+              }
           </TableCell>
         </TableRow>
       );

@@ -118,32 +118,42 @@ export const DiscardedNewsTable = (props) => {
       }
 
       try {
-        axios.get(`/rss-discarded-news/entries/yearmonth/${props.selectedMonth}`).then((results) => { 
-          if (results.data.results.length > 0) { 
-            // OK
-            setTimeout(() => {
-              if (!unmounted) {
+        const request_discarded_news = axios.get(`/rss-discarded-news/entries/yearmonth/${props.selectedMonth}`);
+        const request_excluded_news = axios.get(`/rss-news/exclusion-entries/yearmonth/${props.selectedMonth}`);
+        axios
+          .all([request_discarded_news, request_excluded_news])
+          .then(
+            axios.spread((...responses) => {
+              const response_discarded_news = responses[0].data.results;
+              const response_excluded_news = responses[1].data.results;
+              if (response_discarded_news.length === 0 && response_excluded_news.length === 0) {
+                // No data returned
+                if (!unmounted) {
+                  setData([])
+                  setLoading(false);
+                }
+              } else {
+                var exclusion_results = response_excluded_news.length > 0
+                  ? response_excluded_news.map(function(el) {
+                      var o = Object.assign({}, el);
+                      o.hasExclusionTerm = true;
+                      return o;
+                    })
+                  : []
+  
+                const total_results = response_discarded_news.concat(exclusion_results);
                 setErrorStatus({error: false, message: ''});
                 setLoading(false);
-                setData(results.data.results);
+                setData(total_results);
               }
-            }, 850);
-          }
-          else {
-            // No data returned
-            if (!unmounted) {
-              setData([])
-              setLoading(false);
-            }
-          }
-        }).catch(error => {
-          console.log(getErrorMessage(error));
-          setErrorStatus( { error: true, message: baseErrorMessage } );
-          setLoading(false);
-        });   
-
-      }
-      catch (error) {
+            })
+          )
+          .catch(error => {
+            console.log(getErrorMessage(error));
+            setErrorStatus( { error: true, message: baseErrorMessage } );
+            setLoading(false);
+          });
+      } catch (error) {
         if (!unmounted) {
           console.log(getErrorMessage(error));
           setErrorStatus( { error: true, message: baseErrorMessage } );
@@ -267,6 +277,7 @@ export const DiscardedNewsTable = (props) => {
                   brand={ u.brand }
                   link={ u.link }
                   summary={ u.summary }
+                  hasExclusionTerm={u.hasExclusionTerm}
                   handleRestoreClick = { handleRestoreClick }
                   // handleUpdateTopics = { handleUpdateTopics }
                   isUpdating = { false }

@@ -220,7 +220,6 @@ export const Topics = (props) => {
 
   let filteredData = selectedTopic == "all" ? data : data.filter(filterByTopic);
   filteredData = selectedBrand == "Tots" ? data : data.filter(filterByBrand);
-  console.log("Filtered Data: ", filteredData)
 
   // Get the news related to a topic.
   useEffect(() => {
@@ -430,6 +429,7 @@ export const Topics = (props) => {
               </Typography>
             </div>
             <TopicsRanking
+              selectedBrand={selectedBrand}
               selectedMonth={selectedMonth}
               selectedTopic={selectedTopic}
               topicSelect={handleTopicClick}
@@ -454,6 +454,7 @@ export const Topics = (props) => {
               <TopicsBarChart
                 selectedMonth={selectedMonth}
                 selectedTopic={selectedTopic}
+                selectedBrand={selectedBrand}
               ></TopicsBarChart>
             </div>
             {filteredData.length > 0 &&

@@ -134,7 +134,7 @@ const TopicsBarChart = (props) => {
       try {
         axios
           .get(
-            `/rss-chart/topics/barchart/month/${props.selectedMonth}/topic/${props.selectedTopic}`
+            `/rss-chart/topics/barchart/month/${props.selectedMonth}/topic/${props.selectedTopic}/brand/${props.selectedBrand}`
           )
           .then((results) => {
             if (
@@ -177,7 +177,7 @@ const TopicsBarChart = (props) => {
 
     // Cleanup function. useEffect uses the cleanup function to execute operations useful on component unmount.
     return () => (unmounted = true);
-  }, [props.selectedTopic, props.selectedMonth]);
+  }, [props.selectedTopic, props.selectedMonth, props.selectedBrand]);
 
   return (
     <div>
