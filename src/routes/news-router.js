@@ -75,7 +75,6 @@ router.get("/entries/yearmonth/:yearmonth", (req, res) => {
             var exclusion_terms_list = exclusion_terms.map(function(obj) {
               return obj.term;
             });
-            console.log("Exclusion terms: ", exclusion_terms_list)
             var news_filtered = exclusion_terms_list.length > 0 
              ? docs.filter(obj => {
                 const concatenatedTexts = deburr(news_text.get_all_text_fields(obj));
@@ -214,7 +213,6 @@ router.get("/exclusion-entries/yearmonth/:yearmonth", (req, res) => {
             var exclusion_terms_list = exclusion_terms.map(function(obj) {
               return obj.term;
             });
-            console.log("Exclusion terms: ", exclusion_terms_list)
             var news_filtered = exclusion_terms_list.length > 0 
               ? docs.filter(obj => {
                 const concatenatedTexts = news_text.get_all_text_fields(obj);
