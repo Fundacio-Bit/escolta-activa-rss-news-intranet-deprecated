@@ -79,6 +79,7 @@ router.get("/entries/yearmonth/:yearmonth", (req, res) => {
             var news_filtered = exclusion_terms_list.length > 0 
              ? docs.filter(obj => {
                 const concatenatedTexts = deburr(news_text.get_all_text_fields(obj));
+                // Regexp to replace multiple spaces, tabs, newlines, etc with a single space.
                 const has_exclusion_term = exclusion_terms_list.some( exclusion_term => concatenatedTexts.includes(deburr(exclusion_term.replace(/\s\s+/g, ' '))));
                 return !has_exclusion_term
               })

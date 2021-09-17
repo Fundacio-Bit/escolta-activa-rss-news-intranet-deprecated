@@ -2,7 +2,7 @@ const get_all_text_fields = (doc) => {
 
     const title =
     "title" in doc && doc.title !== undefined && typeof doc.title === "string"
-      ? doc.title.replace(/\s\s+/g, ' ')
+      ? doc.title.replace(/\s\s+/g, ' ') // Regexp to replace multiple spaces, tabs, newlines, etc with a single space.
       : "";
 
   const summary =
