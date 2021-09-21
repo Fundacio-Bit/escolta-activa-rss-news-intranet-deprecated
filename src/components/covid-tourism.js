@@ -27,6 +27,7 @@ import { blue, pink } from "@material-ui/core/colors";
 const useStyles = makeStyles((theme) => ({
   root: {
     fontFamily: "Roboto",
+    marginTop: "3em",
     display: "flex",
     "& > * + *": {
       marginLeft: theme.spacing(2),
