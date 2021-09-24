@@ -16,7 +16,6 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import ListSubheader from '@material-ui/core/ListSubheader';
-import InboxIcon from '@material-ui/icons/MoveToInbox';
 import ReceiptIcon from '@material-ui/icons/ReceiptTwoTone';
 import DescriptionIcon from '@material-ui/icons/DescriptionTwoTone';
 import InsertDriveFileIcon from '@material-ui/icons/InsertDriveFileTwoTone';
@@ -29,7 +28,7 @@ import AirplanemodeActiveIcon from '@material-ui/icons/AirplanemodeActiveTwoTone
 import News from "./news";
 import DiscardedNews from "./discarded-news";
 import FilterableSourcesTable from "./filterable-sources-table";
-import Dictionary from "./dictionary";
+import { Dictionary } from "./dictionary";
 import { Topics } from "./topics";
 import { CovidTourism } from "./covid-tourism";
 import { AirCompanies } from "./air-companies";
