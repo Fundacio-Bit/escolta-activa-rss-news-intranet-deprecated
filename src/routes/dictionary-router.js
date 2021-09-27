@@ -41,15 +41,14 @@ router.get("/terms", (req, res) => {
 
 router.
   route("/terms").post((req, res) => {
-    console.log("req.body: ", req.body)
     var collection = db.collection("dictionary");
     collection.insertOne(req.body, function (err, results) {
       if (err) {
         console.log(err);
         res.status(500).send(err);
       }
+      res.json({ success: results.ops[0] });
     });
-    res.json({ success: req.body._id });
   });
 
   router.
