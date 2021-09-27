@@ -65,10 +65,11 @@ export const Dictionary = (props) => {
             if (results.data.results.length > 0) {
               setTimeout(() => {
                 if (!unmounted) {
+                  let orderedData = results.data.results.sort((a,b) => (a.term > b.term) ? 1 : ((b.term > a.term) ? -1 : 0))
                   setErrorStatus({ error: false, message: "" });
                   setLoading(false);
-                  setData(results.data.results);
-                  setFilteredData(results.data.results);
+                  setData(orderedData);
+                  setFilteredData(orderedData);
                 }
               }, 850);
             } else {
