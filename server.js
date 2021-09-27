@@ -54,6 +54,10 @@ var dictionaryRouter = require("./src/routes/dictionary-router");
 
 app.use("/rss-dictionary", dictionaryRouter);
 
+var exclusionTermsRouter = require("./src/routes/exclusion-terms-router");
+
+app.use("/rss-exclusion-terms", exclusionTermsRouter);
+
 // *************************************************
 // *************** ROUTING *************************
 // *************************************************

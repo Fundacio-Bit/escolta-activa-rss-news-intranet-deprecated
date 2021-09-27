@@ -40,7 +40,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export const Dictionary = () => {
+export const ExclusionTerms = () => {
   const classes = useStyles();
 
   const [data, setData] = useState([]);
@@ -55,7 +55,7 @@ export const Dictionary = () => {
       console.log("Fetching data")
       try {
         axios
-        .get(`/rss-dictionary/terms`)
+        .get(`/rss-exclusion-terms/terms`)
         .then((results) => {
           if (results.data.results.length > 0) {
             setTimeout(() => {
@@ -101,7 +101,7 @@ export const Dictionary = () => {
     if (term.length > 0) {
       axios
         .post(
-          "/rss-dictionary/terms/",
+          "/rss-exclusion-terms/terms/",
           { term: term, search_mode: "substring" },
           { headers: { "Content-Type": "application/json" } }
         )
@@ -114,7 +114,7 @@ export const Dictionary = () => {
   };
 
   const handleDelete = (id) => {
-    axios.delete("/rss-dictionary/identifier/" + id).then((res) => {
+    axios.delete("/rss-exclusion-terms/identifier/" + id).then((res) => {
       setData(data.filter((item) => item._id !== id));
       setTerm('');
     });
@@ -147,7 +147,7 @@ export const Dictionary = () => {
             gutterBottom
             className={classes.title}
           >
-            Diccionari de Termes Turístics
+            Termes d'exclusió
           </Typography>
           <form onSubmit={handleCreate} className={classes.form}>
             <TextField

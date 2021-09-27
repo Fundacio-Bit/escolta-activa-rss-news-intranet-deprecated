@@ -29,6 +29,7 @@ import News from "./news";
 import DiscardedNews from "./discarded-news";
 import FilterableSourcesTable from "./filterable-sources-table";
 import { Dictionary } from "./dictionary";
+import { ExclusionTerms } from "./exclusion-terms";
 import { Topics } from "./topics";
 import { CovidTourism } from "./covid-tourism";
 import { AirCompanies } from "./air-companies";
