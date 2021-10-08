@@ -134,9 +134,11 @@ export const ExclusionTerms = () => {
       )}
 
       {loading && (
-        <div className={classes.loading}>
-          <CircularProgress size={24} thickness={4} />
-        </div>
+        <Paper className={classes.root}>
+          <div className={classes.loading}>
+            <CircularProgress size={24} thickness={4} />
+          </div>
+        </Paper>
       )}
 
       {!loading && !errorStatus.error && (
