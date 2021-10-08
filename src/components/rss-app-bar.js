@@ -1,188 +1,228 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
-import { withStyles } from "@material-ui/core/styles";
-import { AppBar, Tabs, Tab, Popover, MenuItem } from "@material-ui/core";
+import React from 'react';
+import clsx from 'clsx';
+import { makeStyles, useTheme } from '@material-ui/core/styles';
+import Drawer from '@material-ui/core/Drawer';
+import CssBaseline from '@material-ui/core/CssBaseline';
+import AppBar from '@material-ui/core/AppBar';
+import Toolbar from '@material-ui/core/Toolbar';
+import List from '@material-ui/core/List';
+import Typography from '@material-ui/core/Typography';
+import Divider from '@material-ui/core/Divider';
+import IconButton from '@material-ui/core/IconButton';
+import MenuIcon from '@material-ui/icons/Menu';
+import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
+import ChevronRightIcon from '@material-ui/icons/ChevronRight';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemText from '@material-ui/core/ListItemText';
+import ListSubheader from '@material-ui/core/ListSubheader';
+import ReceiptIcon from '@material-ui/icons/ReceiptTwoTone';
+import DescriptionIcon from '@material-ui/icons/DescriptionTwoTone';
+import InsertDriveFileIcon from '@material-ui/icons/InsertDriveFileTwoTone';
+import SpeakerNotesIcon from '@material-ui/icons/SpeakerNotesTwoTone';
+import SpeakerNotesOffIcon from '@material-ui/icons/SpeakerNotesOffTwoTone';
+import AssessmentIcon from '@material-ui/icons/AssessmentTwoTone';
+import LocalHospitalIcon from '@material-ui/icons/LocalHospitalTwoTone';
+import AirplanemodeActiveIcon from '@material-ui/icons/AirplanemodeActiveTwoTone';
+
 import News from "./news";
 import DiscardedNews from "./discarded-news";
+import FilterableSourcesTable from "./filterable-sources-table";
+import { Dictionary } from "./dictionary";
+import { ExclusionTerms } from "./exclusion-terms";
 import { Topics } from "./topics";
 import { CovidTourism } from "./covid-tourism";
 import { AirCompanies } from "./air-companies";
-import FilterableSourcesTable from "./filterable-sources-table";
-import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
 
-const styles = {
+const drawerWidth = 240;
+
+const useStyles = makeStyles((theme) => ({
   root: {
-    flexGrow: 1,
+    display: 'flex',
   },
   appBar: {
-    flexWrap: "wrap",
+    transition: theme.transitions.create(['margin', 'width'], {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.leavingScreen,
+    }),
   },
-  tabs: {
-    width: "100%",
+  appBarShift: {
+    width: `calc(100% - ${drawerWidth}px)`,
+    marginLeft: drawerWidth,
+    transition: theme.transitions.create(['margin', 'width'], {
+      easing: theme.transitions.easing.easeOut,
+      duration: theme.transitions.duration.enteringScreen,
+    }),
   },
-  Tab: {
-    flexDirection: "row-reverse",
+  menuButton: {
+    marginRight: theme.spacing(2),
   },
-};
+  hide: {
+    display: 'none',
+  },
+  drawer: {
+    width: drawerWidth,
+    flexShrink: 0,
+  },
+  drawerPaper: {
+    width: drawerWidth,
+  },
+  drawerHeader: {
+    display: 'flex',
+    alignItems: 'center',
+    padding: theme.spacing(0, 1),
+    // necessary for content to be below app bar
+    ...theme.mixins.toolbar,
+    justifyContent: 'flex-end',
+  },
+  content: {
+    flexGrow: 1,
+    padding: theme.spacing(3),
+    transition: theme.transitions.create('margin', {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.leavingScreen,
+    }),
+    marginLeft: -drawerWidth,
+  },
+  contentShift: {
+    transition: theme.transitions.create('margin', {
+      easing: theme.transitions.easing.easeOut,
+      duration: theme.transitions.duration.enteringScreen,
+    }),
+    marginLeft: 0,
+  },
+}));
 
-class RSSAppBar extends Component {
+export default function PersistentDrawerLeft() {
+  const classes = useStyles();
+  const theme = useTheme();
+  const [open, setOpen] = React.useState(false);
+  const [content, setContent] = React.useState("news");
 
-  constructor(props) {
-    super(props);
-    this.state = {
-      value: 0,
-      content: <News />,
-      anchorEl: null,
-      anchorReports: null,
-    };
-    // This binding is necessary to make `this` work in the callback
-    this.handleChange = this.handleChange.bind(this);
-    this.handleClick = this.handleClick.bind(this);
-    this.handleClose = this.handleClose.bind(this);
-    this.handleReportsClick = this.handleReportsClick.bind(this);
-    this.handleReportsClose = this.handleReportsClose.bind(this);
-    this.handleMenuItemClick = this.handleMenuItemClick.bind(this);
-  }
+  const handleDrawerOpen = () => {
+    setOpen(true);
+  };
 
-  handleChange(event, value) {
-    this.setState({ value });
-  }
+  const handleDrawerClose = () => {
+    setOpen(false);
+  };
 
-  handleClick(event) {
-    event.stopPropagation();
-    this.setState({
-      anchorEl: event.currentTarget,
-    });
-  }
-
-  handleClose() {
-    this.setState({
-      anchorEl: null,
-    });
-  }
-
-  handleReportsClick(event) {
-    event.stopPropagation();
-    this.setState({
-      anchorReports: event.currentTarget,
-    });
-  }
-
-  handleReportsClose() {
-    this.setState({
-      anchorReports: null,
-    });
-  }
-
-  handleMenuItemClick(menuItem) {
-    this.handleClose();
-    var content = null;
-    if (menuItem === 0) {
-      content = <News />;
-    } else if (menuItem === 3) {
-      content = <DiscardedNews />;
-    } else if (menuItem === 4) {
-      content = <CovidTourism />;
-    } else if (menuItem === 5) {
-      content = <AirCompanies />;
-    }
-    this.setState({
-      // label: menuItem,
-      content: content,
-      value: 0,
-    });
-  }
-
-  render() {
-    const { classes } = this.props;
-    const { value } = this.state;
-    const open = Boolean(this.state.anchorEl);
-    const openReports = Boolean(this.state.anchorReports);
-
-    return (
-      <div className={classes.root}>
-        <AppBar position="static" className={classes.appBar}>
-          <Tabs
-            className={classes.tabs}
-            value={value}
-            onChange={this.handleChange}
+  return (
+    <div className={classes.root}>
+      <CssBaseline />
+      <AppBar
+        position="fixed"
+        className={clsx(classes.appBar, {
+          [classes.appBarShift]: open,
+        })}
+      >
+        <Toolbar>
+          <IconButton
+            color="inherit"
+            aria-label="open drawer"
+            onClick={handleDrawerOpen}
+            edge="start"
+            className={clsx(classes.menuButton, open && classes.hide)}
           >
-            <Tab
-              label="NOTÍCIES"
-              classes={{ wrapper: classes.Tab }}
-              value={0}
-              icon={<ArrowDropDownIcon onClick={this.handleClick} />}
-              onClick={() => this.setState({ content: <News /> })}
+            <MenuIcon />
+          </IconButton>
+          <Typography variant="h6" noWrap>
+            RSS INTRANET  
+          </Typography>
+        </Toolbar>
+      </AppBar>
+      <Drawer
+        className={classes.drawer}
+        variant="persistent"
+        anchor="left"
+        open={open}
+        classes={{
+          paper: classes.drawerPaper,
+        }}
+      >
+        <div className={classes.drawerHeader}>
+          <IconButton onClick={handleDrawerClose}>
+            {theme.direction === 'ltr' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
+          </IconButton>
+        </div>
+        <Divider />
+        <List>
+          <ListItem button key="news">
+            <ListItemIcon><DescriptionIcon /></ListItemIcon>
+            <ListItemText primary="Notícies" 
+              onClick={() => setContent("news")}
             />
-            <Tab
-              label="FONTS"
-              value="1"
-              onClick={() =>
-                this.setState({ content: <FilterableSourcesTable /> })
-              }
+          </ListItem>
+          <ListItem button key="discarded">
+            <ListItemIcon><InsertDriveFileIcon /></ListItemIcon>
+            <ListItemText primary="Descartades"
+              onClick={() => setContent("discarded")}
             />
-            <Tab
-              label="TEMES"
-              value="3"
-              onClick={() => this.setState({ content: <Topics /> })}
+          </ListItem>
+        </List>
+        <Divider />
+        <List>
+        <ListItem button key="dictionary">
+            <ListItemIcon><SpeakerNotesIcon /></ListItemIcon>
+            <ListItemText primary="Diccionari" 
+              onClick={() => setContent("dictionary")}
             />
-            <Tab
-              label="INFORMES"
-              classes={{ wrapper: classes.Tab }}
-              value="4"
-              icon={<ArrowDropDownIcon onClick={this.handleReportsClick} />}
-              onClick={() => this.setState({ content: <CovidTourism /> })}
+          </ListItem>
+          <ListItem button key="exclusion-terms">
+            <ListItemIcon><SpeakerNotesOffIcon /></ListItemIcon>
+            <ListItemText primary="Terminos d'exclusió"
+              onClick={() => setContent("exclusion-terms")}
             />
-          </Tabs>
-        </AppBar>
-        {this.state.content}
-        <Popover
-          open={open}
-          anchorEl={this.state.anchorEl}
-          onClose={this.handleClose}
-          anchorOrigin={{
-            vertical: "bottom",
-            horizontal: "center",
-          }}
-          transformOrigin={{
-            vertical: "top",
-            horizontal: "center",
-          }}
-        >
-          <MenuItem onClick={() => this.handleMenuItemClick(0)}>
-            Notícies
-          </MenuItem>
-          <MenuItem onClick={() => this.handleMenuItemClick(3)}>
-            Descartades
-          </MenuItem>
-        </Popover>
-        <Popover
-          open={openReports}
-          anchorEl={this.state.anchorReports}
-          onClose={this.handleReportsClose}
-          anchorOrigin={{
-            vertical: "bottom",
-            horizontal: "center",
-          }}
-          transformOrigin={{
-            vertical: "top",
-            horizontal: "center",
-          }}
-        >
-          <MenuItem onClick={() => this.handleMenuItemClick(4)}>
-            COVID-TURISME
-          </MenuItem>
-          <MenuItem onClick={() => this.handleMenuItemClick(5)}>
-            COMPANYIES AÈRIES
-          </MenuItem>
-        </Popover>
-      </div>
-    );
-  }
+          </ListItem>
+        </List>
+        <Divider />
+        <List>
+          <ListItem button key="sources">
+            <ListItemIcon><ReceiptIcon /></ListItemIcon>
+            <ListItemText primary="Fonts" 
+              onClick={() => setContent("sources")}
+            />
+          </ListItem>
+          <ListItem button key="topics">
+            <ListItemIcon><AssessmentIcon /></ListItemIcon>
+            <ListItemText primary="Estadístiques" 
+              onClick={() => setContent("topics")}
+            />
+          </ListItem>
+        </List>
+        <Divider />
+        <List>
+          <ListSubheader component="div" id="nested-list-subheader">
+            Informes
+          </ListSubheader>
+          <ListItem button key="covid-tourism">
+            <ListItemIcon><LocalHospitalIcon /></ListItemIcon>
+            <ListItemText primary="Covid-Turisme" 
+              onClick={() => setContent("covid-tourism")}
+            />
+          </ListItem>
+          <ListItem button key="air-companies">
+            <ListItemIcon><AirplanemodeActiveIcon /></ListItemIcon>
+            <ListItemText primary="Companyies Aèries" 
+              onClick={() => setContent("air-companies")}
+            />
+          </ListItem>
+        </List>
+      </Drawer>
+      <main
+        className={clsx(classes.content, {
+          [classes.contentShift]: open,
+        })}
+      >
+      { content === "news" && <News /> }
+      { content === "discarded" && <DiscardedNews /> }
+      { content === "dictionary" && <Dictionary /> }
+      { content === "exclusion-terms" && <ExclusionTerms /> }
+      { content === "sources" && <FilterableSourcesTable /> }
+      { content === "topics" && <Topics /> }
+      { content === "covid-tourism" && <CovidTourism /> }
+      { content === "air-companies" && <AirCompanies /> }
+      </main>
+    </div>
+  );
 }
-
-RSSAppBar.propTypes = {
-  classes: PropTypes.object.isRequired,
-};
-
-export default withStyles(styles)(RSSAppBar);

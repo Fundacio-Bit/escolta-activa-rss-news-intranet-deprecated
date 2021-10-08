@@ -9,6 +9,7 @@ import { FormControl, AppBar, Toolbar, Select, MenuItem, InputLabel, IconButton,
 const styles = theme => ({
   root: {
     width: '100%',
+    marginTop: "3em",
   },
   // Bar title
   title: {

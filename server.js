@@ -50,14 +50,13 @@ var airCompaniesRouter = require("./src/routes/air-companies-router");
 
 app.use("/rss-air-companies", airCompaniesRouter);
 
-// *************************************************
-// *************** TEMPLATE ENGINE *****************
-// *************************************************
+var dictionaryRouter = require("./src/routes/dictionary-router");
 
-// // Define template engine used to render HTML (Handlebars)
-// //---------------------------------------------------------
-// app.engine('handlebars', handlebars({defaultLayout: 'main'}))
-// app.set('view engine', 'handlebars')
+app.use("/rss-dictionary", dictionaryRouter);
+
+var exclusionTermsRouter = require("./src/routes/exclusion-terms-router");
+
+app.use("/rss-exclusion-terms", exclusionTermsRouter);
 
 // *************************************************
 // *************** ROUTING *************************
