@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import RSSAppBar from './rss-app-bar';
-import { createTheme } from '@material-ui/core/styles';
+import { createMuiTheme } from '@material-ui/core/styles';
 import { MuiThemeProvider } from '@material-ui/core/styles';
 
 // TODO: minimize bundle size:
@@ -8,7 +8,7 @@ import { MuiThemeProvider } from '@material-ui/core/styles';
 
 // Migration to Typography 2
 // https://v3.material-ui.com/style/typography/#migration-to-typography-v2
-const theme = createTheme({
+const theme = createMuiTheme ({
   
   typography: {
     useNextVariants: true,
