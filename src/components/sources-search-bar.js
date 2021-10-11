@@ -173,8 +173,8 @@ class SearchBar extends Component {
     }
   }
 
-  SearchBar.propTypes = {
-    classes: PropTypes.object.isRequired,
-  };
+  // SearchBar.propTypes = {
+  //   classes: PropTypes.object.isRequired,
+  // };
 
   export default withStyles(styles) (SearchBar);
