@@ -16,7 +16,7 @@ import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import ScheduleIcon from "@material-ui/icons/Schedule";
 import Tooltip from "@material-ui/core/Tooltip";
 
-const styles = (theme) => ({
+const styles = theme => ({
   root: {
     width: "100%",
     // marginTop: theme.spacing(y) * 3,
@@ -271,7 +271,7 @@ class SourcesList extends Component {
                               </TableCell>
                             </TableRow>
                           </TableHead>
-                          {/* <TableBody>
+                          <TableBody>
                             {source.feeds.map((feed) => {
                               return (
                                 <SourceRow
@@ -292,7 +292,7 @@ class SourcesList extends Component {
                                 />
                               );
                             })}
-                          </TableBody> */}
+                          </TableBody>
                         </Table>
                       </div>
                     </div>
