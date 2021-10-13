@@ -9,10 +9,7 @@ import TableCell from "@material-ui/core/TableCell";
 import TableBody from "@material-ui/core/TableBody";
 import TablePagination from "@material-ui/core/TablePagination";
 import SourceRow from "./source-row";
-// import { Accordion, AccordionDetails, AccordionSummary} from "@material-ui/core";
-import ExpansionPanel from "@material-ui/core/ExpansionPanel";
-import ExpansionPanelDetails from "@material-ui/core/ExpansionPanelDetails";
-import ExpansionPanelSummary from "@material-ui/core/ExpansionPanelSummary";
+import { Accordion, AccordionDetails, AccordionSummary} from "@material-ui/core";
 import Typography from "@material-ui/core/Typography";
 import Paper from "@material-ui/core/Paper";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
@@ -236,8 +233,8 @@ class SourcesList extends Component {
           {groupedSources.feedsBySource.map((source) => {
             if (source.feeds) {
               return (
-                <ExpansionPanel key={source.key}>
-                  <ExpansionPanelSummary
+                <Accordion key={source.key}>
+                  <AccordionSummary
                     className={classes.summary}
                     expandIcon={<ExpandMoreIcon />}
                   >
@@ -251,8 +248,8 @@ class SourcesList extends Component {
                         {source.feeds.length} categories
                       </Typography>
                     </div>
-                  </ExpansionPanelSummary>
-                  <ExpansionPanelDetails className={classes.details}>
+                  </AccordionSummary>
+                  <AccordionDetails className={classes.details}>
                     <div className={classes.tableWrapper}>
                       <div className={classes.title}>
                         <Table
@@ -299,8 +296,8 @@ class SourcesList extends Component {
                         </Table>
                       </div>
                     </div>
-                  </ExpansionPanelDetails>
-                </ExpansionPanel>
+                  </AccordionDetails>
+                </Accordion>
               );
             } else {
               return <div></div>;
