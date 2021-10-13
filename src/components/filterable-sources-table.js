@@ -59,10 +59,10 @@ class FilterableSourcesTable extends Component {
                 searchText={this.state.searchText}
                 onSearchTextChange={this.handleSearchTextChange}
                 onActiveSelectorChange={this.handleActiveSelectorChange}/>
-                {/* <SourcesTable
+                <SourcesTable
                 searchText={this.state.searchText}
                 countrySelectorValue = {this.state.countryISOCode}
-                activeSelectorValue = {this.state.activeFilter}/> */}
+                activeSelectorValue = {this.state.activeFilter}/>
             </Paper>
           </Grid>
         </Grid>

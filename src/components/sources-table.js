@@ -271,7 +271,7 @@ class SourcesList extends Component {
                               </TableCell>
                             </TableRow>
                           </TableHead>
-                          <TableBody>
+                          {/* <TableBody>
                             {source.feeds.map((feed) => {
                               return (
                                 <SourceRow
@@ -292,7 +292,7 @@ class SourcesList extends Component {
                                 />
                               );
                             })}
-                          </TableBody>
+                          </TableBody> */}
                         </Table>
                       </div>
                     </div>
