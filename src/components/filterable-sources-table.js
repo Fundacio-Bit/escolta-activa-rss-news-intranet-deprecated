@@ -52,7 +52,7 @@ class FilterableSourcesTable extends Component {
         <Grid container spacing={10}>
           <Grid item xs={12}>
             <Paper className={classes.paper}> 
-              <SearchBar
+              {/* <SearchBar
                 countryISOCode={this.state.countryISOCode}
                 onCountrySelectorChange={this.handleCountrySelectorChange}
                 activeFilter={this.state.activeFilter}
@@ -62,7 +62,7 @@ class FilterableSourcesTable extends Component {
                 <SourcesTable
                 searchText={this.state.searchText}
                 countrySelectorValue = {this.state.countryISOCode}
-                activeSelectorValue = {this.state.activeFilter}/>
+                activeSelectorValue = {this.state.activeFilter}/> */}
             </Paper>
           </Grid>
         </Grid>
