@@ -13,6 +13,18 @@ import {
   ListItemText,
   ListItemSecondaryAction,
 } from "@material-ui/core";
+import {
+  Table,
+  TableHead,
+  TableBody,
+  TableRow,
+  TableCell,
+} from "@material-ui/core";
+import {
+  InputLabel,
+  Select,
+  MenuItem,
+} from "@material-ui/core";
 import Delete from "@material-ui/icons/Delete";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { makeStyles } from "@material-ui/core/styles";
@@ -45,6 +57,7 @@ export const Dictionary = () => {
 
   const [data, setData] = useState([]);
   const [term, setTerm] = useState("");
+  const [mode, setMode] = useState("substring");
   const [loading, setLoading] = useState(true);
   const [errorStatus, setErrorStatus] = useState({ error: false, message: "" });
 
@@ -92,8 +105,12 @@ export const Dictionary = () => {
     return () => (isMounted = false);
   }, []);
 
-  const handleChange = ({ target: { value } }) => {
+  const handleChangeTerm = ({ target: { value } }) => {
     setTerm(value);
+  };
+
+  const handleChangeMode = ({ target: { value } }) => {
+    setMode(value);
   };
 
   const handleCreate = (e) => {
@@ -102,13 +119,14 @@ export const Dictionary = () => {
       axios
         .post(
           "/rss-dictionary/terms/",
-          { term: term, search_mode: "substring" },
+          { term: term, search_mode: mode },
           { headers: { "Content-Type": "application/json" } }
         )
         .then((res) => {
           const new_data = data.concat(res.data.success);
           setData(new_data);
           setTerm('');
+          setMode('substring');
         });
     }
   };
@@ -117,10 +135,14 @@ export const Dictionary = () => {
     axios.delete("/rss-dictionary/identifier/" + id).then((res) => {
       setData(data.filter((item) => item._id !== id));
       setTerm('');
+      setMode('substring');
     });
   };
 
-  let filteredData= data.filter((item) => item.term.toLowerCase().includes(term.toLowerCase()))
+  var filteredData= data.filter((item) => item.term.toLowerCase().includes(term.toLowerCase()))
+  // if (mode !== 'tots')
+  //   filteredData= data.filter((item) => item.search_mode == mode)
+
   // console.log("Rendering dictionary: ", filteredData);
 
   return (
@@ -154,28 +176,50 @@ export const Dictionary = () => {
           <form onSubmit={handleCreate} className={classes.form}>
             <TextField
               name="term"
-              label="Term"
+              label="Terme"
               value={term}
-              onChange={handleChange}
+              onChange={handleChangeTerm}
               margin="normal"
               maxLength={30}
             />
+            <InputLabel id="mode-select-label">Tipus</InputLabel>
+            <Select
+              labelId="mode-select-label"
+              id="mode-select"
+              value={mode}
+              onChange={handleChangeMode}
+            >
+              {/* <MenuItem value="tots">Tots</MenuItem> */}
+              <MenuItem value="substring">substring</MenuItem>
+              <MenuItem value="exact">exact</MenuItem>
+            </Select>
+
             <Button type="submit" color="primary" variant="contained">
               Afegir
             </Button>
           </form>
-          <List>
-            {filteredData.length > 0 && filteredData.map(({ _id, term }) => (
-              <ListItem key={_id}>
-                <ListItemText primary={term} />
-                <ListItemSecondaryAction>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell align="left">Terme</TableCell>
+                <TableCell align="left">Tipus</TableCell>
+                <TableCell></TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+            {filteredData.length > 0 && filteredData.map(({ _id, term, search_mode }) => (
+              <TableRow key={_id}>
+                <TableCell align="left">{term}</TableCell>
+                <TableCell align="left">{search_mode}</TableCell>
+                <TableCell>
                   <IconButton color="primary" onClick={() => handleDelete(_id)}>
                     <Delete />
                   </IconButton>
-                </ListItemSecondaryAction>
-              </ListItem>
+                </TableCell>
+              </TableRow>
             ))}
-          </List>
+            </TableBody>
+          </Table>
         </Paper>
       )}
     </div>
