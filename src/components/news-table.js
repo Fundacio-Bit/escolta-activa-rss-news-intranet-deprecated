@@ -209,7 +209,7 @@ export const NewsTable = (props) => {
 
       try {
         axios
-          .get(`/rss-news/entries/yearmonth/${props.selectedMonth}`)
+          .get(`/rss-news/entriesWithCategory/yearmonth/${props.selectedMonth}`)
           .then((results) => {
             if (results.data.results.length > 0) {
               // OK
