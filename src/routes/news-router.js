@@ -4,7 +4,7 @@ var mongo = require("mongodb");
 var MongoClient = require("mongodb").MongoClient;
 var bodyParser = require("body-parser");
 var db;
-var news_text = require("../components/utils/get-news-text-fields")
+var newsContent = require("../components/utils/getNewsContent")
 var deburr = require("lodash")
 
 router.use(bodyParser.json({ limit: "50mb", extended: true })); // to support JSON-encoded bodies
@@ -100,7 +100,7 @@ router.get("/entries/yearmonth/:yearmonth", (req, res) => {
             });
             var news_filtered = exclusion_terms_list.length > 0 
              ? docs.filter(obj => {
-                const concatenatedTexts = deburr(news_text.get_all_text_fields(obj));
+                const concatenatedTexts = deburr(newsContent.getText(obj));
                 // Regexp to replace multiple spaces, tabs, newlines, etc with a single space.
                 const has_exclusion_term = exclusion_terms_list.some( exclusion_term => concatenatedTexts.includes(deburr(exclusion_term.replace(/\s\s+/g, ' '))));
                 return !has_exclusion_term
@@ -212,7 +212,7 @@ router.get("/entriesWithCategory/yearmonth/:yearmonth", (req, res) => {
             });
             var news_filtered = exclusion_terms_list.length > 0 
              ? docs.filter(obj => {
-                const concatenatedTexts = deburr(news_text.get_all_text_fields(obj));
+                const concatenatedTexts = deburr(newsContent.getText(obj));
                 // Regexp to replace multiple spaces, tabs, newlines, etc with a single space.
                 const has_exclusion_term = exclusion_terms_list.some( exclusion_term => concatenatedTexts.includes(deburr(exclusion_term.replace(/\s\s+/g, ' '))));
                 return !has_exclusion_term
@@ -220,7 +220,7 @@ router.get("/entriesWithCategory/yearmonth/:yearmonth", (req, res) => {
             : docs
             news_filtered.map((doc) => {
               let categories = [];
-              const concatenatedTexts = news_text.get_all_text_fields(doc);
+              const concatenatedTexts = newsContent.getText(doc);
               const categoryTerms = getCategoryTerms(concatenatedTexts, terms);
               if ( categoryTerms.length > 0 ) {
                 categories.push({"name": "tourism", "terms": categoryTerms});
@@ -370,7 +370,7 @@ router.get("/exclusion-entries/yearmonth/:yearmonth", (req, res) => {
             });
             var news_filtered = exclusion_terms_list.length > 0 
               ? docs.filter(obj => {
-                const concatenatedTexts = news_text.get_all_text_fields(obj);
+                const concatenatedTexts = newsContent.getText(obj);
                 // return !exclusion_terms_list.some(concatenatedTexts.includes.bind(concatenatedTexts))
                 return exclusion_terms_list.some( exclusion_term => concatenatedTexts.includes(deburr(exclusion_term.replace(/\s\s+/g, ' '))) )
               })
