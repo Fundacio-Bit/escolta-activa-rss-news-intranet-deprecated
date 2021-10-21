@@ -18,6 +18,7 @@ import ListItemText from '@material-ui/core/ListItemText';
 import ListSubheader from '@material-ui/core/ListSubheader';
 import ReceiptIcon from '@material-ui/icons/ReceiptTwoTone';
 import DescriptionIcon from '@material-ui/icons/DescriptionTwoTone';
+import FlightIcon from '@material-ui/icons/FlightTwoTone';
 import InsertDriveFileIcon from '@material-ui/icons/InsertDriveFileTwoTone';
 import SpeakerNotesIcon from '@material-ui/icons/SpeakerNotesTwoTone';
 import SpeakerNotesOffIcon from '@material-ui/icons/SpeakerNotesOffTwoTone';
@@ -29,10 +30,13 @@ import News from "./news";
 import DiscardedNews from "./discarded-news";
 import FilterableSourcesTable from "./filterable-sources-table";
 import { Dictionary } from "./dictionary";
+import { DictionaryCovid } from "./dictionary-covid";
+import { DictionaryAirlines } from "./dictionary-airlines";
 import { ExclusionTerms } from "./exclusion-terms";
 import { Topics } from "./topics";
 import { CovidTourism } from "./covid-tourism";
 import { AirCompanies } from "./air-companies";
+import { blue, green, red } from '@material-ui/core/colors';
 
 const drawerWidth = 240;
 
@@ -162,29 +166,41 @@ export default function PersistentDrawerLeft() {
         </List>
         <Divider />
         <List>
-        <ListItem button key="dictionary">
-            <ListItemIcon><SpeakerNotesIcon /></ListItemIcon>
+          <ListItem button key="dictionary">
+            <ListItemIcon><SpeakerNotesIcon style={{ color: blue[300] }}/></ListItemIcon>
             <ListItemText primary="Diccionari" 
               onClick={() => setContent("dictionary")}
             />
           </ListItem>
           <ListItem button key="exclusion-terms">
-            <ListItemIcon><SpeakerNotesOffIcon /></ListItemIcon>
+            <ListItemIcon><SpeakerNotesOffIcon style={{ color: blue[300] }}/></ListItemIcon>
             <ListItemText primary="Terminos d'exclusió"
               onClick={() => setContent("exclusion-terms")}
+            />
+          </ListItem>
+          <ListItem button key="dictionary-covid">
+            <ListItemIcon><LocalHospitalIcon style={{ color: blue[300] }}/></ListItemIcon>
+            <ListItemText primary="Diccionari Covid" 
+              onClick={() => setContent("dictionary-covid")}
+            />
+          </ListItem>
+          <ListItem button key="dictionary-airlines">
+            <ListItemIcon><FlightIcon style={{ color: blue[300] }}/></ListItemIcon>
+            <ListItemText primary="Diccionari Línies Aèries" 
+              onClick={() => setContent("dictionary-airlines")}
             />
           </ListItem>
         </List>
         <Divider />
         <List>
           <ListItem button key="sources">
-            <ListItemIcon><ReceiptIcon /></ListItemIcon>
+            <ListItemIcon><ReceiptIcon style={{ color: red[300] }}/></ListItemIcon>
             <ListItemText primary="Fonts" 
               onClick={() => setContent("sources")}
             />
           </ListItem>
           <ListItem button key="topics">
-            <ListItemIcon><AssessmentIcon /></ListItemIcon>
+            <ListItemIcon><AssessmentIcon style={{ color: red[300] }}/></ListItemIcon>
             <ListItemText primary="Estadístiques" 
               onClick={() => setContent("topics")}
             />
@@ -196,13 +212,13 @@ export default function PersistentDrawerLeft() {
             Informes
           </ListSubheader>
           <ListItem button key="covid-tourism">
-            <ListItemIcon><LocalHospitalIcon /></ListItemIcon>
+            <ListItemIcon><LocalHospitalIcon style={{ color: green[300] }}/></ListItemIcon>
             <ListItemText primary="Covid-Turisme" 
               onClick={() => setContent("covid-tourism")}
             />
           </ListItem>
           <ListItem button key="air-companies">
-            <ListItemIcon><AirplanemodeActiveIcon /></ListItemIcon>
+            <ListItemIcon><AirplanemodeActiveIcon style={{ color: green[300] }}/></ListItemIcon>
             <ListItemText primary="Companyies Aèries" 
               onClick={() => setContent("air-companies")}
             />
@@ -218,6 +234,8 @@ export default function PersistentDrawerLeft() {
       { content === "discarded" && <DiscardedNews /> }
       { content === "dictionary" && <Dictionary /> }
       { content === "exclusion-terms" && <ExclusionTerms /> }
+      { content === "dictionary-covid" && <DictionaryCovid /> }
+      { content === "dictionary-airlines" && <DictionaryAirlines /> }
       { content === "sources" && <FilterableSourcesTable /> }
       { content === "topics" && <Topics /> }
       { content === "covid-tourism" && <CovidTourism /> }

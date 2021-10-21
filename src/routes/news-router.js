@@ -4,7 +4,7 @@ var mongo = require("mongodb");
 var MongoClient = require("mongodb").MongoClient;
 var bodyParser = require("body-parser");
 var db;
-var news_text = require("../components/utils/get-news-text-fields")
+var newsContent = require("../components/utils/getNewsContent")
 var deburr = require("lodash")
 
 router.use(bodyParser.json({ limit: "50mb", extended: true })); // to support JSON-encoded bodies
@@ -19,21 +19,44 @@ MongoClient.connect(
   }
 );
 
+const getCategoryTerms = (text, category_terms) => {
+  let matched_terms = []
+  for (var i = 0; i < category_terms.length; i++) {
+    // Check for exact match (search_mode should be "exact")
+    if (
+      category_terms[i].search_mode === "exact" &&
+      new RegExp(
+        "(\\W+|^)" + category_terms[i].term.toLowerCase + "(\\W+|$)",
+        "g"
+      ).test(text.toLowerCase())
+    ) {
+      matched_terms.push(category_terms[i].term);
+    }
+    // Check for partial match (search_mode should be "substring")
+    else if (
+      category_terms[i].search_mode === "substring" &&
+      text.toLowerCase().includes(category_terms[i].term.toLowerCase())
+    ) {
+      matched_terms.push(category_terms[i].term);
+    }
+  }
+  return matched_terms;
+};
+
 // get all entries from news in a daterange with no exclusion terms
 router.get("/entries/yearmonth/:yearmonth", (req, res) => {
   const getNews = async (yearmonth) => {
     try {
 
-      const collection_terms = db.collection("dictionary_exclusion_terms");
-      const exclusion_terms = await collection_terms
+      const collection_exclusion_terms = db.collection("dictionary_exclusion_terms");
+      const exclusion_terms = await collection_exclusion_terms
       .find(
         {
         },
         {
           _id: 1,
           term: 1,
-          alias: 1,
-          modification_date: 1,
+          search_mode: 1,
         }
       ).toArray();
       
@@ -77,12 +100,145 @@ router.get("/entries/yearmonth/:yearmonth", (req, res) => {
             });
             var news_filtered = exclusion_terms_list.length > 0 
              ? docs.filter(obj => {
-                const concatenatedTexts = deburr(news_text.get_all_text_fields(obj));
+                const concatenatedTexts = deburr(newsContent.getText(obj));
                 // Regexp to replace multiple spaces, tabs, newlines, etc with a single space.
                 const has_exclusion_term = exclusion_terms_list.some( exclusion_term => concatenatedTexts.includes(deburr(exclusion_term.replace(/\s\s+/g, ' '))));
                 return !has_exclusion_term
               })
             : docs
+            res.json({ results: news_filtered });
+          }
+        });
+      } catch (error) {
+        console.log(err);
+        res.status(500).send(err);
+      } 
+    };
+    getNews(req.params.yearmonth);
+});
+
+// get all entries from news in a daterange with no exclusion terms
+router.get("/entriesWithCategory/yearmonth/:yearmonth", (req, res) => {
+  const getNews = async (yearmonth) => {
+    try {
+
+      const collection_exclusion_terms = db.collection("dictionary_exclusion_terms");
+      const exclusion_terms = await collection_exclusion_terms
+      .find(
+        {
+        },
+        {
+          _id: 1,
+          term: 1,
+          alias: 1,
+          modification_date: 1,
+        }
+      ).toArray();
+      
+      const collection_dictionary = db.collection("dictionary");
+      const terms = await collection_dictionary
+      .find(
+        {
+        },
+        {
+          _id: 1,
+          term: 1,
+          search_mode: 1,
+        }
+      ).toArray();
+
+      const collection_dictionary_covid = db.collection("dictionary_covid");
+      const terms_covid = await collection_dictionary_covid
+      .find(
+        {
+        },
+        {
+          _id: 1,
+          term: 1,
+          search_mode: 1,
+        }
+      ).toArray();
+
+      const collection_dictionary_airlines = db.collection("dictionary_airlines");
+      const terms_airlines = await collection_dictionary_airlines
+      .find(
+        {
+        },
+        {
+          _id: 1,
+          term: 1,
+          search_mode: 1,
+        }
+      ).toArray();
+
+      queryMonth = yearmonth.split("-")[1];
+      queryYear = yearmonth.split("-")[0];
+      var startDate = new Date(parseInt(queryYear), parseInt(queryMonth) - 1, 1);
+      var endDate = new Date(parseInt(queryYear), parseInt(queryMonth), 1);
+      var collection = db.collection("news");
+      collection
+        .find(
+          {
+            published: {
+              $gte: startDate,
+              $lt: endDate,
+            },
+          },
+          {
+            _id: 1,
+            published: 1,
+            extraction_date: 1,
+            brand: 1,
+            title: 1,
+            topics: 1,
+            link: 1,
+            summary: 1,
+            description: 1,
+            section: 1,
+            // "selected": 1,
+            source_id: 1,
+            source_name: 1,
+          }
+        )
+        .sort({ published: -1 })
+        .toArray((err, docs) => {
+          if (err) {
+            console.log(err);
+            res.status(500).send(err);
+          } else {
+      
+            var exclusion_terms_list = exclusion_terms.map(function(obj) {
+              return obj.term;
+            });
+            var news_filtered = exclusion_terms_list.length > 0 
+             ? docs.filter(obj => {
+                const concatenatedTexts = deburr(newsContent.getText(obj));
+                // Regexp to replace multiple spaces, tabs, newlines, etc with a single space.
+                const has_exclusion_term = exclusion_terms_list.some( exclusion_term => concatenatedTexts.includes(deburr(exclusion_term.replace(/\s\s+/g, ' '))));
+                return !has_exclusion_term
+              })
+            : docs
+            news_filtered.map((doc) => {
+              let categories = [];
+              const concatenatedTexts = newsContent.getText(doc);
+              const categoryTerms = getCategoryTerms(concatenatedTexts, terms);
+              if ( categoryTerms.length > 0 ) {
+                categories.push({"name": "tourism", "terms": categoryTerms});
+              }
+              const categoryTermsCovid = getCategoryTerms(concatenatedTexts, terms_covid);
+              if ( categoryTerms.length > 0 && categoryTermsCovid.length > 0 ) {
+                const terms = categoryTermsCovid.concat(categoryTerms);
+                categories.push({"name": "covid-turisme", "terms": terms});
+              }
+              const categoryTermsAirlines = getCategoryTerms(concatenatedTexts, terms_airlines);
+              if (categoryTermsAirlines.length > 0) {
+                categories.push({"name": "airline", "terms": categoryTermsAirlines});
+              }
+              // console.log("categories: ", categories)
+              doc.category = categories;
+              return doc;
+            })
+
             res.json({ results: news_filtered });
           }
         });
@@ -169,8 +325,7 @@ router.get("/exclusion-entries/yearmonth/:yearmonth", (req, res) => {
         {
           _id: 1,
           term: 1,
-          alias: 1,
-          modification_date: 1,
+          search_mode:1,
         }
       ).toArray();
 
@@ -215,7 +370,7 @@ router.get("/exclusion-entries/yearmonth/:yearmonth", (req, res) => {
             });
             var news_filtered = exclusion_terms_list.length > 0 
               ? docs.filter(obj => {
-                const concatenatedTexts = news_text.get_all_text_fields(obj);
+                const concatenatedTexts = newsContent.getText(obj);
                 // return !exclusion_terms_list.some(concatenatedTexts.includes.bind(concatenatedTexts))
                 return exclusion_terms_list.some( exclusion_term => concatenatedTexts.includes(deburr(exclusion_term.replace(/\s\s+/g, ' '))) )
               })

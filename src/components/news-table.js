@@ -16,7 +16,6 @@ import NewsTableHead from "./news-table-head";
 import {NewsTableToolbar} from "./news-table-toolbar";
 import RSSSnackbarContent from "./rss-snackbar-content";
 import { baseErrorMessage, getErrorMessage } from "./utils/getErrorMessage.js";
-import  { getNewsWithCategory } from "./utils/getNewsWithCategory.js";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -141,7 +140,7 @@ export const NewsTable = (props) => {
   }
 
   // Filtering data
-  let filteredData = getNewsWithCategory(data.slice());
+  let filteredData = data.slice();
   // console.log("filtered data: ", filteredData);
 
   if (props.isChecked) {
@@ -209,7 +208,7 @@ export const NewsTable = (props) => {
 
       try {
         axios
-          .get(`/rss-news/entries/yearmonth/${props.selectedMonth}`)
+          .get(`/rss-news/entriesWithCategory/yearmonth/${props.selectedMonth}`)
           .then((results) => {
             if (results.data.results.length > 0) {
               // OK

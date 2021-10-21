@@ -52,7 +52,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export const Dictionary = () => {
+export const DictionaryCovid = () => {
   const classes = useStyles();
 
   const [data, setData] = useState([]);
@@ -68,7 +68,7 @@ export const Dictionary = () => {
       console.log("Fetching data")
       try {
         axios
-        .get(`/rss-dictionary/terms`)
+        .get(`/rss-dictionary-covid/terms`)
         .then((results) => {
           if (results.data.results.length > 0) {
             setTimeout(() => {
@@ -118,7 +118,7 @@ export const Dictionary = () => {
     if (term.length > 0) {
       axios
         .post(
-          "/rss-dictionary/terms/",
+          "/rss-dictionary-covid/terms/",
           { term: term, search_mode: mode },
           { headers: { "Content-Type": "application/json" } }
         )
@@ -132,7 +132,7 @@ export const Dictionary = () => {
   };
 
   const handleDelete = (id) => {
-    axios.delete("/rss-dictionary/identifier/" + id).then((res) => {
+    axios.delete("/rss-dictionary-covid/identifier/" + id).then((res) => {
       setData(data.filter((item) => item._id !== id));
       setTerm('');
       setMode('substring');
@@ -171,7 +171,7 @@ export const Dictionary = () => {
             gutterBottom
             className={classes.title}
           >
-            Diccionari de Termes Turístics
+            Diccionari de Termes Covid
           </Typography>
           <form onSubmit={handleCreate} className={classes.form}>
             <TextField

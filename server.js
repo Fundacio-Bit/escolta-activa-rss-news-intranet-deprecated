@@ -58,6 +58,13 @@ var exclusionTermsRouter = require("./src/routes/exclusion-terms-router");
 
 app.use("/rss-exclusion-terms", exclusionTermsRouter);
 
+var dictionaryCovidRouter = require("./src/routes/dictionary-covid-router");
+
+app.use("/rss-dictionary-covid", dictionaryCovidRouter);
+
+var dictionaryAirlinesRouter = require("./src/routes/dictionary-airlines-router");
+
+app.use("/rss-dictionary-airlines", dictionaryAirlinesRouter);
 // *************************************************
 // *************** ROUTING *************************
 // *************************************************
