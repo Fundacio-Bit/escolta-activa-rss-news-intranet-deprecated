@@ -22,9 +22,9 @@ MongoClient.connect(
 const getCategoryTerms = (text, category_terms) => {
   let matched_terms = []
   for (var i = 0; i < category_terms.length; i++) {
-    // Check for exact match (search_mode should be "exact")
+    // Check for exact match (search_mode should be "exacte")
     if (
-      category_terms[i].search_mode === "exact" &&
+      category_terms[i].search_mode === "exacte" &&
       new RegExp(
         "(\\W+|^)" + category_terms[i].term.toLowerCase + "(\\W+|$)",
         "g"
@@ -32,9 +32,9 @@ const getCategoryTerms = (text, category_terms) => {
     ) {
       matched_terms.push(category_terms[i].term);
     }
-    // Check for partial match (search_mode should be "substring")
+    // Check for partial match (search_mode should be "subcadena")
     else if (
-      category_terms[i].search_mode === "substring" &&
+      category_terms[i].search_mode === "subcadena" &&
       text.toLowerCase().includes(category_terms[i].term.toLowerCase())
     ) {
       matched_terms.push(category_terms[i].term);

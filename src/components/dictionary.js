@@ -8,12 +8,6 @@ import {
   IconButton,
 } from "@material-ui/core";
 import {
-  List,
-  ListItem,
-  ListItemText,
-  ListItemSecondaryAction,
-} from "@material-ui/core";
-import {
   Table,
   TableHead,
   TableBody,
@@ -57,7 +51,7 @@ export const Dictionary = () => {
 
   const [data, setData] = useState([]);
   const [term, setTerm] = useState("");
-  const [mode, setMode] = useState("substring");
+  const [mode, setMode] = useState("subcadena");
   const [loading, setLoading] = useState(true);
   const [errorStatus, setErrorStatus] = useState({ error: false, message: "" });
 
@@ -126,7 +120,7 @@ export const Dictionary = () => {
           const new_data = data.concat(res.data.success);
           setData(new_data);
           setTerm('');
-          setMode('substring');
+          setMode('subcadena');
         });
     }
   };
@@ -135,7 +129,7 @@ export const Dictionary = () => {
     axios.delete("/rss-dictionary/identifier/" + id).then((res) => {
       setData(data.filter((item) => item._id !== id));
       setTerm('');
-      setMode('substring');
+      setMode('subcadena');
     });
   };
 
@@ -190,8 +184,8 @@ export const Dictionary = () => {
               onChange={handleChangeMode}
             >
               {/* <MenuItem value="tots">Tots</MenuItem> */}
-              <MenuItem value="substring">substring</MenuItem>
-              <MenuItem value="exact">exact</MenuItem>
+              <MenuItem value="subcadena">subcadena</MenuItem>
+              <MenuItem value="exacte">exacte</MenuItem>
             </Select>
 
             <Button type="submit" color="primary" variant="contained">

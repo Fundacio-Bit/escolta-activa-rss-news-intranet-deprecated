@@ -57,7 +57,7 @@ export const DictionaryCovid = () => {
 
   const [data, setData] = useState([]);
   const [term, setTerm] = useState("");
-  const [mode, setMode] = useState("substring");
+  const [mode, setMode] = useState("subcadena");
   const [loading, setLoading] = useState(true);
   const [errorStatus, setErrorStatus] = useState({ error: false, message: "" });
 
@@ -126,7 +126,7 @@ export const DictionaryCovid = () => {
           const new_data = data.concat(res.data.success);
           setData(new_data);
           setTerm('');
-          setMode('substring');
+          setMode('subcadena');
         });
     }
   };
@@ -135,7 +135,7 @@ export const DictionaryCovid = () => {
     axios.delete("/rss-dictionary-covid/identifier/" + id).then((res) => {
       setData(data.filter((item) => item._id !== id));
       setTerm('');
-      setMode('substring');
+      setMode('subcadena');
     });
   };
 
@@ -190,8 +190,8 @@ export const DictionaryCovid = () => {
               onChange={handleChangeMode}
             >
               {/* <MenuItem value="tots">Tots</MenuItem> */}
-              <MenuItem value="substring">substring</MenuItem>
-              <MenuItem value="exact">exact</MenuItem>
+              <MenuItem value="subcadena">subcadena</MenuItem>
+              <MenuItem value="exacte">exacte</MenuItem>
             </Select>
 
             <Button type="submit" color="primary" variant="contained">
