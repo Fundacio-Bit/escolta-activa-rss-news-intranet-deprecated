@@ -213,7 +213,7 @@ export default function PersistentDrawerLeft() {
           </ListSubheader>
           <ListItem button key="covid-tourism">
             <ListItemIcon><LocalHospitalIcon style={{ color: green[300] }}/></ListItemIcon>
-            <ListItemText primary="Covid-Turisme" 
+            <ListItemText primary="Turisme" 
               onClick={() => setContent("covid-tourism")}
             />
           </ListItem>

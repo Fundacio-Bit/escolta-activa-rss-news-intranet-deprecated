@@ -14,8 +14,8 @@ var basePath =
 var foldersBasePath =
   "ESCOLTA_ACTIVA_LOCAL_PATH" in process.env
     ? process.env["ESCOLTA_ACTIVA_LOCAL_PATH"] +
-      "/files/output/rss_news/covid_tourism"
-    : "/data-mongo/files/output/rss_news/covid_tourism";
+      "/files/output/rss_news/tourism"
+    : "/data-mongo/files/output/rss_news/tourism";
 
 // get all available folders
 router.get("/folders", (req, res) => {
@@ -36,7 +36,7 @@ router.get("/folders", (req, res) => {
         // TODO: check if the file exists
         return {
           name: zipFile
-            .replace("escolta_activa_rss_news_covid_tourism_", "")
+            .replace("escolta_activa_rss_news_tourism_", "")
             .replace(".zip", ""),
           path: path.join(foldersBasePath, zipFile),
         };
@@ -54,20 +54,20 @@ router.get("/download-zip/week/:week", (req, res) => {
   file = fs.createReadStream(
     path.join(
       foldersBasePath,
-      `escolta_activa_rss_news_covid_tourism_${week}.zip`
+      `escolta_activa_rss_news_tourism_${week}.zip`
     )
   );
   stat = fs.statSync(
     path.join(
       foldersBasePath,
-      `escolta_activa_rss_news_covid_tourism_${week}.zip`
+      `escolta_activa_rss_news_tourism_${week}.zip`
     )
   );
   res.setHeader("Content-Length", stat.size);
   res.setHeader("Content-Type", "application/zip");
   res.setHeader(
     "Content-Disposition",
-    `attachment; filename=escolta_activa_rss_news_covid_tourism_${week}.zip`
+    `attachment; filename=escolta_activa_rss_news_tourism_${week}.zip`
   );
   file.pipe(res);
 });
