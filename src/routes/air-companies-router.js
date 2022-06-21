@@ -4,16 +4,16 @@ var bodyParser = require("body-parser");
 const path = require("path");
 const fs = require("fs");
 router.use(bodyParser.json()); // to support JSON-encoded bodies
-console.log("process.env[ESCOLTA_ACTIVA_RSS_LOCAL_PATH]", process.env["ESCOLTA_ACTIVA_RSS_LOCAL_PATH"]);
+console.log("process.env[ESCOLTA_ACTIVA_LOCAL_PATH]", process.env["ESCOLTA_ACTIVA_LOCAL_PATH"]);
 
 var basePath =
-  "ESCOLTA_ACTIVA_RSS_LOCAL_PATH" in process.env
-    ? process.env["ESCOLTA_ACTIVA_RSS_LOCAL_PATH"]
+  "ESCOLTA_ACTIVA_LOCAL_PATH" in process.env
+    ? process.env["ESCOLTA_ACTIVA_LOCAL_PATH"]
     : "/home/ubuntu/fbit_projects/escolta_activa";
 
 var foldersBasePath =
-  "ESCOLTA_ACTIVA_RSS_LOCAL_PATH" in process.env
-    ? process.env["ESCOLTA_ACTIVA_RSS_LOCAL_PATH"] + "/files/output/rss_news/sector_aeri"
+  "ESCOLTA_ACTIVA_LOCAL_PATH" in process.env
+    ? process.env["ESCOLTA_ACTIVA_LOCAL_PATH"] + "/files/output/rss_news/sector_aeri"
     : "/data-mongo/files/output/rss_news/sector_aeri";
 
 // get all available folders
@@ -21,7 +21,6 @@ router.get("/folders", (req, res) => {
   //joining path of directory
   // const directoryPath = path.join(__dirname, "Documents");
   //passsing directoryPath and callback function
-  console.log('foldersBasePath ->', foldersBasePath)
   fs.readdir(foldersBasePath, function (err, contents) {
     //handling error
     if (err) {

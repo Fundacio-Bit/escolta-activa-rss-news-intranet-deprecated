@@ -4,16 +4,16 @@ var bodyParser = require("body-parser");
 const path = require("path");
 const fs = require("fs");
 router.use(bodyParser.json()); // to support JSON-encoded bodies
-console.log(process.env["ESCOLTA_ACTIVA_RSS_LOCAL_PATH"]);
+console.log(process.env["ESCOLTA_ACTIVA_LOCAL_PATH"]);
 
 var basePath =
-  "ESCOLTA_ACTIVA_RSS_LOCAL_PATH" in process.env
-    ? process.env["ESCOLTA_RSS_ACTIVA_LOCAL_PATH"]
+  "ESCOLTA_ACTIVA_LOCAL_PATH" in process.env
+    ? process.env["ESCOLTA_ACTIVA_LOCAL_PATH"]
     : "/home/ubuntu/fbit_projects/escolta_activa";
 
 var foldersBasePath =
-  "ESCOLTA_ACTIVA_RSS_LOCAL_PATH" in process.env
-    ? process.env["ESCOLTA_ACTIVA_RSS_LOCAL_PATH"] +
+  "ESCOLTA_ACTIVA_LOCAL_PATH" in process.env
+    ? process.env["ESCOLTA_ACTIVA_LOCAL_PATH"] +
       "/files/output/rss_news/tourism"
     : "/data-mongo/files/output/rss_news/tourism";
 
