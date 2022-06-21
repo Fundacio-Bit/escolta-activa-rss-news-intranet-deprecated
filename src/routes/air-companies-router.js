@@ -21,6 +21,7 @@ router.get("/folders", (req, res) => {
   //joining path of directory
   // const directoryPath = path.join(__dirname, "Documents");
   //passsing directoryPath and callback function
+  console.log('foldersBasePath ->', foldersBasePath)
   fs.readdir(foldersBasePath, function (err, contents) {
     //handling error
     if (err) {
